@@ -1,0 +1,402 @@
+---
+title: Claims
+description: "Typed, versioned data points attached to a person"
+---
+
+A **claim** (`clm_...`) is a single typed data point attached to a [person](/docs/onboarding/persons) — something like an identity, a residence address, a tax residency, or a set of ownership relationships. Every claim has a `claim_type`, a `status`, and a type-specific `data` payload validated against a strict schema.
+
+Claims are what onboarding applications validate against. A person is essentially the sum of their claims.
+
+## Lifecycle
+
+Every claim moves through up to three statuses:
+
+| Status | Description |
+|---|---|
+| `pending` | You've just submitted the claim. It's recorded but not yet confirmed by compliance. |
+| `verified` | Compliance has confirmed the claim. `verified_at` is populated. |
+| `superseded` | A newer claim of the same type replaced it. `superseded_at` is populated. |
+
+### State transitions
+
+```
+pending ──▶ verified ──▶ superseded
+   │
+   └──▶ (deleted)
+```
+
+| From | To | Trigger |
+|---|---|---|
+| *(none)* | `pending` | You create the claim via [`POST /persons`](/api-reference/create-a-person) or [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). |
+| `pending` | *(deleted)* | You call [`DELETE /persons/{person_id}/claims/{claim_id}`](/api-reference/delete-a-pending-claim). Only pending claims can be deleted. |
+| `pending` | `verified` | We verify the claim as part of compliance review. This is not self-service. |
+| `verified` | `superseded` | You create a newer claim of the same type on the same person. The older verified claim is automatically marked `superseded`. |
+
+<Note>
+There is no `pending → superseded` transition. A pending claim can only become `verified` or be deleted. Only `verified` claims get superseded.
+</Note>
+
+### Supersession: replacing an already-verified claim
+
+When a customer updates information you've already had verified — say, a new address — submit a fresh claim of the same type. We automatically supersede any prior `verified` claim of that type on the same person in the same request:
+
+```bash
+curl -X POST https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "claim": {
+      "claim_type": "residence",
+      "line1": "42 New Street",
+      "postal_code": "EC2A 4RQ",
+      "city": "London",
+      "country_code": "GB"
+    }
+  }'
+```
+
+After this call:
+
+- The new `residence` claim exists with status `pending`.
+- The previously-verified `residence` claim (if any) now has status `superseded` and a `superseded_at` timestamp.
+- Any still-pending `residence` claim is left untouched — it's harmless and you can delete it if you don't want it around.
+
+## Creating a claim
+
+To add a claim to an existing person, `POST /persons/{person_id}/claims` with a single `claim` object:
+
+<CodeGroup>
+```python Python
+import requests
+
+response = requests.post(
+    "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims",
+    headers={
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json",
+    },
+    json={
+        "claim": {
+            "claim_type": "pep_status",
+            "is_pep": False,
+            "has_pep_association": False,
+        }
+    },
+)
+claim = response.json()
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims",
+  {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer YOUR_ACCESS_TOKEN",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      claim: {
+        claim_type: "pep_status",
+        is_pep: false,
+        has_pep_association: false,
+      },
+    }),
+  }
+);
+const claim = await response.json();
+```
+
+```go Go
+body, _ := json.Marshal(map[string]interface{}{
+    "claim": map[string]interface{}{
+        "claim_type":          "pep_status",
+        "is_pep":              false,
+        "has_pep_association": false,
+    },
+})
+req, _ := http.NewRequest("POST",
+    "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims",
+    bytes.NewBuffer(body))
+req.Header.Set("Authorization", "Bearer YOUR_ACCESS_TOKEN")
+req.Header.Set("Content-Type", "application/json")
+```
+
+```java Java
+String json = """
+    {
+        "claim": {
+            "claim_type": "pep_status",
+            "is_pep": false,
+            "has_pep_association": false
+        }
+    }
+    """;
+
+HttpRequest request = HttpRequest.newBuilder()
+    .uri(URI.create("https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims"))
+    .header("Authorization", "Bearer YOUR_ACCESS_TOKEN")
+    .header("Content-Type", "application/json")
+    .POST(HttpRequest.BodyPublishers.ofString(json))
+    .build();
+```
+
+```csharp C#
+var payload = new {
+    claim = new {
+        claim_type = "pep_status",
+        is_pep = false,
+        has_pep_association = false
+    }
+};
+
+var response = await client.PostAsJsonAsync(
+    "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims",
+    payload);
+```
+</CodeGroup>
+
+The response is the full claim resource:
+
+```json
+{
+  "id": "clm_abc123",
+  "created_at": "2026-04-18T09:30:00Z",
+  "modified_at": "2026-04-18T09:30:00Z",
+  "person": "per_m4k7r9s2",
+  "claim_type": "pep_status",
+  "status": "pending",
+  "verified_at": null,
+  "superseded_at": null,
+  "data": {
+    "is_pep": false,
+    "has_pep_association": false,
+    "pep_role": null,
+    "pep_role_start_date": null,
+    "pep_role_end_date": null,
+    "pep_associate_name": null,
+    "pep_associate_relationship": null
+  }
+}
+```
+
+## Listing and retrieving claims
+
+List all of a person's claims, optionally filtered:
+
+```bash
+curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?claim_type=residence&status=verified" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+| Query parameter | Values | Notes |
+|---|---|---|
+| `claim_type` | Any [`claim_type`](#claim-type-reference) | Optional. Filters by claim type. |
+| `status` | `pending`, `verified`, `superseded` | Optional. Omit to return claims of all statuses. |
+
+Retrieve a single claim by ID via [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim).
+
+## Deleting a pending claim
+
+Only `pending` claims can be deleted. Use this to clean up mistakes or abandon a claim before it's verified:
+
+```bash
+curl -X DELETE https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims/clm_abc123 \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+A successful delete returns `204 No Content`. Attempting to delete a `verified` or `superseded` claim returns `400 invalid_request` — those are part of the permanent record and can't be removed through the API.
+
+## Claim type reference
+
+Every claim payload uses `extra: forbid` validation — unknown fields are rejected. Dates are ISO-8601 (`YYYY-MM-DD`), country codes are ISO-3166-1 alpha-2 (`GB`, `US`, `DE`…).
+
+### Natural-person claims
+
+Acceptable when `person_type` is `natural`.
+
+#### `identity`
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `first_name` | string | yes | |
+| `last_name` | string | yes | |
+| `date_of_birth` | date | yes | ISO-8601. |
+
+#### `nationalities`
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `nationalities` | array | yes | Non-empty. Each item: `country_code` (required), `basis` (optional: `birth`, `naturalisation`, `descent`, `marriage`, `investment_programme`, `other`). |
+
+#### `residence`
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `line1` | string | yes | |
+| `line2` | string \| null | no | |
+| `line3` | string \| null | no | |
+| `district_county` | string \| null | no | |
+| `postal_code` | string | yes | |
+| `city` | string | yes | |
+| `country_code` | string | yes | ISO-3166-1 alpha-2. |
+
+#### `tax_residencies`
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `tax_residencies` | array | yes | Non-empty. Each item: `country_code` (required), `tin` (optional), `tin_exemption_reason` (optional: `not_issued`, `pending_application`, `not_required`). |
+
+<Note>
+Either supply a `tin` or a `tin_exemption_reason` for each tax residency. Supplying neither is allowed at the claim-creation layer but will block the onboarding application if a TIN is required by your tenant's rules.
+</Note>
+
+#### `fatca_status`
+
+| Field | Type | Required |
+|---|---|---|
+| `is_us_person` | boolean | yes |
+
+#### `pep_status`
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `is_pep` | boolean | yes | |
+| `pep_role` | string \| null | conditional | Required when `is_pep` is `true`. |
+| `pep_role_start_date` | date \| null | conditional | Required when `is_pep` is `true`. |
+| `pep_role_end_date` | date \| null | no | |
+| `has_pep_association` | boolean | yes | |
+| `pep_associate_name` | string \| null | conditional | Required when `has_pep_association` is `true`. |
+| `pep_associate_relationship` | string \| null | conditional | Required when `has_pep_association` is `true`. |
+
+#### `education_level`
+
+| Field | Type | Required | Values |
+|---|---|---|---|
+| `education_level` | enum | yes | `none`, `secondary`, `bachelors`, `masters`, `doctorate`, `professional` |
+
+#### `employment`
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `employment_status` | enum | yes | `employed`, `self_employed`, `retired`, `student`, `unemployed`. |
+| `industry` | enum \| null | conditional | Required when `employment_status` is `employed` or `self_employed`. See [industry values](#industry-values). |
+| `industry_other` | string \| null | conditional | Required when `industry` is `other`. |
+
+#### `financial_profile`
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `annual_income_eur` | enum | yes | See [EUR amount bands](#eur-amount-bands). |
+| `income_sources` | array of enum | yes | Non-empty. Values: `salary`, `business_income`, `investments`, `pension`, `inheritance`, `other`. |
+| `net_worth_eur` | enum | yes | Same bands as `annual_income_eur`. |
+| `wealth_sources` | array of enum | yes | Non-empty. Values: `savings`, `business_sale`, `investments`, `inheritance`, `property_sale`, `gift`, `other`. |
+
+#### `investment_experience`
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `has_prior_experience` | boolean | yes | |
+| `asset_classes` | array of enum | conditional | Non-empty when `has_prior_experience` is `true`. Values: `equities`, `bonds`, `funds`, `derivatives`, `crypto`, `other`. |
+
+#### `expected_activity`
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `funding_currency` | string | yes | ISO-4217 code (`EUR`, `USD`, `GBP`…). |
+| `asset_classes` | array of string | yes | The asset classes the customer expects to trade. |
+| `annual_transactions` | string | yes | Band value: `1_10`, `11_20`, `21_50`, `gt_50`. |
+| `investment_amount` | string | yes | See [EUR amount bands](#eur-amount-bands). |
+
+### Legal-person claims
+
+Acceptable when `person_type` is `legal`.
+
+#### `registration`
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `legal_name` | string | yes | |
+| `trading_name` | string \| null | no | |
+| `registration_number` | string | yes | |
+| `date_of_incorporation` | date | yes | |
+| `country_of_incorporation` | string | yes | ISO-3166-1 alpha-2. |
+| `entity_type` | enum | yes | `private_limited_company`, `public_limited_company`, `partnership`, `llp`, `sole_proprietorship`, `trust`, `foundation`, `nonprofit`, `other`. |
+
+#### `contact_details`
+
+| Field | Type | Required |
+|---|---|---|
+| `phone_number` | string | yes |
+| `email` | string \| null | no |
+
+#### `lei`
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `identifier` | string | yes | 20 alphanumeric characters. We normalise it to uppercase. |
+| `expiry_date` | date | yes | |
+
+#### `registered_address` / `operating_address`
+
+Same shape as [`residence`](#residence). `registered_address` is the legal registration address; `operating_address` is where the business actually trades from.
+
+#### `business_nature`
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `business_activity` | enum | yes | See [industry values](#industry-values). |
+| `business_activity_other` | string \| null | conditional | Required when `business_activity` is `other`. |
+| `annual_turnover_eur` | enum | yes | See [EUR amount bands](#eur-amount-bands). |
+| `is_regulated` | boolean | yes | |
+| `license_number` | string \| null | no | |
+| `issues_bearer_shares` | boolean | yes | |
+| `has_nominee_shareholders` | boolean | yes | |
+| `has_shell_bank_relationships` | boolean | yes | |
+
+### Shared claim types
+
+Acceptable on both natural and legal persons.
+
+#### `relationships`
+
+Used primarily on legal persons to declare directors, shareholders, UBOs, trustees, settlors, and authorised signatories.
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `relationships` | array | yes | Non-empty. See entry fields below. |
+
+Each relationship entry:
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `related_person` | string | yes | ID of an existing person. Must exist — unknown IDs fail the whole request with `400`. |
+| `relationship_type` | enum | yes | `director`, `shareholder`, `beneficial_owner`, `trustee`, `settlor`, `authorised_signatory`. |
+| `control_type` | enum \| null | no | `ownership`, `voting`, `other`. |
+| `ownership_percentage` | decimal (string) \| null | no | E.g. `"25.50"`. |
+| `appointment_date` | date \| null | no | |
+| `end_date` | date \| null | no | |
+
+<Note>
+Different `relationship_type` values carry different follow-on requirements during onboarding. For example, every declared `director` must themselves satisfy an identity / selfie / passport bundle. See [applications — related-person requirements](/docs/onboarding/applications#related-person-requirements).
+</Note>
+
+## Reference values
+
+### EUR amount bands
+
+| Value | Range |
+|---|---|
+| `lt_50k` | Under €50,000 |
+| `50k_100k` | €50,000 – €100,000 |
+| `100k_250k` | €100,000 – €250,000 |
+| `250k_500k` | €250,000 – €500,000 |
+| `500k_1m` | €500,000 – €1,000,000 |
+| `1m_3m` | €1,000,000 – €3,000,000 |
+| `gt_3m` | Over €3,000,000 |
+
+### Industry values
+
+`agriculture`, `mining`, `manufacturing`, `utilities`, `construction`, `wholesale_retail`, `transport_logistics`, `hospitality`, `media_telecoms`, `technology`, `financial_services`, `insurance`, `real_estate`, `professional_services`, `education`, `healthcare`, `arts_entertainment`, `public_administration`, `defence`, `non_profit`, `gambling`, `extractives`, `precious_metals`, `cryptocurrency`, `other`.
+
+Use `other` together with the `_other` text field on whichever claim carries the industry (`employment.industry_other`, `business_nature.business_activity_other`).

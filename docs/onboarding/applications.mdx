@@ -1,0 +1,267 @@
+---
+title: Applications
+description: "Submit an onboarding application referencing persons, consents, and evidence"
+---
+
+An **onboarding application** (`onba_...`) is the single request that kicks off compliance review. You submit it once all your [persons](/docs/onboarding/persons) and their [claims](/docs/onboarding/claims) are in place. The request pulls everything together: which persons are acting in which capacity, which legal documents they've consented to, and which evidence files back up their claims.
+
+Submission is synchronous. We validate everything against your tenant's configured requirements and either accept the application (status `pending`, awaiting compliance review) or reject it with a `400` and a precise explanation of what's missing.
+
+## Request structure
+
+Send a `POST` to `/onboarding-applications` with four top-level fields:
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `customer_type` | enum | yes | `individual` or `business`. See [requirements by customer type](#requirements-by-customer-type). |
+| `authorities` | array | yes | Non-empty. The persons who will act on the resulting customer, and in what capacity. |
+| `consents` | array | no | Legal document consents, one per required consent type per authority. Defaults to empty. |
+| `evidence` | array | no | Evidence files backing up the claims. Defaults to empty. |
+
+Every item in `authorities`, `consents`, and `evidence` references a person by ID using the `person` field (not `person_id` — the wire name is `person`).
+
+### Authorities
+
+Each authority pins a person to a role on the resulting customer. Valid `authority_type` values are `owner`, `joint_owner`, `signatory`, `power_of_attorney`, `trading`.
+
+```json
+{
+  "authorities": [
+    {"person": "per_ada",    "authority_type": "owner"},
+    {"person": "per_grace",  "authority_type": "signatory"}
+  ]
+}
+```
+
+### Consents
+
+A consent records that a person has agreed to a specific version of a legal document. You'll typically need one consent per required `consent_type` per authority — see [required consents](#required-consents) below.
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `person` | string | yes | ID of an authority on this application, or a related person (see [attribution](#per-person-attribution)). |
+| `consent_type` | string | yes | E.g. `terms_of_service`. Must match one of your tenant's required consent types for the customer type. |
+| `legal_document_version` | string | yes | ID of a specific [legal document version](/api-reference/list-versions-of-a-legal-document). Must exist. |
+| `consented_at` | datetime | yes | ISO-8601 timestamp of when the person consented. |
+
+<Warning>
+Every consent requires a valid `legal_document_version`. Submitting a consent without one — or with an ID we don't recognise — fails the whole application with `400 invalid_request`.
+</Warning>
+
+### Evidence
+
+Evidence attaches an uploaded file to a specific claim type. Upload files first via the [Files API](/api-reference/create-a-file), then reference the resulting file IDs here.
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `person` | string | yes | Which person this evidence belongs to. |
+| `evidence_type` | enum | yes | See [evidence taxonomy](#evidence-taxonomy). |
+| `document_type` | enum \| null | conditional | Required for most evidence types; must be `null` for `selfie`. |
+| `file` | string | yes | ID of a file you've already uploaded. Must exist. |
+
+## Per-person attribution
+
+Every consent and every evidence item must be attributed — via its `person` field — to either:
+
+1. An **authority** on this application, or
+2. A **related person** declared in a `relationships` claim on one of the legal authorities.
+
+Attributing a consent or evidence item to some other person ID fails the whole application with a `400`. This is what prevents accidentally mixing documents from unrelated customers into a single submission.
+
+<Note>
+You can't attach evidence to a person who appears nowhere on the application. If a person should contribute, they must either be in `authorities` or be declared as a related person on a legal authority's `relationships` claim.
+</Note>
+
+## Idempotency
+
+These endpoints don't accept an `Idempotency-Key` header. Instead, we compute a **server-side idempotency key** from the submission's semantic content:
+
+```
+SHA-256(customer_type | sorted[person_id:authority_type])
+```
+
+Only `customer_type` and the `authorities` set contribute. Consents and evidence don't — they're considered details of the same logical application.
+
+The key is enforced against currently-active applications (status `pending` or `processing`):
+
+| Scenario | Result |
+|---|---|
+| No prior active application with the same key | Accepted. |
+| An active application with the same key exists | Rejected with `409 conflict`. |
+| A prior application with the same key has terminated (`completed`) | Accepted — you can submit a new one. |
+
+If you need to resubmit after correcting details on an active application, contact support to cancel the active one. There is no self-service cancellation endpoint.
+
+## Requirements by customer type
+
+An application is only accepted if it satisfies every requirement for its `customer_type`. Requirements fall into three buckets: required claims on authorities, acceptable evidence bundles, and required consents.
+
+### Individual
+
+One natural-person authority with `authority_type` of `owner`.
+
+**Required claims on the authority** (all must exist, regardless of status):
+
+`identity`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
+
+**Required evidence** — three independent requirements, each satisfied by one of the acceptable bundles:
+
+| For the `identity` claim | Acceptable bundles |
+|---|---|
+| | A single `identity_document` of type `passport` |
+| | **or** two `identity_document` items: one `national_id_front` **and** one `national_id_back` |
+
+| For the `identity` claim | Acceptable bundles |
+|---|---|
+| | A single `selfie` (no `document_type`) |
+
+| For the `residence` claim | Acceptable bundles |
+|---|---|
+| | One `proof_of_address` with any compatible document type (see [evidence taxonomy](#evidence-taxonomy)) |
+
+### Business
+
+One legal-person authority with `authority_type` of `owner`, plus related persons declared via a `relationships` claim.
+
+**Required claims on the legal authority**:
+
+`registration`, `contact_details`, `relationships`.
+
+**Required evidence on the legal authority**:
+
+| Claim | Acceptable bundles |
+|---|---|
+| On `registration` | One `certificate_of_good_standing` |
+
+**Related-person requirements** (see [below](#related-person-requirements)) apply to each person listed in the legal authority's `relationships` claim.
+
+### Required consents
+
+Every application must include these consents, attributed to the authority:
+
+| `consent_type` | What the customer agrees to |
+|---|---|
+| `terms_of_service` | Your terms of service. |
+| `risk_disclosures` | Applicable investor risk disclosures. |
+| `data_accuracy` | A statement that the information provided is accurate. |
+
+Each consent must reference a live `legal_document_version`. List versions for a given document via [`GET /legal-documents/{legal_document_id}/versions`](/api-reference/list-versions-of-a-legal-document).
+
+### Unsupported: `joint`
+
+The `customer_type` enum includes a `joint` value, but no requirement configuration ships for it yet. Submissions with `customer_type: "joint"` return `400 invalid_request` with `No onboarding requirement defined for customer type: joint`. Treat `joint` as not currently supported.
+
+## Related-person requirements
+
+When a legal authority's `relationships` claim declares people with specific `relationship_type` values, each of those related persons has their own validation requirements.
+
+### `director`
+
+Every related person whose `relationship_type` is `director` must satisfy an individual-style identity bundle:
+
+**Required claims on the director**: `identity`, `nationalities`.
+
+**Required evidence** (attributed to the director):
+
+| For the `identity` claim | Acceptable bundles |
+|---|---|
+| | A single `identity_document` of type `passport` |
+| | **or** two `identity_document` items: one `national_id_front` **and** one `national_id_back` |
+
+| For the `identity` claim | Acceptable bundles |
+|---|---|
+| | A single `selfie` (no `document_type`) |
+
+No consents are required from related persons today.
+
+### Other relationship types
+
+`shareholder`, `beneficial_owner`, `trustee`, `settlor`, and `authorised_signatory` carry no additional requirements at submission time. You can still declare them — they'll be captured on the application — but no per-relationship claims or evidence are enforced. Additional checks will arrive through compliance processing, not validation.
+
+## Evidence taxonomy
+
+Each `evidence_type` accepts a specific set of `document_type` values. Submitting a combination outside the matrix — for example, a `national_id_front` document against a `proof_of_address` evidence type — fails the application with `400 invalid_request`.
+
+| `evidence_type` | Allowed `document_type` values |
+|---|---|
+| `identity_document` | `passport`, `national_id_front`, `national_id_back`, `driving_license`, `driving_license_front`, `driving_license_back` |
+| `proof_of_address` | `utility_bill`, `bank_statement`, `tax_document` |
+| `selfie` | *(none — `document_type` must be `null`)* |
+| `certificate_of_shareholders` | `shareholder_register`, `share_certificate` |
+| `certificate_of_directors` | `director_register`, `board_minutes` |
+| `certificate_of_good_standing` | `certificate_of_good_standing`, `incumbency_certificate` |
+| `financial_statements` | `audited_accounts`, `management_accounts` |
+| `ownership_structure` | `ubo_declaration`, `org_chart` |
+| `proof_of_registered_address` | `utility_bill`, `bank_statement` |
+| `proof_of_operating_address` | `utility_bill`, `bank_statement` |
+| `nominee_agreement` | `trust_deed`, `nominee_agreement` |
+| `board_resolution` | `board_resolution` |
+
+<Note>
+National IDs are always submitted as the `national_id_front` + `national_id_back` pair. There's no single-sided `national_id` document type. Driving licences can be either the single-sided `driving_license` or the `driving_license_front` + `driving_license_back` pair.
+</Note>
+
+### Which evidence types apply to each person type
+
+Natural-person evidence (`identity_document`, `proof_of_address`, `selfie`) is only valid against natural-person authorities and related persons. Legal-entity evidence (`certificate_of_*`, `financial_statements`, `ownership_structure`, `proof_of_registered_address`, `proof_of_operating_address`, `nominee_agreement`, `board_resolution`) is only valid against legal-person authorities. Attributing evidence to the wrong person type returns `400`.
+
+## Response
+
+A successful submission returns `201 Created` with the application resource:
+
+```json
+{
+  "id": "onba_m4k7r9s2",
+  "created_at": "2026-04-18T09:30:00Z",
+  "modified_at": "2026-04-18T09:30:00Z",
+  "customer_type": "individual",
+  "status": "pending",
+  "outcome": null,
+  "application": {
+    "customer_type": "individual",
+    "authorities": [
+      {"person": "per_ada", "authority_type": "owner"}
+    ],
+    "consents": [
+      {"person": "per_ada", "consent_type": "terms_of_service", "legal_document_version": "ldv_tos_v3", "consented_at": "2026-04-18T09:30:00Z"}
+    ],
+    "evidence": [
+      {"person": "per_ada", "evidence_type": "identity_document", "document_type": "passport", "file": "fil_passport"}
+    ]
+  }
+}
+```
+
+| Field | Description |
+|---|---|
+| `id` | Application ID, prefix `onba_`. |
+| `customer_type` | Echoes the submitted value. |
+| `status` | Always `pending` on submission. |
+| `outcome` | Always `null` on submission. Populated later once the application terminates. |
+| `application` | The full submitted payload (authorities, consents, evidence), stored as-submitted. |
+
+### Application statuses and outcomes
+
+The full enum range is:
+
+| `status` | Meaning |
+|---|---|
+| `pending` | Initial state. Queued for compliance review. |
+| `processing` | Under active review. |
+| `completed` | Terminal. Check `outcome` for the result. |
+
+| `outcome` | Meaning |
+|---|---|
+| `approved` | Compliance approved the application. We'll provision the customer and any accounts automatically. |
+| `rejected` | Compliance rejected the application. |
+| `withdrawn` | The application was withdrawn before a decision. |
+
+<Note>
+All post-submission transitions (`pending → processing → completed`) happen in our compliance systems. You'll see them reflected if you retrieve the application, but we don't currently emit webhooks for these transitions. Expect polling to be necessary until webhook support lands.
+</Note>
+
+## Errors
+
+The single most common response path during integration is `400 invalid_request` with a precise `detail` message. We prefer loud, specific errors over silent defaults — if something's missing or mis-attributed, the detail will tell you exactly which person, claim, consent, or evidence item caused the failure.
+
+See [errors](/docs/onboarding/errors) for the full catalogue.

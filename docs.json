@@ -50,6 +50,16 @@
             ]
           },
           {
+            "group": "Onboarding",
+            "pages": [
+              "docs/onboarding/overview",
+              "docs/onboarding/persons",
+              "docs/onboarding/claims",
+              "docs/onboarding/applications",
+              "docs/onboarding/errors"
+            ]
+          },
+          {
             "group": "Orders",
             "pages": [
               "docs/orders/overview",
@@ -98,6 +108,24 @@
               "GET /instruments/{id_or_symbol}",
               "GET /instruments",
               "GET /prices"
+            ]
+          },
+          {
+            "group": "Persons",
+            "pages": [
+              "POST /persons",
+              "GET /persons/{id}",
+              "GET /persons/{id}/authorities",
+              "POST /persons/{person_id}/claims",
+              "GET /persons/{person_id}/claims",
+              "GET /persons/{person_id}/claims/{claim_id}",
+              "DELETE /persons/{person_id}/claims/{claim_id}"
+            ]
+          },
+          {
+            "group": "Onboarding",
+            "pages": [
+              "POST /onboarding-applications"
             ]
           },
           {
