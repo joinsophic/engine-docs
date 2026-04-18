@@ -18,6 +18,8 @@ The `person_type` determines which claim types are acceptable and which evidence
 
 A legal person can declare its natural- and legal-person counterparties (directors, shareholders, UBOs, trustees, signatories) using a [`relationships`](/docs/onboarding/claims#relationships) claim. The related persons must already exist as persons of their own — you can't declare a relationship to a party we don't know about.
 
+The split is enforced at the claim layer: every claim type belongs to either natural or legal persons, and mixing them is rejected. Both the `claims` array on `POST /persons` and later calls to `POST /persons/{person_id}/claims` return `400 invalid_request` if a `claim_type` doesn't match the target person's `person_type` — see the [claim type reference](/docs/onboarding/claims#claim-type-reference) for the per-type split.
+
 ## Creating a person
 
 Send a `POST` to `/persons` with the `person_type` and a non-empty `claims` array. Creation is **atomic**: if any claim fails validation, nothing is persisted.
@@ -245,7 +247,7 @@ Persons don't have a status of their own. Lifecycle exists only on individual cl
 </Note>
 
 <Warning>
-`POST /persons` doesn't support the `Idempotency-Key` header. If you retry a request that may have already succeeded, you'll create a duplicate person. Record the returned `id` the first time through and reuse it on retries.
+`POST /persons` doesn't de-duplicate retries. If you retry a request that may have already succeeded, you'll create a duplicate person. Record the returned `id` the first time through and reuse it on retries.
 </Warning>
 
 ## Retrieving a person

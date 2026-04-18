@@ -21,6 +21,7 @@ Returned from `POST /persons` and `POST /persons/{person_id}/claims`.
 | HTTP | `code` | When |
 |---|---|---|
 | 400 | `invalid_request` | The request body fails validation — unknown `claim_type`, missing required field, unknown field (claims use strict `extra: forbid` validation), or a conditional rule isn't met (e.g. `pep_role` is missing while `is_pep` is `true`). |
+| 400 | `invalid_request` | The `claim_type` isn't valid for the target person's `person_type`. Detail reads `Claim type '<claim_type>' is not allowed on natural persons.` or `... on legal persons.` Use a claim type that matches the person — see [natural-person claims](/docs/onboarding/claims#natural-person-claims) and [legal-person claims](/docs/onboarding/claims#legal-person-claims). |
 | 400 | `invalid_request` | A `relationships` claim references a `related_person` ID that doesn't exist. The whole request fails and no person is created — build the related persons first. |
 | 404 | `not_found` | `POST /persons/{person_id}/claims` — the person ID in the path doesn't exist. |
 | 401 | `invalid_token` | Missing or invalid bearer token. |
@@ -46,16 +47,29 @@ Returned from `POST /onboarding-applications`. Every `400` below carries `code: 
 | `detail` pattern | Cause | Fix |
 |---|---|---|
 | `Referenced persons not found: [...]` | One or more authority `person` IDs don't exist. | Verify the IDs — create missing persons first. |
-| `No onboarding requirement defined for customer type: ...` | `customer_type` is `joint` (not yet supported) or otherwise unrecognised. | Use `individual` or `business`. |
 | `Evidence references non-existent files: [...]` | An `evidence[].file` ID doesn't exist. | Confirm the file was uploaded successfully and the returned ID is used verbatim. |
 
-### Missing or mis-shaped requirements
+### Per-authority composition errors
+
+Requirements are defined per `(customer_type, authority_type)` slot. These errors fire when the submitted authorities don't match the slot configuration — wrong authority type, wrong person type, too few, too many, or duplicates.
 
 | `detail` pattern | Cause | Fix |
 |---|---|---|
-| `Missing required claims -- {person_id}: [...]` | The authority is missing one or more claims required for the customer type. | Create the missing claims on the person before resubmitting. See [requirements by customer type](/docs/onboarding/applications#requirements-by-customer-type). |
+| `Customer type '{ct}' does not accept authority type '{at}'.` | The authority type isn't configured for this customer type (e.g. `signatory` on `individual`, or `power_of_attorney` on any current customer type). | Use one of the authority types listed for this customer type — see [authority composition](/docs/onboarding/applications#authority-composition). |
+| `Authority '{at}' on '{ct}' customer requires a {expected} person, got {actual} (person_id=...).` | The referenced person's `person_type` doesn't match the slot (e.g. a natural person submitted as a business `owner`, or a legal person submitted as a `signatory`). | Either use a person of the correct type, or change the `authority_type` to one that accepts the person you have. |
+| `Customer type '{ct}' requires at least {n} '{at}' authority; got {m}.` | A mandatory authority slot wasn't filled the minimum number of times (e.g. a business application with zero signatories, or a joint application with zero joint owners). | Add the missing authorities. |
+| `Customer type '{ct}' allows at most {n} '{at}' authority; got {m}.` | A slot with an upper bound was over-supplied (e.g. two `owner` authorities on a business). | Remove the extras so the count matches the slot's maximum. |
+| `Each person may hold at most one authority slot per application; duplicates: [...].` | The same `person` ID appears more than once across `authorities`. | De-duplicate so each person holds at most one authority on the application. If a person genuinely needs to act in two capacities, create separate applications. |
+
+### Missing or mis-shaped requirements
+
+Required claims, consents, and evidence are defined per authority slot — a business `owner` and a business `signatory` have different required sets. These errors tell you which authority is short and exactly what's missing.
+
+| `detail` pattern | Cause | Fix |
+|---|---|---|
+| `Missing required claims -- {person_id}: [...]` | The authority is missing one or more claims required for its specific slot. The missing list is what that slot needs — it's not shared across authority types. | Create the missing claims on the person before resubmitting. See [requirements by customer type](/docs/onboarding/applications#requirements-by-customer-type) for each slot's claim set. |
 | `Missing required consents for person {person_id}: [...]` | One of the required consent types isn't present for the authority. | Add a consent entry for each missing `consent_type`, attributed to that person. |
-| `No acceptable evidence bundle submitted for claim '{claim_type}' on person {person_id}.` | You didn't provide any of the bundles that satisfy the evidence requirement for that claim. | Supply one of the acceptable bundles — see [requirements by customer type](/docs/onboarding/applications#requirements-by-customer-type). |
+| `No acceptable evidence bundle submitted for claim '{claim_type}' on person {person_id}.` | You didn't provide any of the bundles that satisfy the evidence requirement for that claim on that authority. | Supply one of the acceptable bundles — see [requirements by customer type](/docs/onboarding/applications#requirements-by-customer-type). |
 | `Missing required claims on {relationship_type} {related_person_id}: [...]` | A related person (e.g. a director) is missing the claims required for their relationship type. | Add the missing claims on the related person. |
 
 ### Consent errors
@@ -86,7 +100,7 @@ Returned from `POST /onboarding-applications`. Every `400` below carries `code: 
 
 | HTTP | `code` | `detail` | Cause | Fix |
 |---|---|---|---|---|
-| 409 | `conflict` | `An active onboarding application already exists for this combination of customer type and authorities.` | An earlier application with the same `customer_type` + authority set is still `pending` or `processing`. | Wait for that application to terminate, or contact support to cancel it. Consents and evidence don't contribute to the idempotency key — see [idempotency](/docs/onboarding/applications#idempotency). |
+| 409 | `conflict` | `An active onboarding application already exists for this combination of customer type and authorities.` | An earlier application with the same `customer_type` + authority set is still `pending` or `processing`. | Wait for that application to terminate, or contact support to cancel it. Consents and evidence don't affect de-duplication — see [duplicate submissions](/docs/onboarding/applications#duplicate-submissions). |
 
 ### Auth errors
 

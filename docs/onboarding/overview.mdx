@@ -111,13 +111,6 @@ Here's what onboarding an individual looks like end-to-end. For a business, you'
 Every consent requires a `legal_document_version` referencing the version your customer agreed to. Discover valid IDs via the [legal document versions endpoint](/api-reference/list-versions-of-a-legal-document).
 </Note>
 
-## What's not here yet
-
-Two gaps worth calling out so you don't design around them:
-
-- **No webhooks.** We don't yet emit events for person creation, claim status changes, or onboarding application transitions. You'll need to hold application state on your side and check in with us for the outcome. Webhooks for these transitions are on the roadmap.
-- **No self-service changes to a submitted application.** Once an application is `pending` or `processing`, you can't edit or cancel it via the API. If you need to unblock a stuck application, contact support.
-
 ## Where to next
 
 <CardGroup cols={2}>
@@ -128,7 +121,7 @@ Two gaps worth calling out so you don't design around them:
     Every claim type, its schema, and how claims move through their lifecycle.
   </Card>
   <Card title="Applications" icon="clipboard-check" href="/docs/onboarding/applications">
-    Submitting an application — authorities, consents, evidence, and idempotency.
+    Submitting an application — authorities, consents, evidence, and duplicate handling.
   </Card>
   <Card title="Errors" icon="triangle-exclamation" href="/docs/onboarding/errors">
     Every validation error we return, what causes it, and how to fix it.

@@ -13,7 +13,7 @@ Send a `POST` to `/onboarding-applications` with four top-level fields:
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `customer_type` | enum | yes | `individual` or `business`. See [requirements by customer type](#requirements-by-customer-type). |
+| `customer_type` | enum | yes | `individual`, `business`, or `joint`. See [requirements by customer type](#requirements-by-customer-type). |
 | `authorities` | array | yes | Non-empty. The persons who will act on the resulting customer, and in what capacity. |
 | `consents` | array | no | Legal document consents, one per required consent type per authority. Defaults to empty. |
 | `evidence` | array | no | Evidence files backing up the claims. Defaults to empty. |
@@ -22,16 +22,22 @@ Every item in `authorities`, `consents`, and `evidence` references a person by I
 
 ### Authorities
 
-Each authority pins a person to a role on the resulting customer. Valid `authority_type` values are `owner`, `joint_owner`, `signatory`, `power_of_attorney`, `trading`.
+Each authority pins a person to a role on the resulting customer. Valid `authority_type` values are `owner`, `joint_owner`, `signatory`, `power_of_attorney`, `trading`. The set of `authority_type` values a given `customer_type` accepts — and the minimum and maximum count for each slot — is fixed per customer type (see [authority composition](#authority-composition)).
+
+For example, a business application pairs a legal-person `owner` with one or more natural-person `signatory` authorities:
 
 ```json
 {
   "authorities": [
-    {"person": "per_ada",    "authority_type": "owner"},
-    {"person": "per_grace",  "authority_type": "signatory"}
+    {"person": "per_legal_entity", "authority_type": "owner"},
+    {"person": "per_ada",          "authority_type": "signatory"}
   ]
 }
 ```
+
+<Note>
+Each person can hold at most one authority slot on a given application. The same `person` ID appearing twice across `authorities` is rejected with `400 invalid_request`.
+</Note>
 
 ### Consents
 
@@ -72,39 +78,45 @@ Attributing a consent or evidence item to some other person ID fails the whole a
 You can't attach evidence to a person who appears nowhere on the application. If a person should contribute, they must either be in `authorities` or be declared as a related person on a legal authority's `relationships` claim.
 </Note>
 
-## Idempotency
+## Duplicate submissions
 
-These endpoints don't accept an `Idempotency-Key` header. Instead, we compute a **server-side idempotency key** from the submission's semantic content:
+Each onboarding application is de-duplicated by its `customer_type` and the set of `(person, authority_type)` pairs in its `authorities`. Two submissions sharing that combination are treated as the same logical application. Consents and evidence are not part of the de-duplication — changing them doesn't create a new application.
 
-```
-SHA-256(customer_type | sorted[person_id:authority_type])
-```
+While an earlier application with the same `customer_type` + authorities is still `pending` or `processing`, a new submission with the same combination is rejected with `409 conflict`. Once the earlier application reaches `completed`, you can submit a new one.
 
-Only `customer_type` and the `authorities` set contribute. Consents and evidence don't — they're considered details of the same logical application.
-
-The key is enforced against currently-active applications (status `pending` or `processing`):
-
-| Scenario | Result |
-|---|---|
-| No prior active application with the same key | Accepted. |
-| An active application with the same key exists | Rejected with `409 conflict`. |
-| A prior application with the same key has terminated (`completed`) | Accepted — you can submit a new one. |
-
-If you need to resubmit after correcting details on an active application, contact support to cancel the active one. There is no self-service cancellation endpoint.
+There is no self-service cancellation. If you need to resubmit with corrections while an application is still active, contact support.
 
 ## Requirements by customer type
 
-An application is only accepted if it satisfies every requirement for its `customer_type`. Requirements fall into three buckets: required claims on authorities, acceptable evidence bundles, and required consents.
+An application is only accepted if every authority slot on it satisfies its own requirements. Requirements are defined **per authority slot** — each `(customer_type, authority_type)` pair carries its own required claims, acceptable evidence bundles, required consents, expected `person_type`, and minimum/maximum count. That means, for example, a business `owner` (legal) and a business `signatory` (natural) have different required-claim sets; neither inherits from the other.
+
+<Note>
+The requirements listed below are the defaults as of the time of writing. They're configuration on our side and evolve as our compliance program and tenant setups change — treat them as guidance rather than a versioned contract. Build your integration to react to the current requirements reported in our error responses rather than hard-coding them, and we'll announce breaking changes through our standard release channels.
+</Note>
+
+### Authority composition
+
+The table below captures which authority slots each customer type accepts, the expected `person_type`, and the slot count.
+
+| `customer_type` | `authority_type` | Expected `person_type` | Count |
+|---|---|---|---|
+| `individual` | `owner` | `natural` | exactly 1 |
+| `business` | `owner` | `legal` | exactly 1 |
+| `business` | `signatory` | `natural` | at least 1 (no upper bound) |
+| `joint` | `owner` | `natural` | exactly 1 |
+| `joint` | `joint_owner` | `natural` | at least 1 (no upper bound) |
+
+Any other `(customer_type, authority_type)` combination — for example, `signatory` on `individual`, or `power_of_attorney` on any current customer type — is rejected with `400 invalid_request`. See [composition errors](/docs/onboarding/errors#per-authority-composition-errors) for the full set.
 
 ### Individual
 
 One natural-person authority with `authority_type` of `owner`.
 
-**Required claims on the authority** (all must exist, regardless of status):
+**Required claims on the owner** (all must exist, regardless of status):
 
 `identity`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
 
-**Required evidence** — three independent requirements, each satisfied by one of the acceptable bundles:
+**Required evidence on the owner** — three independent requirements, each satisfied by one of the acceptable bundles:
 
 | For the `identity` claim | Acceptable bundles |
 |---|---|
@@ -119,25 +131,87 @@ One natural-person authority with `authority_type` of `owner`.
 |---|---|
 | | One `proof_of_address` with any compatible document type (see [evidence taxonomy](#evidence-taxonomy)) |
 
+**Required consents**: the owner supplies the standard consent set (see [required consents](#required-consents)).
+
 ### Business
 
-One legal-person authority with `authority_type` of `owner`, plus related persons declared via a `relationships` claim.
+One legal-person authority with `authority_type` of `owner`, plus at least one natural-person authority with `authority_type` of `signatory`, plus related persons declared via a `relationships` claim on the legal owner.
 
-**Required claims on the legal authority**:
+Because requirements are per slot, the OWNER and SIGNATORY carry different claim and evidence sets.
+
+#### Owner (legal person)
+
+**Required claims on the legal owner**:
 
 `registration`, `contact_details`, `relationships`.
 
-**Required evidence on the legal authority**:
+**Required evidence on the legal owner**:
 
 | Claim | Acceptable bundles |
 |---|---|
 | On `registration` | One `certificate_of_good_standing` |
 
-**Related-person requirements** (see [below](#related-person-requirements)) apply to each person listed in the legal authority's `relationships` claim.
+**Required consents**: the legal owner is the party supplying the standard consents on a business application.
+
+**Related-person requirements** (see [below](#related-person-requirements)) apply to each person listed in the legal owner's `relationships` claim.
+
+#### Signatory (natural person)
+
+Attach one signatory authority for every natural person who signs on behalf of the business. Each signatory has its own claim and evidence requirements; they do **not** need the legal-entity claims (`registration`, `contact_details`, etc.).
+
+**Required claims on each signatory**:
+
+`identity`, `nationalities`, `residence`, `pep_status`.
+
+**Required evidence on each signatory**:
+
+| For the `identity` claim | Acceptable bundles |
+|---|---|
+| | A single `identity_document` of type `passport` |
+| | **or** two `identity_document` items: one `national_id_front` **and** one `national_id_back` |
+
+| For the `identity` claim | Acceptable bundles |
+|---|---|
+| | A single `selfie` (no `document_type`) |
+
+No `proof_of_address` is required for signatories. No consents are required from signatories personally — the legal owner's consents cover the business.
+
+### Joint
+
+One natural-person `owner`, plus at least one natural-person `joint_owner`. Every party — the owner and every joint owner — satisfies the same requirements as an individual owner does: all ten individual-style claims and all three evidence bundles, each attributed to that person. Every party supplies the standard consents personally.
+
+**Required claims on the owner and each joint owner**:
+
+`identity`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
+
+**Required evidence on the owner and each joint owner** — three independent requirements each, attributed to that person:
+
+| For the `identity` claim | Acceptable bundles |
+|---|---|
+| | A single `identity_document` of type `passport` |
+| | **or** two `identity_document` items: one `national_id_front` **and** one `national_id_back` |
+
+| For the `identity` claim | Acceptable bundles |
+|---|---|
+| | A single `selfie` (no `document_type`) |
+
+| For the `residence` claim | Acceptable bundles |
+|---|---|
+| | One `proof_of_address` with any compatible document type |
+
+**Required consents**: every natural authority (the owner and every joint owner) supplies the standard consent set, each consent attributed to the party giving it.
 
 ### Required consents
 
-Every application must include these consents, attributed to the authority:
+Every application must include these consents. The party supplying them depends on the customer type:
+
+- **Individual** — the owner supplies every consent, each attributed to the owner.
+- **Joint** — every natural authority (owner and each joint owner) supplies every consent, each attributed to the party giving it.
+- **Business** — the legal owner is the party supplying these consents. Signatories don't consent personally.
+
+<Note>
+The consent types listed below are the defaults as of the time of writing. The required set is configuration on our side and may change — don't hard-code these values. Drive your integration from the current requirements reported in our error responses, and we'll announce breaking changes through our standard release channels.
+</Note>
 
 | `consent_type` | What the customer agrees to |
 |---|---|
@@ -147,13 +221,13 @@ Every application must include these consents, attributed to the authority:
 
 Each consent must reference a live `legal_document_version`. List versions for a given document via [`GET /legal-documents/{legal_document_id}/versions`](/api-reference/list-versions-of-a-legal-document).
 
-### Unsupported: `joint`
-
-The `customer_type` enum includes a `joint` value, but no requirement configuration ships for it yet. Submissions with `customer_type: "joint"` return `400 invalid_request` with `No onboarding requirement defined for customer type: joint`. Treat `joint` as not currently supported.
-
 ## Related-person requirements
 
 When a legal authority's `relationships` claim declares people with specific `relationship_type` values, each of those related persons has their own validation requirements.
+
+<Note>
+The per-relationship requirements listed below are the defaults as of the time of writing. They're configuration on our side and evolve as our compliance program and tenant setups change — treat them as guidance rather than a versioned contract. Drive your integration from the current requirements reported in our error responses rather than hard-coding them, and we'll announce breaking changes through our standard release channels.
+</Note>
 
 ### `director`
 
@@ -177,6 +251,10 @@ No consents are required from related persons today.
 ### Other relationship types
 
 `shareholder`, `beneficial_owner`, `trustee`, `settlor`, and `authorised_signatory` carry no additional requirements at submission time. You can still declare them — they'll be captured on the application — but no per-relationship claims or evidence are enforced. Additional checks will arrive through compliance processing, not validation.
+
+<Note>
+Only the relationship types listed here carry enforced per-relationship requirements today. Others (shareholders, beneficial owners, and so on) may become enforced as our compliance configuration evolves — don't assume a relationship type without listed requirements will stay unenforced indefinitely.
+</Note>
 
 ## Evidence taxonomy
 

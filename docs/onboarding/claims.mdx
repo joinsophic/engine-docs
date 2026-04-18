@@ -211,9 +211,13 @@ A successful delete returns `204 No Content`. Attempting to delete a `verified` 
 
 Every claim payload uses `extra: forbid` validation — unknown fields are rejected. Dates are ISO-8601 (`YYYY-MM-DD`), country codes are ISO-3166-1 alpha-2 (`GB`, `US`, `DE`…).
 
+<Warning>
+Claim types are split between natural and legal persons, and the split is enforced. Both `POST /persons` and `POST /persons/{person_id}/claims` reject any claim whose `claim_type` isn't valid for the target person's `person_type` — the response is `400 invalid_request` with a detail like `Claim type 'relationships' is not allowed on natural persons.` or `Claim type 'identity' is not allowed on legal persons.` See [claim creation errors](/docs/onboarding/errors#person-creation-errors).
+</Warning>
+
 ### Natural-person claims
 
-Acceptable when `person_type` is `natural`.
+Acceptable when `person_type` is `natural`. Attempting to create any of these on a legal person fails with `400 invalid_request`.
 
 #### `identity`
 
@@ -227,7 +231,14 @@ Acceptable when `person_type` is `natural`.
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
-| `nationalities` | array | yes | Non-empty. Each item: `country_code` (required), `basis` (optional: `birth`, `naturalisation`, `descent`, `marriage`, `investment_programme`, `other`). |
+| `nationalities` | array of objects | yes | Non-empty. |
+
+Each `nationalities` entry:
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `country_code` | string | yes | ISO-3166-1 alpha-2. |
+| `basis` | enum \| null | no | One of `birth`, `naturalisation`, `descent`, `marriage`, `investment_programme`, `other`. |
 
 #### `residence`
 
@@ -245,7 +256,15 @@ Acceptable when `person_type` is `natural`.
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
-| `tax_residencies` | array | yes | Non-empty. Each item: `country_code` (required), `tin` (optional), `tin_exemption_reason` (optional: `not_issued`, `pending_application`, `not_required`). |
+| `tax_residencies` | array of objects | yes | Non-empty. |
+
+Each `tax_residencies` entry:
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `country_code` | string | yes | ISO-3166-1 alpha-2. |
+| `tin` | string \| null | no | Tax identification number. Free-form string; we don't validate format at the claim layer. |
+| `tin_exemption_reason` | enum \| null | no | One of `not_issued`, `pending_application`, `not_required`. |
 
 <Note>
 Either supply a `tin` or a `tin_exemption_reason` for each tax residency. Supplying neither is allowed at the claim-creation layer but will block the onboarding application if a TIN is required by your tenant's rules.
@@ -310,7 +329,7 @@ Either supply a `tin` or a `tin_exemption_reason` for each tax residency. Supply
 
 ### Legal-person claims
 
-Acceptable when `person_type` is `legal`.
+Acceptable when `person_type` is `legal`. Attempting to create any of these on a natural person fails with `400 invalid_request`.
 
 #### `registration`
 
@@ -354,13 +373,9 @@ Same shape as [`residence`](#residence). `registered_address` is the legal regis
 | `has_nominee_shareholders` | boolean | yes | |
 | `has_shell_bank_relationships` | boolean | yes | |
 
-### Shared claim types
-
-Acceptable on both natural and legal persons.
-
 #### `relationships`
 
-Used primarily on legal persons to declare directors, shareholders, UBOs, trustees, settlors, and authorised signatories.
+Legal-person-only. Used to declare directors, shareholders, UBOs, trustees, settlors, and authorised signatories for this legal entity.
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
