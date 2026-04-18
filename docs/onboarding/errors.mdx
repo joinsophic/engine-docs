@@ -1,0 +1,96 @@
+---
+title: Errors
+description: "Every validation error the onboarding endpoints return and how to fix it"
+---
+
+Onboarding endpoints prefer loud, specific errors over silent defaults. Most failures you'll see during integration come back as `400 invalid_request` with a `detail` message that identifies exactly which person, claim, consent, or evidence item caused the failure — fix it and resubmit.
+
+All error responses follow the [standard error format](/api-reference/errors):
+
+```json
+{
+  "code": "invalid_request",
+  "detail": "Missing required claims -- per_ada: ['financial_profile']"
+}
+```
+
+## Person creation errors
+
+Returned from `POST /persons` and `POST /persons/{person_id}/claims`.
+
+| HTTP | `code` | When |
+|---|---|---|
+| 400 | `invalid_request` | The request body fails validation — unknown `claim_type`, missing required field, unknown field (claims use strict `extra: forbid` validation), or a conditional rule isn't met (e.g. `pep_role` is missing while `is_pep` is `true`). |
+| 400 | `invalid_request` | A `relationships` claim references a `related_person` ID that doesn't exist. The whole request fails and no person is created — build the related persons first. |
+| 404 | `not_found` | `POST /persons/{person_id}/claims` — the person ID in the path doesn't exist. |
+| 401 | `invalid_token` | Missing or invalid bearer token. |
+| 403 | `forbidden` | The token lacks the `write` scope. |
+
+## Claim retrieval and deletion errors
+
+Returned from `GET` and `DELETE` endpoints under `/persons/{person_id}/claims`.
+
+| HTTP | `code` | When |
+|---|---|---|
+| 400 | `invalid_request` | `DELETE` — the claim exists but its status is not `pending`. Only pending claims can be deleted. |
+| 404 | `not_found` | The person or claim doesn't exist. |
+| 401 | `invalid_token` | Missing or invalid bearer token. |
+| 403 | `forbidden` | The token lacks the `read` scope (`GET`) or `write` scope (`DELETE`). |
+
+## Onboarding application errors
+
+Returned from `POST /onboarding-applications`. Every `400` below carries `code: "invalid_request"` with a specific `detail` message.
+
+### Structural errors
+
+| `detail` pattern | Cause | Fix |
+|---|---|---|
+| `Referenced persons not found: [...]` | One or more authority `person` IDs don't exist. | Verify the IDs — create missing persons first. |
+| `No onboarding requirement defined for customer type: ...` | `customer_type` is `joint` (not yet supported) or otherwise unrecognised. | Use `individual` or `business`. |
+| `Evidence references non-existent files: [...]` | An `evidence[].file` ID doesn't exist. | Confirm the file was uploaded successfully and the returned ID is used verbatim. |
+
+### Missing or mis-shaped requirements
+
+| `detail` pattern | Cause | Fix |
+|---|---|---|
+| `Missing required claims -- {person_id}: [...]` | The authority is missing one or more claims required for the customer type. | Create the missing claims on the person before resubmitting. See [requirements by customer type](/docs/onboarding/applications#requirements-by-customer-type). |
+| `Missing required consents for person {person_id}: [...]` | One of the required consent types isn't present for the authority. | Add a consent entry for each missing `consent_type`, attributed to that person. |
+| `No acceptable evidence bundle submitted for claim '{claim_type}' on person {person_id}.` | You didn't provide any of the bundles that satisfy the evidence requirement for that claim. | Supply one of the acceptable bundles — see [requirements by customer type](/docs/onboarding/applications#requirements-by-customer-type). |
+| `Missing required claims on {relationship_type} {related_person_id}: [...]` | A related person (e.g. a director) is missing the claims required for their relationship type. | Add the missing claims on the related person. |
+
+### Consent errors
+
+| `detail` pattern | Cause | Fix |
+|---|---|---|
+| `Consent '...' is missing a legal_document_version.` | A consent entry has no `legal_document_version`. | Supply the ID of the legal document version the customer agreed to. |
+| `Consent '...' references unknown legal_document_version: ...` | The referenced version doesn't exist. | Fetch valid versions via [`GET /legal-documents/{legal_document_id}/versions`](/api-reference/list-versions-of-a-legal-document). |
+| `Consent '...' is attributed to person '...', which is neither an authority nor a related person on this application.` | The consent's `person` isn't on the application. | Attribute the consent to an authority or a person declared in a `relationships` claim. |
+
+### Evidence errors
+
+| `detail` pattern | Cause | Fix |
+|---|---|---|
+| `Evidence type '...' is not allowed for customer type '...'` | The evidence type is unsupported for this customer type (e.g. `board_resolution` on an individual). | Remove the evidence item or switch to an allowed type. |
+| `Evidence type '...' does not accept a document_type.` | A `document_type` was supplied for `selfie`. | Omit `document_type` for `selfie`. |
+| `document_type '...' is not compatible with evidence_type '...'` | The combination isn't in the [evidence taxonomy](/docs/onboarding/applications#evidence-taxonomy). | Use one of the allowed document types for that evidence type. |
+| `Evidence type '...' is not allowed for natural person '...'` *or* `... for legal person '...'` | You attributed legal-entity evidence to a natural person, or natural-person evidence to a legal person. | Attribute the evidence item to a person of the correct type. |
+| `Evidence '...' is attributed to person '...', which is neither an authority nor a related person on this application.` | The evidence's `person` isn't on the application. | Attribute it to an authority or a declared related person. |
+
+### Relationship errors
+
+| `detail` pattern | Cause | Fix |
+|---|---|---|
+| `Relationship references non-existent persons: [...]` | A legal authority's `relationships` claim references related-person IDs that don't exist. | Create the related persons first, then retry. |
+
+### Conflict
+
+| HTTP | `code` | `detail` | Cause | Fix |
+|---|---|---|---|---|
+| 409 | `conflict` | `An active onboarding application already exists for this combination of customer type and authorities.` | An earlier application with the same `customer_type` + authority set is still `pending` or `processing`. | Wait for that application to terminate, or contact support to cancel it. Consents and evidence don't contribute to the idempotency key — see [idempotency](/docs/onboarding/applications#idempotency). |
+
+### Auth errors
+
+| HTTP | `code` | When |
+|---|---|---|
+| 401 | `invalid_token` | Missing or invalid bearer token. |
+| 403 | `forbidden` | The token lacks the `write` scope. |

@@ -1,0 +1,136 @@
+---
+title: Overview
+description: "Onboard customers through persons, claims, and onboarding applications"
+---
+
+Onboarding is how you introduce a new customer to our platform. You do it by describing the parties involved — the individual, or the company plus its directors and shareholders — as a set of **persons** and **claims**, and then submitting an **onboarding application** that ties them together for compliance processing.
+
+## The two-phase flow
+
+Onboarding happens in two phases:
+
+<Steps>
+  <Step title="Build the parties">
+    Create a [person](/docs/onboarding/persons) for every party involved in the onboarding — the customer themselves, plus any directors, shareholders, or beneficial owners for a business. Each person is created from a list of typed [claims](/docs/onboarding/claims) (identity, residence, PEP status, registration, LEI, relationships, and so on). You can add more claims to a person later.
+  </Step>
+  <Step title="Submit the application">
+    Once every party exists as a person, submit a single [onboarding application](/docs/onboarding/applications) that references those persons as **authorities** (owners, signatories, etc.), attaches per-person **consents** and **evidence files**, and specifies the customer type.
+  </Step>
+</Steps>
+
+We validate the application synchronously against the required claims, evidence, and consents for the customer type. If everything lines up, the application is persisted in `pending` status for downstream compliance review.
+
+## Why two phases
+
+Splitting person creation from application submission means you can:
+
+- **Collect data progressively.** A business onboarding often involves several people whose information arrives at different times. You can create each person as you go, then submit the application once you have everything.
+- **Reuse persons across applications.** The same natural person can be referenced in multiple onboardings — for example, as a director of two different business customers.
+- **Update information without re-submitting.** Adding a new claim to an existing person automatically supersedes stale ones (see [claim lifecycle](/docs/onboarding/claims#lifecycle)).
+
+## Persons vs. customers
+
+A **person** (`per_...`) is a party we know about — a natural person or a legal entity. It is not a [customer](/api-reference/retrieve-a-customer).
+
+A **customer** represents a MiFID relationship and is created by us **after** an onboarding application is approved. At that point, the persons you submitted become the customer's authorities (owners, signatories) and are linked to any accounts that get provisioned.
+
+<Note>
+You don't create customers directly. You create persons and submit an application — we handle the customer and account provisioning once compliance approves it.
+</Note>
+
+## What's in scope
+
+| Resource | Prefix | Created by |
+|---|---|---|
+| Person | `per_` | You, via [`POST /persons`](/api-reference/create-a-person) |
+| Person claim | `clm_` | You, via [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person) |
+| Onboarding application | `onba_` | You, via [`POST /onboarding-applications`](/api-reference/submit-an-onboarding-application) |
+| Customer | `cus_` | Us, after application approval |
+
+## A complete example
+
+Here's what onboarding an individual looks like end-to-end. For a business, you'd repeat the person-creation step for the legal entity plus every director / shareholder, and include a `relationships` claim on the legal person.
+
+<Steps>
+  <Step title="Create the person with their claims">
+    ```bash
+    curl -X POST https://api.engine.usesophic.com/persons \
+      -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "person_type": "natural",
+        "claims": [
+          {"claim_type": "identity", "first_name": "Ada", "last_name": "Lovelace", "date_of_birth": "1985-12-10"},
+          {"claim_type": "nationalities", "nationalities": [{"country_code": "GB", "basis": "birth"}]},
+          {"claim_type": "residence", "line1": "1 Example Street", "postal_code": "SW1A 1AA", "city": "London", "country_code": "GB"},
+          {"claim_type": "tax_residencies", "tax_residencies": [{"country_code": "GB", "tin": "QQ123456C"}]},
+          {"claim_type": "fatca_status", "is_us_person": false},
+          {"claim_type": "pep_status", "is_pep": false, "has_pep_association": false},
+          {"claim_type": "employment", "employment_status": "employed", "industry": "technology"},
+          {"claim_type": "financial_profile", "annual_income_eur": "50k_100k", "income_sources": ["salary"], "net_worth_eur": "100k_250k", "wealth_sources": ["savings"]},
+          {"claim_type": "investment_experience", "has_prior_experience": true, "asset_classes": ["equities"]},
+          {"claim_type": "expected_activity", "funding_currency": "EUR", "asset_classes": ["equities"], "annual_transactions": "1_10", "investment_amount": "lt_50k"}
+        ]
+      }'
+    ```
+
+    The response contains the new person's ID. Keep it — you'll reference it in the application.
+  </Step>
+  <Step title="Upload evidence files">
+    Upload the customer's passport and selfie via the [Files API](/api-reference/create-a-file) and hold onto the returned file IDs.
+  </Step>
+  <Step title="Submit the onboarding application">
+    ```bash
+    curl -X POST https://api.engine.usesophic.com/onboarding-applications \
+      -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "customer_type": "individual",
+        "authorities": [
+          {"person": "per_abc123", "authority_type": "owner"}
+        ],
+        "consents": [
+          {"person": "per_abc123", "consent_type": "terms_of_service",  "legal_document_version": "ldv_tos_v3",  "consented_at": "2026-04-18T09:30:00Z"},
+          {"person": "per_abc123", "consent_type": "risk_disclosures",  "legal_document_version": "ldv_risk_v2", "consented_at": "2026-04-18T09:30:00Z"},
+          {"person": "per_abc123", "consent_type": "data_accuracy",     "legal_document_version": "ldv_data_v1", "consented_at": "2026-04-18T09:30:00Z"}
+        ],
+        "evidence": [
+          {"person": "per_abc123", "evidence_type": "identity_document", "document_type": "passport",    "file": "fil_passport"},
+          {"person": "per_abc123", "evidence_type": "selfie",                                            "file": "fil_selfie"},
+          {"person": "per_abc123", "evidence_type": "proof_of_address",  "document_type": "utility_bill", "file": "fil_poa"}
+        ]
+      }'
+    ```
+  </Step>
+  <Step title="Wait for compliance review">
+    The application comes back with `status: "pending"` and `outcome: null`. Compliance takes it from there — you'll see the resulting customer and accounts appear once the application is approved.
+  </Step>
+</Steps>
+
+<Note>
+Every consent requires a `legal_document_version` referencing the version your customer agreed to. Discover valid IDs via the [legal document versions endpoint](/api-reference/list-versions-of-a-legal-document).
+</Note>
+
+## What's not here yet
+
+Two gaps worth calling out so you don't design around them:
+
+- **No webhooks.** We don't yet emit events for person creation, claim status changes, or onboarding application transitions. You'll need to hold application state on your side and check in with us for the outcome. Webhooks for these transitions are on the roadmap.
+- **No self-service changes to a submitted application.** Once an application is `pending` or `processing`, you can't edit or cancel it via the API. If you need to unblock a stuck application, contact support.
+
+## Where to next
+
+<CardGroup cols={2}>
+  <Card title="Persons" icon="user" href="/docs/onboarding/persons">
+    Natural and legal persons, relationships, and how to build them from claims.
+  </Card>
+  <Card title="Claims" icon="file-signature" href="/docs/onboarding/claims">
+    Every claim type, its schema, and how claims move through their lifecycle.
+  </Card>
+  <Card title="Applications" icon="clipboard-check" href="/docs/onboarding/applications">
+    Submitting an application — authorities, consents, evidence, and idempotency.
+  </Card>
+  <Card title="Errors" icon="triangle-exclamation" href="/docs/onboarding/errors">
+    Every validation error we return, what causes it, and how to fix it.
+  </Card>
+</CardGroup>
