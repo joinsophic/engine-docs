@@ -3,39 +3,27 @@ title: Overview
 description: "Onboard customers through persons, claims, and onboarding applications"
 ---
 
-Onboarding is how you introduce a new customer to our platform. You do it by describing the parties involved — the individual, or the company plus its directors and shareholders — as a set of **persons** and **claims**, and then submitting an **onboarding application** that ties them together for compliance processing.
+Onboard a customer by describing the parties involved as **persons** and **claims**, then submitting an **onboarding application** that ties them together.
 
 ## The two-phase flow
 
-Onboarding happens in two phases:
-
 <Steps>
   <Step title="Build the parties">
-    Create a [person](/docs/onboarding/persons) for every party involved in the onboarding — the customer themselves, plus any directors, shareholders, or beneficial owners for a business. Each person is created from a list of typed [claims](/docs/onboarding/claims) (identity, residence, PEP status, registration, LEI, relationships, and so on). You can add more claims to a person later.
+    Create a [person](/docs/onboarding/persons) for every party — the customer plus any directors, shareholders, or beneficial owners for a business — from a list of typed [claims](/docs/onboarding/claims).
   </Step>
   <Step title="Submit the application">
-    Once every party exists as a person, submit a single [onboarding application](/docs/onboarding/applications) that references those persons as **authorities** (owners, signatories, etc.), attaches per-person **consents** and **evidence files**, and specifies the customer type.
+    Submit a single [onboarding application](/docs/onboarding/applications) referencing those persons as **authorities**, attaching per-person **consents** and **evidence files**.
   </Step>
 </Steps>
 
-We validate the application synchronously against the required claims, evidence, and consents for the customer type. If everything lines up, the application is persisted in `pending` status for downstream compliance review.
-
-## Why two phases
-
-Splitting person creation from application submission means you can:
-
-- **Collect data progressively.** A business onboarding often involves several people whose information arrives at different times. You can create each person as you go, then submit the application once you have everything.
-- **Reuse persons across applications.** The same natural person can be referenced in multiple onboardings — for example, as a director of two different business customers.
-- **Update information without re-submitting.** Adding a new claim to an existing person automatically supersedes stale ones (see [claim lifecycle](/docs/onboarding/claims#lifecycle)).
+We validate synchronously against the customer type's required claims, evidence, and consents. If it passes, the application is persisted in `pending` for compliance review.
 
 ## Persons vs. customers
 
-A **person** (`per_...`) is a party we know about — a natural person or a legal entity. It is not a [customer](/api-reference/retrieve-a-customer).
-
-A **customer** represents a MiFID relationship and is created by us **after** an onboarding application is approved. At that point, the persons you submitted become the customer's authorities (owners, signatories) and are linked to any accounts that get provisioned.
+A **person** (`per_...`) is a party — natural or legal — that you create. A [customer](/api-reference/retrieve-a-customer) is formed once an application is approved, establishing an active relationship with us; your persons are granted the requested authority over the customer and are linked to any provisioned accounts.
 
 <Note>
-You don't create customers directly. You create persons and submit an application — we handle the customer and account provisioning once compliance approves it.
+You don't create customers directly. Submit an application and we provision the customer and accounts on approval.
 </Note>
 
 ## What's in scope
@@ -49,7 +37,7 @@ You don't create customers directly. You create persons and submit an applicatio
 
 ## A complete example
 
-Here's what onboarding an individual looks like end-to-end. For a business, you'd repeat the person-creation step for the legal entity plus every director / shareholder, and include a `relationships` claim on the legal person.
+Individual end-to-end. For a business, create a person for the legal entity plus each director / shareholder, and include a `relationships` claim on the legal person.
 
 <Steps>
   <Step title="Create the person with their claims">
@@ -74,10 +62,10 @@ Here's what onboarding an individual looks like end-to-end. For a business, you'
       }'
     ```
 
-    The response contains the new person's ID. Keep it — you'll reference it in the application.
+    Keep the returned `id` — you'll reference it in the application.
   </Step>
   <Step title="Upload evidence files">
-    Upload the customer's passport and selfie via the [Files API](/api-reference/create-a-file) and hold onto the returned file IDs.
+    Upload the passport and selfie via the [Files API](/api-reference/create-a-file); hold onto the returned file IDs.
   </Step>
   <Step title="Submit the onboarding application">
     ```bash
@@ -90,9 +78,9 @@ Here's what onboarding an individual looks like end-to-end. For a business, you'
           {"person": "per_abc123", "authority_type": "owner"}
         ],
         "consents": [
-          {"person": "per_abc123", "consent_type": "terms_of_service",  "legal_document_version": "ldv_tos_v3",  "consented_at": "2026-04-18T09:30:00Z"},
-          {"person": "per_abc123", "consent_type": "risk_disclosures",  "legal_document_version": "ldv_risk_v2", "consented_at": "2026-04-18T09:30:00Z"},
-          {"person": "per_abc123", "consent_type": "data_accuracy",     "legal_document_version": "ldv_data_v1", "consented_at": "2026-04-18T09:30:00Z"}
+          {"person": "per_abc123", "consent_type": "terms_of_service",  "legal_document_version": "legal_doc_ver_tos_v3",  "consented_at": "2026-04-18T09:30:00Z"},
+          {"person": "per_abc123", "consent_type": "risk_disclosures",  "legal_document_version": "legal_doc_ver_risk_v2", "consented_at": "2026-04-18T09:30:00Z"},
+          {"person": "per_abc123", "consent_type": "data_accuracy",     "legal_document_version": "legal_doc_ver_data_v1", "consented_at": "2026-04-18T09:30:00Z"}
         ],
         "evidence": [
           {"person": "per_abc123", "evidence_type": "identity_document", "document_type": "passport",    "file": "fil_passport"},
@@ -103,27 +91,27 @@ Here's what onboarding an individual looks like end-to-end. For a business, you'
     ```
   </Step>
   <Step title="Wait for compliance review">
-    The application comes back with `status: "pending"` and `outcome: null`. Compliance takes it from there — you'll see the resulting customer and accounts appear once the application is approved.
+    You'll get `status: "pending"`, `outcome: null`. The customer and accounts appear once compliance approves.
   </Step>
 </Steps>
 
 <Note>
-Every consent requires a `legal_document_version` referencing the version your customer agreed to. Discover valid IDs via the [legal document versions endpoint](/api-reference/list-versions-of-a-legal-document).
+Each consent needs a `legal_document_version`. Discover valid IDs via the [legal document versions endpoint](/api-reference/list-versions-of-a-legal-document).
 </Note>
 
 ## Where to next
 
 <CardGroup cols={2}>
   <Card title="Persons" icon="user" href="/docs/onboarding/persons">
-    Natural and legal persons, relationships, and how to build them from claims.
+    Natural and legal persons, built from claims.
   </Card>
   <Card title="Claims" icon="file-signature" href="/docs/onboarding/claims">
-    Every claim type, its schema, and how claims move through their lifecycle.
+    Claim types, schemas, and lifecycle.
   </Card>
   <Card title="Applications" icon="clipboard-check" href="/docs/onboarding/applications">
-    Submitting an application — authorities, consents, evidence, and duplicate handling.
+    Authorities, consents, evidence, and duplicates.
   </Card>
   <Card title="Errors" icon="triangle-exclamation" href="/docs/onboarding/errors">
-    Every validation error we return, what causes it, and how to fix it.
+    Every validation error and how to fix it.
   </Card>
 </CardGroup>

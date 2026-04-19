@@ -3,26 +3,26 @@ title: Persons
 description: "Natural and legal parties that fuel onboarding applications"
 ---
 
-A **person** (`per_...`) is a party we know about — either a natural person (a human) or a legal person (a company, trust, or other legal entity). Persons are standalone: they're not tied to a customer or an account until an [onboarding application](/docs/onboarding/applications) they appear in is approved.
+A **person** (`per_...`) is a natural person (human) or legal person (company, trust, other entity). Persons are standalone until an [onboarding application](/docs/onboarding/applications) referencing them is approved.
 
-Every person is built from a list of [claims](/docs/onboarding/claims) — typed data points that capture identity, residence, ownership, PEP status, and so on. You can't create an empty person — you have to supply at least one claim.
+Every person is built from [claims](/docs/onboarding/claims) — typed data points capturing identity, residence, ownership, PEP status, and so on. At least one claim is required.
 
 ## Natural vs. legal persons
 
-The `person_type` determines which claim types are acceptable and which evidence a downstream application can request against the person.
+`person_type` determines which claim types are acceptable.
 
 | `person_type` | Represents | Example claim types |
 |---|---|---|
 | `natural` | A human | `identity`, `nationalities`, `residence`, `tax_residencies`, `pep_status`, `employment`, `financial_profile` |
 | `legal` | A company, trust, partnership, or other legal entity | `registration`, `contact_details`, `lei`, `registered_address`, `operating_address`, `business_nature`, `relationships` |
 
-A legal person can declare its natural- and legal-person counterparties (directors, shareholders, UBOs, trustees, signatories) using a [`relationships`](/docs/onboarding/claims#relationships) claim. The related persons must already exist as persons of their own — you can't declare a relationship to a party we don't know about.
+Legal persons declare counterparties (directors, shareholders, UBOs, trustees, signatories) via a [`relationships`](/docs/onboarding/claims#relationships) claim. Related persons must already exist.
 
-The split is enforced at the claim layer: every claim type belongs to either natural or legal persons, and mixing them is rejected. Both the `claims` array on `POST /persons` and later calls to `POST /persons/{person_id}/claims` return `400 invalid_request` if a `claim_type` doesn't match the target person's `person_type` — see the [claim type reference](/docs/onboarding/claims#claim-type-reference) for the per-type split.
+Claim types are enforced against `person_type`: mismatches on `POST /persons` or `POST /persons/{person_id}/claims` return `400 invalid_request`. See the [claim type reference](/docs/onboarding/claims#claim-type-reference).
 
 ## Creating a person
 
-Send a `POST` to `/persons` with the `person_type` and a non-empty `claims` array. Creation is **atomic**: if any claim fails validation, nothing is persisted.
+`POST /persons` with `person_type` and a non-empty `claims` array. Creation is **atomic** — if any claim fails validation, nothing is persisted.
 
 <CodeGroup>
 ```python Python
@@ -239,27 +239,27 @@ A successful request returns `201 Created`:
 |---|---|
 | `id` | The person's unique ID, prefix `per_`. |
 | `person_type` | `natural` or `legal`. |
-| `full_name` | For natural persons: `"{first_name} {last_name}"` derived from the identity claim. For legal persons: the `entity_name` from registration, or empty if none was claimed. |
-| `claims` | The claims you provided, now carrying IDs and a `status` of `pending`. See [claim lifecycle](/docs/onboarding/claims#lifecycle). |
+| `full_name` | Natural: `"{first_name} {last_name}"` from the identity claim. Legal: `entity_name` from registration, or empty. |
+| `claims` | The claims you provided, with IDs and `status: pending`. See [claim lifecycle](/docs/onboarding/claims#lifecycle). |
 
 <Note>
-Persons don't have a status of their own. Lifecycle exists only on individual claims. See the [claims page](/docs/onboarding/claims#lifecycle) for how `pending`, `verified`, and `superseded` work.
+Persons don't have their own status — lifecycle lives on claims. See [lifecycle](/docs/onboarding/claims#lifecycle).
 </Note>
 
 <Warning>
-`POST /persons` doesn't de-duplicate retries. If you retry a request that may have already succeeded, you'll create a duplicate person. Record the returned `id` the first time through and reuse it on retries.
+`POST /persons` doesn't de-duplicate retries. Record the returned `id` and reuse it on retries.
 </Warning>
 
 ## Retrieving a person
 
-Use [`GET /persons/{id}`](/api-reference/retrieve-a-person) to fetch a person together with its current set of claims:
+Use [`GET /persons/{id}`](/api-reference/retrieve-a-person) to fetch a person with its claims:
 
 ```bash
 curl https://api.engine.usesophic.com/persons/per_m4k7r9s2 \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
-To fetch claims independently — for example, filtered by type or status — use [`GET /persons/{person_id}/claims`](/api-reference/list-claims-for-a-person):
+Use [`GET /persons/{person_id}/claims`](/api-reference/list-claims-for-a-person) to filter claims by type or status:
 
 ```bash
 curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?status=verified" \
@@ -268,7 +268,7 @@ curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?status=verifi
 
 ## Authorities
 
-Once an onboarding application that references a person is approved, that person becomes an **authority** on the resulting customer and accounts. Valid authority types are:
+When an application referencing a person is approved, that person becomes an **authority** on the resulting customer and accounts.
 
 | `authority_type` | Meaning |
 |---|---|
@@ -278,11 +278,11 @@ Once an onboarding application that references a person is approved, that person
 | `power_of_attorney` | Acts under a power of attorney arrangement. |
 | `trading` | Authorised to place trades on the customer's accounts. |
 
-To list the authorities a given person holds across our platform, use [`GET /persons/{id}/authorities`](/api-reference/list-authorities-for-a-person). The inverse lookup — "who can act on this customer?" — lives at [`GET /customers/{id}/authorities`](/api-reference/list-authorities-for-a-customer).
+List authorities per person with [`GET /persons/{id}/authorities`](/api-reference/list-authorities-for-a-person), or per customer with [`GET /customers/{id}/authorities`](/api-reference/list-authorities-for-a-customer).
 
 ## Legal persons and relationships
 
-For a business onboarding, create one person for the legal entity and one person for every director, shareholder, UBO, trustee, settlor, or authorised signatory you need to reference. Then add a `relationships` claim on the legal person pointing to each of them.
+Create one person for the legal entity and one for every director, shareholder, UBO, trustee, settlor, or authorised signatory. Then add a `relationships` claim on the legal person.
 
 ```json
 {
@@ -315,6 +315,6 @@ For a business onboarding, create one person for the legal entity and one person
 }
 ```
 
-The related persons must already exist. If any `related_person` ID is unknown, the whole request fails with a `400` and nothing is persisted.
+Related persons must already exist — an unknown `related_person` ID fails the request with `400` and nothing is persisted.
 
-See [claim types](/docs/onboarding/claims#relationships) for the full schema of a `relationships` claim.
+See [claim types](/docs/onboarding/claims#relationships) for the full `relationships` schema.

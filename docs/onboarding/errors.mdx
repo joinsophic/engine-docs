@@ -21,6 +21,7 @@ Returned from `POST /persons` and `POST /persons/{person_id}/claims`.
 | HTTP | `code` | When |
 |---|---|---|
 | 400 | `invalid_request` | The request body fails validation — unknown `claim_type`, missing required field, unknown field (claims use strict `extra: forbid` validation), or a conditional rule isn't met (e.g. `pep_role` is missing while `is_pep` is `true`). |
+| 400 | `invalid_request` | `POST /persons/{person_id}/claims` — the body is missing the `claim` envelope. The response carries a structured `params` array: `{"path": ["body", "claim"], "detail": "Field required", "code": "missing_param"}`. Wrap the claim in `{"claim": {"claim_type": "...", ...}}`. |
 | 400 | `invalid_request` | The `claim_type` isn't valid for the target person's `person_type`. Detail reads `Claim type '<claim_type>' is not allowed on natural persons.` or `... on legal persons.` Use a claim type that matches the person — see [natural-person claims](/docs/onboarding/claims#natural-person-claims) and [legal-person claims](/docs/onboarding/claims#legal-person-claims). |
 | 400 | `invalid_request` | A `relationships` claim references a `related_person` ID that doesn't exist. The whole request fails and no person is created — build the related persons first. |
 | 404 | `not_found` | `POST /persons/{person_id}/claims` — the person ID in the path doesn't exist. |
