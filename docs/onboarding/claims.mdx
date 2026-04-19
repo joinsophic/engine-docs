@@ -3,19 +3,15 @@ title: Claims
 description: "Typed, versioned data points attached to a person"
 ---
 
-A **claim** (`clm_...`) is a single typed data point attached to a [person](/docs/onboarding/persons) — something like an identity, a residence address, a tax residency, or a set of ownership relationships. Every claim has a `claim_type`, a `status`, and a type-specific `data` payload validated against a strict schema.
-
-Claims are what onboarding applications validate against. A person is essentially the sum of their claims.
+A **claim** (`clm_...`) is a typed data point on a [person](/docs/onboarding/persons). Each has a `claim_type`, a `status`, and a `data` payload validated against a strict schema. Applications validate against claims.
 
 ## Lifecycle
 
-Every claim moves through up to three statuses:
-
 | Status | Description |
 |---|---|
-| `pending` | You've just submitted the claim. It's recorded but not yet confirmed by compliance. |
-| `verified` | Compliance has confirmed the claim. `verified_at` is populated. |
-| `superseded` | A newer claim of the same type replaced it. `superseded_at` is populated. |
+| `pending` | Submitted, not yet confirmed by compliance. |
+| `verified` | Confirmed by compliance. `verified_at` populated. |
+| `superseded` | Replaced by a newer claim of the same type. `superseded_at` populated. |
 
 ### State transitions
 
@@ -27,18 +23,18 @@ pending ──▶ verified ──▶ superseded
 
 | From | To | Trigger |
 |---|---|---|
-| *(none)* | `pending` | You create the claim via [`POST /persons`](/api-reference/create-a-person) or [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). |
-| `pending` | *(deleted)* | You call [`DELETE /persons/{person_id}/claims/{claim_id}`](/api-reference/delete-a-pending-claim). Only pending claims can be deleted. |
-| `pending` | `verified` | We verify the claim as part of compliance review. This is not self-service. |
-| `verified` | `superseded` | You create a newer claim of the same type on the same person. The older verified claim is automatically marked `superseded`. |
+| *(none)* | `pending` | [`POST /persons`](/api-reference/create-a-person) or [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). |
+| `pending` | *(deleted)* | [`DELETE /persons/{person_id}/claims/{claim_id}`](/api-reference/delete-a-pending-claim). Pending only. |
+| `pending` | `verified` | Compliance review. Not self-service. |
+| `verified` | `superseded` | A newer claim of the same type is created on the same person. |
 
 <Note>
-There is no `pending → superseded` transition. A pending claim can only become `verified` or be deleted. Only `verified` claims get superseded.
+No `pending → superseded` transition. Pending claims can only be verified or deleted.
 </Note>
 
-### Supersession: replacing an already-verified claim
+### Supersession
 
-When a customer updates information you've already had verified — say, a new address — submit a fresh claim of the same type. We automatically supersede any prior `verified` claim of that type on the same person in the same request:
+To update already-verified info, submit a fresh claim of the same type. Any prior `verified` claim of that type is superseded in the same request:
 
 ```bash
 curl -X POST https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims \
@@ -55,15 +51,23 @@ curl -X POST https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims \
   }'
 ```
 
-After this call:
-
-- The new `residence` claim exists with status `pending`.
-- The previously-verified `residence` claim (if any) now has status `superseded` and a `superseded_at` timestamp.
-- Any still-pending `residence` claim is left untouched — it's harmless and you can delete it if you don't want it around.
+After the call: the new claim is `pending`, the prior `verified` one (if any) becomes `superseded`, and any still-pending claim of the same type is left untouched.
 
 ## Creating a claim
 
-To add a claim to an existing person, `POST /persons/{person_id}/claims` with a single `claim` object:
+`POST /persons/{person_id}/claims` with a single `claim` object.
+
+<Tip>
+Wrap the claim in a `"claim"` envelope. A flat body is rejected with `400 invalid_request`:
+
+```json
+{
+  "detail": "The request parameters are invalid.",
+  "code": "invalid_request",
+  "params": [{"path": ["body", "claim"], "detail": "Field required", "code": "missing_param"}]
+}
+```
+</Tip>
 
 <CodeGroup>
 ```python Python
@@ -156,7 +160,7 @@ var response = await client.PostAsJsonAsync(
 ```
 </CodeGroup>
 
-The response is the full claim resource:
+The response is the full claim:
 
 ```json
 {
@@ -182,7 +186,7 @@ The response is the full claim resource:
 
 ## Listing and retrieving claims
 
-List all of a person's claims, optionally filtered:
+List a person's claims, optionally filtered:
 
 ```bash
 curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?claim_type=residence&status=verified" \
@@ -191,25 +195,29 @@ curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?claim_type=re
 
 | Query parameter | Values | Notes |
 |---|---|---|
-| `claim_type` | Any [`claim_type`](#claim-type-reference) | Optional. Filters by claim type. |
-| `status` | `pending`, `verified`, `superseded` | Optional. Omit to return claims of all statuses. |
+| `claim_type` | Any [`claim_type`](#claim-type-reference) | Optional. |
+| `status` | `pending`, `verified`, `superseded` | Optional. |
 
-Retrieve a single claim by ID via [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim).
+Retrieve a single claim via [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim).
 
 ## Deleting a pending claim
 
-Only `pending` claims can be deleted. Use this to clean up mistakes or abandon a claim before it's verified:
+Only `pending` claims can be deleted.
 
 ```bash
 curl -X DELETE https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims/clm_abc123 \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
-A successful delete returns `204 No Content`. Attempting to delete a `verified` or `superseded` claim returns `400 invalid_request` — those are part of the permanent record and can't be removed through the API.
+Returns `204 No Content`. Deleting a `verified` or `superseded` claim returns `400 invalid_request`.
 
 ## Claim type reference
 
-Every claim payload uses `extra: forbid` validation — unknown fields are rejected. Dates are ISO-8601 (`YYYY-MM-DD`), country codes are ISO-3166-1 alpha-2 (`GB`, `US`, `DE`…).
+Unknown fields are rejected. Dates are ISO-8601, country codes ISO-3166-1 alpha-2.
+
+<Warning>
+Claim types are split between natural and legal persons. Creating a claim whose `claim_type` doesn't match the target's `person_type` returns `400 invalid_request` (e.g. `Claim type 'relationships' is not allowed on natural persons.`). See [claim creation errors](/docs/onboarding/errors#person-creation-errors).
+</Warning>
 
 ### Natural-person claims
 
@@ -227,7 +235,14 @@ Acceptable when `person_type` is `natural`.
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
-| `nationalities` | array | yes | Non-empty. Each item: `country_code` (required), `basis` (optional: `birth`, `naturalisation`, `descent`, `marriage`, `investment_programme`, `other`). |
+| `nationalities` | array of objects | yes | Non-empty. |
+
+Each `nationalities` entry:
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `country_code` | string | yes | ISO-3166-1 alpha-2. |
+| `basis` | enum \| null | no | One of `birth`, `naturalisation`, `descent`, `marriage`, `investment_programme`, `other`. |
 
 #### `residence`
 
@@ -245,10 +260,18 @@ Acceptable when `person_type` is `natural`.
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
-| `tax_residencies` | array | yes | Non-empty. Each item: `country_code` (required), `tin` (optional), `tin_exemption_reason` (optional: `not_issued`, `pending_application`, `not_required`). |
+| `tax_residencies` | array of objects | yes | Non-empty. |
+
+Each `tax_residencies` entry:
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `country_code` | string | yes | ISO-3166-1 alpha-2. |
+| `tin` | string \| null | no | Tax identification number. Free-form string; we don't validate format at the claim layer. |
+| `tin_exemption_reason` | enum \| null | no | One of `not_issued`, `pending_application`, `not_required`. |
 
 <Note>
-Either supply a `tin` or a `tin_exemption_reason` for each tax residency. Supplying neither is allowed at the claim-creation layer but will block the onboarding application if a TIN is required by your tenant's rules.
+Supply a `tin` or `tin_exemption_reason` for each tax residency. Neither is accepted at the claim layer but may block the application if your tenant requires a TIN.
 </Note>
 
 #### `fatca_status`
@@ -339,7 +362,7 @@ Acceptable when `person_type` is `legal`.
 
 #### `registered_address` / `operating_address`
 
-Same shape as [`residence`](#residence). `registered_address` is the legal registration address; `operating_address` is where the business actually trades from.
+Same shape as [`residence`](#residence). `registered_address` is the legal registration address; `operating_address` is where the business trades from.
 
 #### `business_nature`
 
@@ -354,13 +377,9 @@ Same shape as [`residence`](#residence). `registered_address` is the legal regis
 | `has_nominee_shareholders` | boolean | yes | |
 | `has_shell_bank_relationships` | boolean | yes | |
 
-### Shared claim types
-
-Acceptable on both natural and legal persons.
-
 #### `relationships`
 
-Used primarily on legal persons to declare directors, shareholders, UBOs, trustees, settlors, and authorised signatories.
+Legal-person-only. Declares directors, shareholders, UBOs, trustees, settlors, and authorised signatories.
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
@@ -370,7 +389,7 @@ Each relationship entry:
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
-| `related_person` | string | yes | ID of an existing person. Must exist — unknown IDs fail the whole request with `400`. |
+| `related_person` | string | yes | ID of an existing person. Unknown IDs fail the request with `400`. |
 | `relationship_type` | enum | yes | `director`, `shareholder`, `beneficial_owner`, `trustee`, `settlor`, `authorised_signatory`. |
 | `control_type` | enum \| null | no | `ownership`, `voting`, `other`. |
 | `ownership_percentage` | decimal (string) \| null | no | E.g. `"25.50"`. |
@@ -378,7 +397,7 @@ Each relationship entry:
 | `end_date` | date \| null | no | |
 
 <Note>
-Different `relationship_type` values carry different follow-on requirements during onboarding. For example, every declared `director` must themselves satisfy an identity / selfie / passport bundle. See [applications — related-person requirements](/docs/onboarding/applications#related-person-requirements).
+Different `relationship_type` values carry different onboarding requirements — e.g. every `director` must satisfy an identity/selfie/passport bundle. See [related-person requirements](/docs/onboarding/applications#related-person-requirements).
 </Note>
 
 ## Reference values
@@ -399,4 +418,4 @@ Different `relationship_type` values carry different follow-on requirements duri
 
 `agriculture`, `mining`, `manufacturing`, `utilities`, `construction`, `wholesale_retail`, `transport_logistics`, `hospitality`, `media_telecoms`, `technology`, `financial_services`, `insurance`, `real_estate`, `professional_services`, `education`, `healthcare`, `arts_entertainment`, `public_administration`, `defence`, `non_profit`, `gambling`, `extractives`, `precious_metals`, `cryptocurrency`, `other`.
 
-Use `other` together with the `_other` text field on whichever claim carries the industry (`employment.industry_other`, `business_nature.business_activity_other`).
+Pair `other` with the `_other` text field on the same claim (`employment.industry_other`, `business_nature.business_activity_other`).
