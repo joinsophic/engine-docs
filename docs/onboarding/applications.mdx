@@ -5,7 +5,7 @@ description: "Submit an onboarding application referencing persons, consents, an
 
 An **onboarding application** (`onba_...`) ties [persons](/docs/onboarding/persons), consents, and evidence together into one request that kicks off compliance review.
 
-Submission is synchronous. We validate against your tenant's requirements and either accept (`pending`, awaiting review) or return `400` with a precise explanation.
+Submission is synchronous. We validate and either accept (`pending`, awaiting review) or return `400` with a precise explanation.
 
 ## Request structure
 
@@ -45,17 +45,17 @@ The duplicate-person check runs before the authority-type check. If the same `pe
 
 ### Consents
 
-A consent records that a person agreed to a specific [legal document version](/api-reference/list-versions-of-a-legal-document). See [required consents](#required-consents).
+A consent records that a person agreed to a specific [legal document version](/api-reference/list-versions-of-a-legal-document), or made an attestation. See [required consents](#required-consents).
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
 | `person` | string | yes | An authority or related person — see [attribution](#per-person-attribution). |
-| `consent_type` | string | yes | E.g. `terms_of_service`. Must match a required consent for the customer type. |
-| `legal_document_version` | string | yes | ID of a [legal document version](/api-reference/list-versions-of-a-legal-document). |
+| `consent_type` | string | yes | E.g. `terms_of_service`, `data_accuracy`. See [required consents](#required-consents) for the full list. |
+| `legal_document_version` | string | conditional | Required for every `consent_type` except `data_accuracy`. For `data_accuracy`, omit. |
 | `consented_at` | datetime | yes | ISO-8601 timestamp. |
 
 <Warning>
-Every consent needs a valid `legal_document_version`. Missing or unknown IDs fail the application with `400 invalid_request`.
+Legal-document consents need a valid `legal_document_version` whose document type matches the `consent_type`. `data_accuracy` is an attestation — omit `legal_document_version` entirely. Either rule violated returns `400 invalid_request`.
 </Warning>
 
 ### Evidence
@@ -82,10 +82,6 @@ While an earlier matching application is `pending` or `processing`, a new submis
 ## Requirements by customer type
 
 Requirements are defined **per authority slot** — each `(customer_type, authority_type)` pair carries its own required claims, evidence bundles, consents, expected `person_type`, and count. A business `owner` and `signatory` have different sets; neither inherits.
-
-<Note>
-These are the current defaults. Requirements are tenant configuration and evolve — don't hard-code them. Drive your integration from the current error responses; breaking changes ship through our release channels.
-</Note>
 
 ### Authority composition
 
@@ -120,7 +116,7 @@ One natural-person `owner`.
 |---|---|
 | | One `proof_of_address` with any compatible document type (see [evidence taxonomy](#evidence-taxonomy)) |
 
-**Consents**: owner supplies the standard set (see [required consents](#required-consents)).
+**Consents**: owner supplies every consent in [required consents](#required-consents), attributed to themselves.
 
 ### Business
 
@@ -128,23 +124,32 @@ One legal-person `owner`, at least one natural-person `signatory`, plus related 
 
 #### Owner (legal person)
 
-**Required claims**: `registration`, `contact_details`, `relationships`.
+**Required claims**: `registration`, `lei`, `contact_details`, `registered_address`, `business_nature`, `relationships`.
+
+An additional `operating_address` claim is required when `registered_address.operating_address_is_same` is `false`. See [conditional requirements](#conditional-requirements).
 
 **Required evidence**:
 
-| Claim | Acceptable bundles |
+| Claim or condition | Required |
 |---|---|
 | On `registration` | One `certificate_of_good_standing` |
+| On `registration` | One `certificate_of_shareholders` |
+| On `registration` | One `certificate_of_directors` |
+| On `registration` | One `financial_statements` |
+| On `registration` | One `ownership_structure` |
+| On `registered_address` | One `proof_of_registered_address` |
+| When `registered_address.operating_address_is_same` is `false` | One `proof_of_operating_address` |
+| When `business_nature.has_nominee_shareholders` is `true` | One `nominee_agreement` |
 
-**Consents**: the legal owner supplies the standard set. Signatories don't consent personally.
+**Consents**: none. The legal owner's consent bundle is empty — consents come from the signatories.
 
 **Related persons**: see [related-person requirements](#related-person-requirements).
 
 #### Signatory (natural person)
 
-One per person signing for the business. Signatories don't need legal-entity claims.
+One per person signing for the business. Signatories carry the full natural-person profile.
 
-**Required claims**: `identity`, `nationalities`, `residence`, `pep_status`.
+**Required claims**: `identity`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
 
 **Required evidence**:
 
@@ -157,7 +162,15 @@ One per person signing for the business. Signatories don't need legal-entity cla
 |---|---|
 | | A single `selfie` (no `document_type`) |
 
-No `proof_of_address` needed. Consents are covered by the legal owner.
+| For the `residence` claim | Acceptable bundles |
+|---|---|
+| | One `proof_of_address` with any compatible document type |
+
+| Authorising claim | Required |
+|---|---|
+| For signing authority | One `board_resolution`, attributed to this signatory |
+
+**Consents**: each signatory supplies every consent in [required consents](#required-consents), attributed to themselves.
 
 ### Joint
 
@@ -180,7 +193,7 @@ One natural-person `owner` plus one or more natural-person `joint_owner`s. Every
 |---|---|
 | | One `proof_of_address` with any compatible document type |
 
-**Consents**: every natural authority supplies the standard set, each attributed to the party giving it.
+**Consents**: every natural authority supplies every consent in [required consents](#required-consents), each attributed to the party giving it.
 
 ### Required consents
 
@@ -188,52 +201,120 @@ Who supplies the consents depends on customer type:
 
 - **Individual** — the owner.
 - **Joint** — every natural authority, each attributed to themselves.
-- **Business** — the legal owner. Signatories don't consent personally.
+- **Business** — every signatory, each attributed to themselves. The legal-entity owner does not consent.
+
+The same nine consents apply in every case:
+
+| `consent_type` | `legal_document_version` |
+|---|---|
+| `terms_of_service` | required |
+| `investment_service_agreement` | required |
+| `risk_disclosures` | required |
+| `conflicts_of_interest_policy` | required |
+| `complaints_handling_policy` | required |
+| `client_assets_safeguarding_policy` | required |
+| `investor_compensation_fund_policy` | required |
+| `order_execution_policy` | required |
+| `data_accuracy` | must be omitted |
+
+`data_accuracy` is an attestation — the person attests that the information they provided is accurate, so there is no legal document to version. Sending `legal_document_version` with it returns `400 invalid_request`.
+
+For every other consent, fetch a live document version via [`GET /legal-documents/{legal_document_id}/versions`](/api-reference/list-versions-of-a-legal-document) and pass its ID. The version's document type must equal the `consent_type` — mismatches return `400 invalid_request`.
 
 <Note>
-These are the current defaults. The required set is tenant configuration and may change — drive your integration from error responses.
+On a business application, any consent attributed to the legal-entity `owner` is accepted silently and counts for nothing. Missing the required consents on the signatories will still fail the application. Make sure you attribute every consent to a natural `signatory`.
 </Note>
-
-| `consent_type` | What the customer agrees to |
-|---|---|
-| `terms_of_service` | Your terms of service. |
-| `risk_disclosures` | Applicable investor risk disclosures. |
-| `data_accuracy` | A statement that the information provided is accurate. |
-
-Each consent needs a live `legal_document_version` — list them via [`GET /legal-documents/{legal_document_id}/versions`](/api-reference/list-versions-of-a-legal-document).
 
 ## Related-person requirements
 
-Persons declared in a legal authority's `relationships` claim carry their own requirements per `relationship_type`.
+Persons declared in a legal authority's `relationships` claim carry their own requirements per `relationship_type`. Related persons never carry consents — all consents come from the application's natural authorities.
 
-<Note>
-These are current defaults and evolve with compliance configuration — drive your integration from error responses.
-</Note>
+Two groups, split on whether the related person holds authority to act on the entity:
 
-### `director`
+**With authority to act** — `director`, `authorised_signatory`:
 
-**Required claims**: `identity`, `nationalities`.
-
-**Required evidence**:
-
-| For the `identity` claim | Acceptable bundles |
+| | Required |
 |---|---|
-| | A single `identity_document` of type `passport` |
-| | **or** two `identity_document` items: one `national_id_front` **and** one `national_id_back` |
+| Claims | `identity`, `nationalities`, `residence`, `pep_status` |
+| Evidence — for `identity` | One `identity_document` of type `passport`, **or** one `national_id_front` **and** one `national_id_back` |
+| Evidence — for `identity` | One `selfie` (no `document_type`) |
+| Evidence — for `residence` | One `proof_of_address` |
+| Evidence — authorising the appointment | One `board_resolution`, attributed to this person |
 
-| For the `identity` claim | Acceptable bundles |
+**Without authority to act** — `shareholder`, `beneficial_owner`, `trustee`, `settlor`:
+
+| | Required |
 |---|---|
-| | A single `selfie` (no `document_type`) |
+| Claims | `identity`, `nationalities`, `residence`, `pep_status` |
+| Evidence — for `identity` | One `identity_document` of type `passport`, **or** one `national_id_front` **and** one `national_id_back` |
+| Evidence — for `identity` | One `selfie` (no `document_type`) |
+| Evidence — for `residence` | One `proof_of_address` |
 
-No consents required from related persons.
+## Conditional requirements
 
-### Other relationship types
+Two requirements on a business application depend on the content of the legal owner's claims. Send the claim values first, then assemble the application with the matching evidence.
 
-`shareholder`, `beneficial_owner`, `trustee`, `settlor`, and `authorised_signatory` aren't enforced at submission today — they're captured on the application, but any follow-up checks happen in compliance processing.
+### Operating address
 
-<Note>
-Unenforced relationship types may become enforced as compliance configuration evolves. Don't assume today's behaviour is permanent.
-</Note>
+If the legal entity operates from its registered address, set `operating_address_is_same` to `true` on the `registered_address` claim and you're done:
+
+```json
+{
+  "claim_type": "registered_address",
+  "line1": "10 Castle Street",
+  "city": "Douglas",
+  "postal_code": "IM1 2EZ",
+  "country_code": "IM",
+  "operating_address_is_same": true
+}
+```
+
+If the operating address differs, set it to `false`, add an `operating_address` claim, and attach a `proof_of_operating_address` evidence to the legal owner:
+
+```json
+{
+  "claim_type": "registered_address",
+  "line1": "10 Castle Street",
+  "city": "Douglas",
+  "postal_code": "IM1 2EZ",
+  "country_code": "IM",
+  "operating_address_is_same": false
+}
+```
+
+```json
+{
+  "claim_type": "operating_address",
+  "line1": "25 Harbour Road",
+  "city": "Douglas",
+  "postal_code": "IM1 4LB",
+  "country_code": "IM"
+}
+```
+
+Missing either piece returns `400 invalid_request` referencing the legal owner's `person_id`.
+
+### Nominee agreement
+
+If the legal entity uses nominee shareholders, set `has_nominee_shareholders` to `true` on the `business_nature` claim and attach a `nominee_agreement` evidence to the legal owner:
+
+```json
+{
+  "claim_type": "business_nature",
+  "business_activity": "financial_services",
+  "annual_turnover_eur": "1m_3m",
+  "is_regulated": true,
+  "issues_bearer_shares": false,
+  "has_nominee_shareholders": true,
+  "has_shell_bank_relationships": false
+}
+```
+
+Without the evidence, submission fails. If the entity has no nominees, set the field to `false` and omit the evidence.
+
+<Tip>
+The exact error string names the missing claim or evidence and the `person_id` it was expected on. Log these — they tell you exactly what to add before you retry.
+</Tip>
 
 ## Evidence taxonomy
 
@@ -260,7 +341,9 @@ National IDs always use the `national_id_front` + `national_id_back` pair — no
 
 ### Which evidence types apply to each person type
 
-Natural-person evidence (`identity_document`, `proof_of_address`, `selfie`) is only valid against natural-person authorities and related persons. Legal-entity evidence (`certificate_of_*`, `financial_statements`, `ownership_structure`, `proof_of_registered_address`, `proof_of_operating_address`, `nominee_agreement`, `board_resolution`) is only valid against legal-person authorities. Mismatches return `400`.
+Natural-person evidence (`identity_document`, `proof_of_address`, `selfie`, `board_resolution`) is only valid against natural-person authorities and related persons. Legal-entity evidence (`certificate_of_*`, `financial_statements`, `ownership_structure`, `proof_of_registered_address`, `proof_of_operating_address`, `nominee_agreement`) is only valid against legal-person authorities. Mismatches return `400`.
+
+`board_resolution` belongs to the natural person it authorises — the signatory on a business application, or the `director` / `authorised_signatory` related person on the legal owner's `relationships` claim. Attribute it via that person's `person_id`, not the legal entity's.
 
 ## Response
 

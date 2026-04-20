@@ -20,7 +20,7 @@ Returned from `POST /persons` and `POST /persons/{person_id}/claims`.
 
 | HTTP | `code` | When |
 |---|---|---|
-| 400 | `invalid_request` | The request body fails validation — unknown `claim_type`, missing required field, unknown field (claims use strict `extra: forbid` validation), or a conditional rule isn't met (e.g. `pep_role` is missing while `is_pep` is `true`). |
+| 400 | `invalid_request` | The request body fails validation — unknown `claim_type`, missing required field, unknown field, or a conditional rule isn't met (e.g. `pep_role` is missing while `is_pep` is `true`). |
 | 400 | `invalid_request` | `POST /persons/{person_id}/claims` — the body is missing the `claim` envelope. The response carries a structured `params` array: `{"path": ["body", "claim"], "detail": "Field required", "code": "missing_param"}`. Wrap the claim in `{"claim": {"claim_type": "...", ...}}`. |
 | 400 | `invalid_request` | The `claim_type` isn't valid for the target person's `person_type`. Detail reads `Claim type '<claim_type>' is not allowed on natural persons.` or `... on legal persons.` Use a claim type that matches the person — see [natural-person claims](/docs/onboarding/claims#natural-person-claims) and [legal-person claims](/docs/onboarding/claims#legal-person-claims). |
 | 400 | `invalid_request` | A `relationships` claim references a `related_person` ID that doesn't exist. The whole request fails and no person is created — build the related persons first. |
@@ -42,6 +42,14 @@ Returned from `GET` and `DELETE` endpoints under `/persons/{person_id}/claims`.
 ## Onboarding application errors
 
 Returned from `POST /onboarding-applications`. Every `400` below carries `code: "invalid_request"` with a specific `detail` message.
+
+<Note>
+**One error at a time.** An onboarding application is validated in stages and we return on the first failing stage — structural checks first, then authority composition, then per-person claims, consents, and evidence. If the response mentions a missing claim, there may still be missing consents or evidence behind it. Fix what's reported, resubmit, and expect the next thing to surface.
+
+Within a single stage, we do report every failure we can see. For example, a single "missing required claims" response will list all the claims that person is missing — not just the first.
+
+One gotcha worth calling out: on a business application, consents attributed to the legal-entity `owner` are accepted silently. If the signatories don't carry the [required consents](/docs/onboarding/applications#required-consents), the application still fails — the detail points at the signatory, not at the silently-ignored entry. See the [attribution note](/docs/onboarding/applications#required-consents).
+</Note>
 
 ### Structural errors
 
@@ -77,18 +85,20 @@ Required claims, consents, and evidence are defined per authority slot — a bus
 
 | `detail` pattern | Cause | Fix |
 |---|---|---|
-| `Consent '...' is missing a legal_document_version.` | A consent entry has no `legal_document_version`. | Supply the ID of the legal document version the customer agreed to. |
+| `Consent '...' is missing a legal_document_version.` | A legal-document consent (anything other than `data_accuracy`) was sent without `legal_document_version`. | Supply the ID of the legal document version the customer agreed to. |
 | `Consent '...' references unknown legal_document_version: ...` | The referenced version doesn't exist. | Fetch valid versions via [`GET /legal-documents/{legal_document_id}/versions`](/api-reference/list-versions-of-a-legal-document). |
+| `Consent '...' references a legal_document_version whose document_type is '...'; consent_type and document_type must match.` | You pointed a consent at a legal document version of a different type (e.g. `consent_type: terms_of_service` but the referenced version is a `risk_disclosures` document). | Reference a version whose document type matches the `consent_type`. |
 | `Consent '...' is attributed to person '...', which is neither an authority nor a related person on this application.` | The consent's `person` isn't on the application. | Attribute the consent to an authority or a person declared in a `relationships` claim. |
+| `Consent '...' must not include a legal_document_version.` | A `data_accuracy` consent was sent with a `legal_document_version`. | `data_accuracy` is an attestation — omit `legal_document_version`. |
 
 ### Evidence errors
 
 | `detail` pattern | Cause | Fix |
 |---|---|---|
-| `Evidence type '...' is not allowed for customer type '...'` | The evidence type is unsupported for this customer type (e.g. `board_resolution` on an individual). | Remove the evidence item or switch to an allowed type. |
+| `Evidence type '...' is not allowed for customer type '...'` | The evidence type is unsupported for this customer type (e.g. `certificate_of_good_standing` on an `individual` application). | Remove the evidence item or switch to an allowed type. |
 | `Evidence type '...' does not accept a document_type.` | A `document_type` was supplied for `selfie`. | Omit `document_type` for `selfie`. |
 | `document_type '...' is not compatible with evidence_type '...'` | The combination isn't in the [evidence taxonomy](/docs/onboarding/applications#evidence-taxonomy). | Use one of the allowed document types for that evidence type. |
-| `Evidence type '...' is not allowed for natural person '...'` *or* `... for legal person '...'` | You attributed legal-entity evidence to a natural person, or natural-person evidence to a legal person. | Attribute the evidence item to a person of the correct type. |
+| `Evidence type '...' is not allowed for natural person '...'` *or* `... for legal person '...'` | You attributed legal-entity evidence to a natural person, or natural-person evidence to a legal person. Common cause: attaching `board_resolution` to the legal-entity owner instead of to the natural person it authorises (a signatory, director, or authorised signatory). | Attribute the evidence item to a person of the correct type. `board_resolution` belongs to the authorised natural person — see [evidence taxonomy](/docs/onboarding/applications#which-evidence-types-apply-to-each-person-type). |
 | `Evidence '...' is attributed to person '...', which is neither an authority nor a related person on this application.` | The evidence's `person` isn't on the application. | Attribute it to an authority or a declared related person. |
 
 ### Relationship errors

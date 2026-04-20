@@ -14,7 +14,9 @@ Every person is built from [claims](/docs/onboarding/claims) — typed data poin
 | `person_type` | Represents | Example claim types |
 |---|---|---|
 | `natural` | A human | `identity`, `nationalities`, `residence`, `tax_residencies`, `pep_status`, `employment`, `financial_profile` |
-| `legal` | A company, trust, partnership, or other legal entity | `registration`, `contact_details`, `lei`, `registered_address`, `operating_address`, `business_nature`, `relationships` |
+| `legal` | A company, trust, partnership, or other legal entity | `registration`, `contact_details`, `lei`, `registered_address`, `business_nature`, `relationships` |
+
+`operating_address` is also a legal-person claim. You only add it when the legal owner's `registered_address` has `operating_address_is_same: false` — see [conditional requirements](/docs/onboarding/applications#conditional-requirements).
 
 Legal persons declare counterparties (directors, shareholders, UBOs, trustees, signatories) via a [`relationships`](/docs/onboarding/claims#relationships) claim. Related persons must already exist.
 
