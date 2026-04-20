@@ -211,27 +211,24 @@ A successful request returns `201 Created`:
     {
       "id": "clm_abc123",
       "created_at": "2026-04-18T09:30:00Z",
-      "modified_at": "2026-04-18T09:30:00Z",
-      "claim_type": "identity",
       "status": "pending",
-      "data": {
-        "first_name": "Ada",
-        "last_name": "Lovelace",
-        "date_of_birth": "1985-12-10"
-      }
+      "claim_type": "identity",
+      "first_name": "Ada",
+      "last_name": "Lovelace",
+      "date_of_birth": "1985-12-10"
     },
     {
       "id": "clm_def456",
       "created_at": "2026-04-18T09:30:00Z",
-      "modified_at": "2026-04-18T09:30:00Z",
-      "claim_type": "residence",
       "status": "pending",
-      "data": {
-        "line1": "1 Example Street",
-        "postal_code": "SW1A 1AA",
-        "city": "London",
-        "country_code": "GB"
-      }
+      "claim_type": "residence",
+      "line1": "1 Example Street",
+      "line2": null,
+      "line3": null,
+      "district_county": null,
+      "postal_code": "SW1A 1AA",
+      "city": "London",
+      "country_code": "GB"
     }
   ]
 }
@@ -242,7 +239,11 @@ A successful request returns `201 Created`:
 | `id` | The person's unique ID, prefix `per_`. |
 | `person_type` | `natural` or `legal`. |
 | `full_name` | Natural: `"{first_name} {last_name}"` from the identity claim. Legal: `entity_name` from registration, or empty. |
-| `claims` | The claims you provided, with IDs and `status: pending`. See [claim lifecycle](/docs/onboarding/claims#lifecycle). |
+| `claims` | The claims you provided. Each element carries `id`, `created_at`, `status: pending`, `claim_type`, and the spec fields at the root. To get the full claim (with `person`, `verified_at`, `superseded_at`) for a specific claim later, call [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim). See [claim lifecycle](/docs/onboarding/claims#lifecycle). |
+
+<Note>
+The OpenAPI schema exposes one summary variant per claim type — `IdentityPersonClaimSummary`, `NationalitiesPersonClaimSummary`, …, `RelationshipsPersonClaimSummary` — discriminated on `claim_type`.
+</Note>
 
 <Note>
 Persons don't have their own status — lifecycle lives on claims. See [lifecycle](/docs/onboarding/claims#lifecycle).

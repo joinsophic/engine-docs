@@ -3,21 +3,21 @@ title: Claims
 description: "Typed, versioned data points attached to a person"
 ---
 
-A **claim** (`clm_...`) is a typed data point on a [person](/docs/onboarding/persons). Each has a `claim_type`, a `status`, and a `data` payload validated against a strict schema. Applications validate against claims.
+A **claim** (`clm_...`) is a typed data point on a [person](/docs/onboarding/persons). Each has a `claim_type`, a `status`, and the spec fields at the root, validated against a strict schema. Applications validate against claims.
 
 ## Lifecycle
 
 | Status | Description |
 |---|---|
 | `pending` | Submitted, not yet confirmed by compliance. |
-| `verified` | Confirmed by compliance. `verified_at` populated. |
-| `superseded` | Replaced by a newer claim of the same type. `superseded_at` populated. |
+| `verified` | Confirmed by compliance. `verified_at` populated. A verified claim whose `superseded_at` is non-null is the historical row — a newer verified claim of the same type has taken over. |
 
 ### State transitions
 
 ```
-pending ──▶ verified ──▶ superseded
-   │
+pending ──▶ verified
+   │           │
+   │           └──▶ verified (historical, superseded_at set)
    └──▶ (deleted)
 ```
 
@@ -26,48 +26,34 @@ pending ──▶ verified ──▶ superseded
 | *(none)* | `pending` | [`POST /persons`](/api-reference/create-a-person) or [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). |
 | `pending` | *(deleted)* | [`DELETE /persons/{person_id}/claims/{claim_id}`](/api-reference/delete-a-pending-claim). Pending only. |
 | `pending` | `verified` | Compliance review. Not self-service. |
-| `verified` | `superseded` | A newer claim of the same type is created on the same person. |
+| `verified` (current) | `verified` (historical) | A newer verified claim of the same type is recorded. The old row's `status` stays `verified`; its `superseded_at` is set. |
 
 <Note>
-No `pending → superseded` transition. Pending claims can only be verified or deleted.
+There's no `superseded` status — supersession is a derived state. Filter for currently authoritative claims by checking `status == "verified"` and `superseded_at == null`.
 </Note>
 
 ### Supersession
 
-To update already-verified info, submit a fresh claim of the same type. Any prior `verified` claim of that type is superseded in the same request:
+To update already-verified info, submit a fresh claim of the same type. The new claim is recorded as `pending`; the prior verified row (if any) is retired in the same transaction:
 
 ```bash
 curl -X POST https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "claim": {
-      "claim_type": "residence",
-      "line1": "42 New Street",
-      "postal_code": "EC2A 4RQ",
-      "city": "London",
-      "country_code": "GB"
-    }
+    "claim_type": "residence",
+    "line1": "42 New Street",
+    "postal_code": "EC2A 4RQ",
+    "city": "London",
+    "country_code": "GB"
   }'
 ```
 
-After the call: the new claim is `pending`, the prior `verified` one (if any) becomes `superseded`, and any still-pending claim of the same type is left untouched.
+After the call: the new claim is `pending`, the prior verified row (if any) keeps `status: "verified"` but gets a non-null `superseded_at`, and any still-pending claim of the same type is left untouched.
 
 ## Creating a claim
 
-`POST /persons/{person_id}/claims` with a single `claim` object.
-
-<Tip>
-Wrap the claim in a `"claim"` envelope. A flat body is rejected with `400 invalid_request`:
-
-```json
-{
-  "detail": "The request parameters are invalid.",
-  "code": "invalid_request",
-  "params": [{"path": ["body", "claim"], "detail": "Field required", "code": "missing_param"}]
-}
-```
-</Tip>
+`POST /persons/{person_id}/claims` with the claim spec as the body. The body is a discriminated union keyed on `claim_type` — there's no outer envelope.
 
 <CodeGroup>
 ```python Python
@@ -80,11 +66,9 @@ response = requests.post(
         "Content-Type": "application/json",
     },
     json={
-        "claim": {
-            "claim_type": "pep_status",
-            "is_pep": False,
-            "has_pep_association": False,
-        }
+        "claim_type": "pep_status",
+        "is_pep": False,
+        "has_pep_association": False,
     },
 )
 claim = response.json()
@@ -100,11 +84,9 @@ const response = await fetch(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      claim: {
-        claim_type: "pep_status",
-        is_pep: false,
-        has_pep_association: false,
-      },
+      claim_type: "pep_status",
+      is_pep: false,
+      has_pep_association: false,
     }),
   }
 );
@@ -113,11 +95,9 @@ const claim = await response.json();
 
 ```go Go
 body, _ := json.Marshal(map[string]interface{}{
-    "claim": map[string]interface{}{
-        "claim_type":          "pep_status",
-        "is_pep":              false,
-        "has_pep_association": false,
-    },
+    "claim_type":          "pep_status",
+    "is_pep":              false,
+    "has_pep_association": false,
 })
 req, _ := http.NewRequest("POST",
     "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims",
@@ -129,11 +109,9 @@ req.Header.Set("Content-Type", "application/json")
 ```java Java
 String json = """
     {
-        "claim": {
-            "claim_type": "pep_status",
-            "is_pep": false,
-            "has_pep_association": false
-        }
+        "claim_type": "pep_status",
+        "is_pep": false,
+        "has_pep_association": false
     }
     """;
 
@@ -147,11 +125,9 @@ HttpRequest request = HttpRequest.newBuilder()
 
 ```csharp C#
 var payload = new {
-    claim = new {
-        claim_type = "pep_status",
-        is_pep = false,
-        has_pep_association = false
-    }
+    claim_type = "pep_status",
+    is_pep = false,
+    has_pep_association = false
 };
 
 var response = await client.PostAsJsonAsync(
@@ -160,29 +136,41 @@ var response = await client.PostAsJsonAsync(
 ```
 </CodeGroup>
 
-The response is the full claim:
+The response is the full claim, with the spec fields at the root:
 
 ```json
 {
   "id": "clm_abc123",
-  "created_at": "2026-04-18T09:30:00Z",
-  "modified_at": "2026-04-18T09:30:00Z",
   "person": "per_m4k7r9s2",
-  "claim_type": "pep_status",
+  "created_at": "2026-04-18T09:30:00Z",
   "status": "pending",
   "verified_at": null,
   "superseded_at": null,
-  "data": {
-    "is_pep": false,
-    "has_pep_association": false,
-    "pep_role": null,
-    "pep_role_start_date": null,
-    "pep_role_end_date": null,
-    "pep_associate_name": null,
-    "pep_associate_relationship": null
-  }
+  "claim_type": "pep_status",
+  "is_pep": false,
+  "has_pep_association": false,
+  "pep_role": null,
+  "pep_role_start_date": null,
+  "pep_role_end_date": null,
+  "pep_associate_name": null,
+  "pep_associate_relationship": null
 }
 ```
+
+| Field | Description |
+|---|---|
+| `id` | The claim's unique ID, prefix `clm_`. |
+| `person` | ID of the person this claim belongs to. |
+| `created_at` | ISO-8601 timestamp of when the claim was submitted. |
+| `status` | `pending` or `verified`. See [lifecycle](#lifecycle). |
+| `verified_at` | ISO-8601 timestamp of verification, or `null` if still pending. |
+| `superseded_at` | ISO-8601 timestamp set when a newer verified claim of the same type takes over, or `null` for the current row. |
+| `claim_type` | The claim's type — also the discriminator for the response variant. |
+| _spec fields_ | The variant-specific fields (e.g. `is_pep`, `pep_role`, …). See [claim type reference](#claim-type-reference). |
+
+<Note>
+The OpenAPI schema exposes one response variant per claim type — `IdentityPersonClaim`, `NationalitiesPersonClaim`, …, `RelationshipsPersonClaim` — discriminated on `claim_type`. SDK generators can emit per-variant types instead of a single dynamic shape.
+</Note>
 
 ## Listing and retrieving claims
 
@@ -196,7 +184,7 @@ curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?claim_type=re
 | Query parameter | Values | Notes |
 |---|---|---|
 | `claim_type` | Any [`claim_type`](#claim-type-reference) | Optional. |
-| `status` | `pending`, `verified`, `superseded` | Optional. |
+| `status` | `pending`, `verified` | Optional. To get only the currently authoritative verified claim for each type, filter `status=verified` and discard rows where `superseded_at` is non-null. |
 
 Retrieve a single claim via [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim).
 
@@ -209,7 +197,7 @@ curl -X DELETE https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims/clm_
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
-Returns `204 No Content`. Deleting a `verified` or `superseded` claim returns `400 invalid_request`.
+Returns `204 No Content`. Deleting any non-pending claim returns `400 invalid_request` with detail `Only pending claims can be deleted; claim '<id>' has status '<status>'` — that includes verified rows whether or not they've been superseded.
 
 ## Claim type reference
 
