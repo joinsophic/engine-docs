@@ -389,8 +389,55 @@ Natural-person evidence (`identity_document`, `proof_of_address`, `selfie`, `boa
 | `withdrawn` | Withdrawn before a decision. |
 
 <Note>
-Post-submission transitions happen in our compliance systems. Poll the application for updates.
+Post-submission transitions happen in our compliance systems. Poll the application via [`GET /onboarding-applications/{id}`](#retrieving-an-application) for updates.
 </Note>
+
+## Retrieving an application
+
+`GET /onboarding-applications/{id}` with the `read` scope. Use it to poll an application after submission — reads have no side effects and are safe to call repeatedly.
+
+```bash
+curl https://api.engine.usesophic.com/onboarding-applications/onba_m4k7r9s2 \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+| Path parameter | Required | Notes |
+|---|---|---|
+| `id` | yes | The application ID returned by `POST /onboarding-applications`. Format `onba_<suffix>`. |
+
+A successful request returns `200 OK` with the same shape as the submission response. `status` and `outcome` reflect the current lifecycle; `application` is the payload exactly as persisted at submission time — we don't re-derive it from the person's current claims or re-run validation.
+
+```json
+{
+  "id": "onba_m4k7r9s2",
+  "created_at": "2026-04-18T09:30:00Z",
+  "modified_at": "2026-04-18T10:15:00Z",
+  "customer_type": "individual",
+  "status": "processing",
+  "outcome": null,
+  "application": {
+    "customer_type": "individual",
+    "authorities": [
+      {"person": "per_ada", "authority_type": "owner"}
+    ],
+    "consents": [
+      {"person": "per_ada", "consent_type": "terms_of_service", "legal_document_version": "legal_doc_ver_tos_v3", "consented_at": "2026-04-18T09:30:00Z"}
+    ],
+    "evidence": [
+      {"person": "per_ada", "evidence_type": "identity_document", "document_type": "passport", "file": "fil_passport"}
+    ]
+  }
+}
+```
+
+Unknown or invisible IDs return `404 not_found`:
+
+```json
+{
+  "code": "not_found",
+  "detail": "Not Found"
+}
+```
 
 ## Errors
 
