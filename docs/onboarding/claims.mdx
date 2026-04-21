@@ -161,10 +161,6 @@ The response is the full claim:
 | `claim_type` | The claim's type. Determines which other fields are present. |
 | _other fields_ | Depend on `claim_type` (e.g. `is_pep`, `pep_role`, …). See [claim type reference](#claim-type-reference). |
 
-<Note>
-Per-variant response shapes (`IdentityPersonClaim`, `NationalitiesPersonClaim`, …, `RelationshipsPersonClaim`) are exposed in the OpenAPI schema for SDK generation.
-</Note>
-
 ## Listing and retrieving claims
 
 List a person's claims, optionally filtered by type or status. By default each `claim_type` collapses to at most two rows — the latest `pending` and the latest `verified` — so you see the current value for each type plus any in-flight update. Pass `include_history=true` for the full audit trail. Results come back newest-first.

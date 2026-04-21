@@ -282,10 +282,6 @@ A successful request returns `201 Created`:
 | `claims` | The claims you provided. Each element carries `id`, `created_at`, `status: pending`, `claim_type`, and the fields defined for that `claim_type`. To get the full claim (with `person`, `verified_at`, `superseded_at`) for a specific claim later, call [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim). See [claim lifecycle](/docs/onboarding/claims#lifecycle). |
 
 <Note>
-Per-variant summary shapes (`IdentityPersonClaimSummary`, …, `RelationshipsPersonClaimSummary`) are exposed in the OpenAPI schema for SDK generation.
-</Note>
-
-<Note>
 Persons don't have their own status — lifecycle lives on claims. See [lifecycle](/docs/onboarding/claims#lifecycle).
 </Note>
 
