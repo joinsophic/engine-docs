@@ -3,71 +3,50 @@ title: Claims
 description: "Typed, versioned data points attached to a person"
 ---
 
-A **claim** (`clm_...`) is a typed data point on a [person](/docs/onboarding/persons). Each has a `claim_type`, a `status`, and a `data` payload validated against a strict schema. Applications validate against claims.
+A **claim** (`clm_...`) is a typed data point on a [person](/docs/onboarding/persons). Each has a `claim_type`, a `status`, and the fields defined for that type, validated against a strict schema. Applications validate against claims.
 
 ## Lifecycle
 
 | Status | Description |
 |---|---|
 | `pending` | Submitted, not yet confirmed by compliance. |
-| `verified` | Confirmed by compliance. `verified_at` populated. |
-| `superseded` | Replaced by a newer claim of the same type. `superseded_at` populated. |
+| `verified` | Confirmed by compliance. `verified_at` is set. |
 
 ### State transitions
 
 ```
-pending ──▶ verified ──▶ superseded
-   │
-   └──▶ (deleted)
+pending ──▶ verified
 ```
 
 | From | To | Trigger |
 |---|---|---|
-| *(none)* | `pending` | [`POST /persons`](/api-reference/create-a-person) or [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). |
-| `pending` | *(deleted)* | [`DELETE /persons/{person_id}/claims/{claim_id}`](/api-reference/delete-a-pending-claim). Pending only. |
+| *(none)* | `pending` | [`POST /persons`](/api-reference/create-a-person) or [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). Each submission creates a fresh claim; prior claims of the same type are left as they were. |
 | `pending` | `verified` | Compliance review. Not self-service. |
-| `verified` | `superseded` | A newer claim of the same type is created on the same person. |
 
 <Note>
-No `pending → superseded` transition. Pending claims can only be verified or deleted.
+A person can have more than one claim of the same `claim_type`. The current value is the latest `verified` claim. To update it, submit a new claim — it replaces the current value once compliance verifies it.
 </Note>
 
-### Supersession
+### Updating a claim value
 
-To update already-verified info, submit a fresh claim of the same type. Any prior `verified` claim of that type is superseded in the same request:
+Post a new claim of the same type. It starts as `pending` and becomes the current value once compliance verifies it.
 
 ```bash
 curl -X POST https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "claim": {
-      "claim_type": "residence",
-      "line1": "42 New Street",
-      "postal_code": "EC2A 4RQ",
-      "city": "London",
-      "country_code": "GB"
-    }
+    "claim_type": "residence",
+    "line1": "42 New Street",
+    "postal_code": "EC2A 4RQ",
+    "city": "London",
+    "country_code": "GB"
   }'
 ```
 
-After the call: the new claim is `pending`, the prior `verified` one (if any) becomes `superseded`, and any still-pending claim of the same type is left untouched.
-
 ## Creating a claim
 
-`POST /persons/{person_id}/claims` with a single `claim` object.
-
-<Tip>
-Wrap the claim in a `"claim"` envelope. A flat body is rejected with `400 invalid_request`:
-
-```json
-{
-  "detail": "The request parameters are invalid.",
-  "code": "invalid_request",
-  "params": [{"path": ["body", "claim"], "detail": "Field required", "code": "missing_param"}]
-}
-```
-</Tip>
+`POST /persons/{person_id}/claims` with the claim as the body. `claim_type` tells us which claim you're sending.
 
 <CodeGroup>
 ```python Python
@@ -80,11 +59,9 @@ response = requests.post(
         "Content-Type": "application/json",
     },
     json={
-        "claim": {
-            "claim_type": "pep_status",
-            "is_pep": False,
-            "has_pep_association": False,
-        }
+        "claim_type": "pep_status",
+        "is_pep": False,
+        "has_pep_association": False,
     },
 )
 claim = response.json()
@@ -100,11 +77,9 @@ const response = await fetch(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      claim: {
-        claim_type: "pep_status",
-        is_pep: false,
-        has_pep_association: false,
-      },
+      claim_type: "pep_status",
+      is_pep: false,
+      has_pep_association: false,
     }),
   }
 );
@@ -113,11 +88,9 @@ const claim = await response.json();
 
 ```go Go
 body, _ := json.Marshal(map[string]interface{}{
-    "claim": map[string]interface{}{
-        "claim_type":          "pep_status",
-        "is_pep":              false,
-        "has_pep_association": false,
-    },
+    "claim_type":          "pep_status",
+    "is_pep":              false,
+    "has_pep_association": false,
 })
 req, _ := http.NewRequest("POST",
     "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims",
@@ -129,11 +102,9 @@ req.Header.Set("Content-Type", "application/json")
 ```java Java
 String json = """
     {
-        "claim": {
-            "claim_type": "pep_status",
-            "is_pep": false,
-            "has_pep_association": false
-        }
+        "claim_type": "pep_status",
+        "is_pep": false,
+        "has_pep_association": false
     }
     """;
 
@@ -147,11 +118,9 @@ HttpRequest request = HttpRequest.newBuilder()
 
 ```csharp C#
 var payload = new {
-    claim = new {
-        claim_type = "pep_status",
-        is_pep = false,
-        has_pep_association = false
-    }
+    claim_type = "pep_status",
+    is_pep = false,
+    has_pep_association = false
 };
 
 var response = await client.PostAsJsonAsync(
@@ -165,58 +134,60 @@ The response is the full claim:
 ```json
 {
   "id": "clm_abc123",
-  "created_at": "2026-04-18T09:30:00Z",
-  "modified_at": "2026-04-18T09:30:00Z",
   "person": "per_m4k7r9s2",
-  "claim_type": "pep_status",
+  "created_at": "2026-04-18T09:30:00Z",
   "status": "pending",
   "verified_at": null,
   "superseded_at": null,
-  "data": {
-    "is_pep": false,
-    "has_pep_association": false,
-    "pep_role": null,
-    "pep_role_start_date": null,
-    "pep_role_end_date": null,
-    "pep_associate_name": null,
-    "pep_associate_relationship": null
-  }
+  "claim_type": "pep_status",
+  "is_pep": false,
+  "has_pep_association": false,
+  "pep_role": null,
+  "pep_role_start_date": null,
+  "pep_role_end_date": null,
+  "pep_associate_name": null,
+  "pep_associate_relationship": null
 }
 ```
 
+| Field | Description |
+|---|---|
+| `id` | The claim's unique ID, prefix `clm_`. |
+| `person` | ID of the person this claim belongs to. |
+| `created_at` | ISO-8601 timestamp of when the claim was submitted. |
+| `status` | `pending` or `verified`. See [lifecycle](#lifecycle). |
+| `verified_at` | ISO-8601 timestamp of verification, or `null` if still pending. |
+| `superseded_at` | Always `null` today. Reserved for a future verification workflow that will stamp a previously authoritative verified claim when a newer verified claim of the same type replaces it. Submitting a new claim never sets this. |
+| `claim_type` | The claim's type. Determines which other fields are present. |
+| _other fields_ | Depend on `claim_type` (e.g. `is_pep`, `pep_role`, …). See [claim type reference](#claim-type-reference). |
+
 ## Listing and retrieving claims
 
-List a person's claims, optionally filtered:
+List a person's claims, optionally filtered by type or status. By default each `claim_type` collapses to at most two rows — the latest `pending` and the latest `verified` — so you see the current value for each type plus any in-flight update. Pass `include_history=true` for the full audit trail. Results come back newest-first.
 
 ```bash
-curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?claim_type=residence&status=verified" \
+curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?claim_type=residence" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
 | Query parameter | Values | Notes |
 |---|---|---|
 | `claim_type` | Any [`claim_type`](#claim-type-reference) | Optional. |
-| `status` | `pending`, `verified`, `superseded` | Optional. |
+| `status` | `pending`, `verified` | Optional. Combine with the default collapse to get one row per type — e.g. `status=verified` returns the current value for each type. |
+| `include_history` | `true`, `false` | Optional, default `false`. Set to `true` to disable the collapse and return every matching row (for audit / history views). Other filters still apply. |
 
-Retrieve a single claim via [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim).
+Retrieve a specific claim by ID via [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim). This always returns the exact claim you asked for, even if it would be hidden by the default collapse on the list endpoint.
 
-## Deleting a pending claim
-
-Only `pending` claims can be deleted.
-
-```bash
-curl -X DELETE https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims/clm_abc123 \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
-```
-
-Returns `204 No Content`. Deleting a `verified` or `superseded` claim returns `400 invalid_request`.
+<Note>
+Claims can't be deleted. To correct a submission — including a pending one — post a new claim of the same type via [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). See [updating a claim value](#updating-a-claim-value).
+</Note>
 
 ## Claim type reference
 
 Unknown fields are rejected. Dates are ISO-8601, country codes ISO-3166-1 alpha-2.
 
 <Warning>
-Claim types are split between natural and legal persons. Creating a claim whose `claim_type` doesn't match the target's `person_type` returns `400 invalid_request` (e.g. `Claim type 'relationships' is not allowed on natural persons.`). See [claim creation errors](/docs/onboarding/errors#person-creation-errors).
+Most claim types are specific to natural or legal persons; `contact_details` is valid on both. Creating a claim whose `claim_type` isn't valid for the target's `person_type` returns `400 invalid_request` (e.g. `Claim type 'relationships' is not allowed on natural persons.`). See [claim creation errors](/docs/onboarding/errors#person-creation-errors).
 </Warning>
 
 ### Natural-person claims
@@ -271,7 +242,7 @@ Each `tax_residencies` entry:
 | `tin_exemption_reason` | enum \| null | no | One of `not_issued`, `pending_application`, `not_required`. |
 
 <Note>
-Supply a `tin` or `tin_exemption_reason` for each tax residency. Neither is accepted at the claim layer but may block the application if your tenant requires a TIN.
+Supply a `tin` or `tin_exemption_reason` for each tax residency. The claim layer accepts either, but an onboarding application is expected to carry a `tin` where available.
 </Note>
 
 #### `fatca_status`
@@ -331,6 +302,19 @@ Supply a `tin` or `tin_exemption_reason` for each tax residency. Neither is acce
 | `annual_transactions` | string | yes | Band value: `1_10`, `11_20`, `21_50`, `gt_50`. |
 | `investment_amount` | string | yes | See [EUR amount bands](#eur-amount-bands). |
 
+### Shared claim types
+
+Acceptable on both natural and legal persons.
+
+#### `contact_details`
+
+How to reach the person. Required on every `POST /persons`.
+
+| Field | Type | Required |
+|---|---|---|
+| `phone_number` | string | yes |
+| `email` | string \| null | no |
+
 ### Legal-person claims
 
 Acceptable when `person_type` is `legal`.
@@ -346,13 +330,6 @@ Acceptable when `person_type` is `legal`.
 | `country_of_incorporation` | string | yes | ISO-3166-1 alpha-2. |
 | `entity_type` | enum | yes | `private_limited_company`, `public_limited_company`, `partnership`, `llp`, `sole_proprietorship`, `trust`, `foundation`, `nonprofit`, `other`. |
 
-#### `contact_details`
-
-| Field | Type | Required |
-|---|---|---|
-| `phone_number` | string | yes |
-| `email` | string \| null | no |
-
 #### `lei`
 
 | Field | Type | Required | Notes |
@@ -360,9 +337,24 @@ Acceptable when `person_type` is `legal`.
 | `identifier` | string | yes | 20 alphanumeric characters. We normalise it to uppercase. |
 | `expiry_date` | date | yes | |
 
-#### `registered_address` / `operating_address`
+#### `registered_address`
 
-Same shape as [`residence`](#residence). `registered_address` is the legal registration address; `operating_address` is where the business trades from.
+The legal registration address.
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `line1` | string | yes | |
+| `line2` | string \| null | no | |
+| `line3` | string \| null | no | |
+| `district_county` | string \| null | no | |
+| `postal_code` | string | yes | |
+| `city` | string | yes | |
+| `country_code` | string | yes | ISO-3166-1 alpha-2. |
+| `operating_address_is_same` | boolean | no | Defaults to `false`. Set `true` if the entity operates from its registered address — in that case the `operating_address` claim and `proof_of_operating_address` evidence aren't required on an application. |
+
+#### `operating_address`
+
+Where the business trades from. Same shape as [`residence`](#residence). Send this claim only when the legal owner's `registered_address` has `operating_address_is_same: false` (the default). See [conditional requirements](/docs/onboarding/applications#conditional-requirements).
 
 #### `business_nature`
 
@@ -374,7 +366,7 @@ Same shape as [`residence`](#residence). `registered_address` is the legal regis
 | `is_regulated` | boolean | yes | |
 | `license_number` | string \| null | no | |
 | `issues_bearer_shares` | boolean | yes | |
-| `has_nominee_shareholders` | boolean | yes | |
+| `has_nominee_shareholders` | boolean | yes | When `true`, an onboarding application for this entity also needs a `nominee_agreement` evidence file attached to the legal owner. See [conditional requirements](/docs/onboarding/applications#conditional-requirements). |
 | `has_shell_bank_relationships` | boolean | yes | |
 
 #### `relationships`
@@ -397,7 +389,7 @@ Each relationship entry:
 | `end_date` | date \| null | no | |
 
 <Note>
-Different `relationship_type` values carry different onboarding requirements — e.g. every `director` must satisfy an identity/selfie/passport bundle. See [related-person requirements](/docs/onboarding/applications#related-person-requirements).
+Different `relationship_type` values carry different onboarding requirements. `director` and `authorised_signatory` also need a `board_resolution` evidence file authorising them to act on the entity; the others don't. See [related-person requirements](/docs/onboarding/applications#related-person-requirements).
 </Note>
 
 ## Reference values

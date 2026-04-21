@@ -5,7 +5,14 @@ description: "Natural and legal parties that fuel onboarding applications"
 
 A **person** (`per_...`) is a natural person (human) or legal person (company, trust, other entity). Persons are standalone until an [onboarding application](/docs/onboarding/applications) referencing them is approved.
 
-Every person is built from [claims](/docs/onboarding/claims) — typed data points capturing identity, residence, ownership, PEP status, and so on. At least one claim is required.
+Every person is built from [claims](/docs/onboarding/claims) — typed data points capturing identity, residence, ownership, PEP status, and so on. Every `POST /persons` must include at least the mandatory claim set for its `person_type`:
+
+| `person_type` | Mandatory claims |
+|---|---|
+| `natural` | `identity` + `contact_details` |
+| `legal` | `registration` + `contact_details` |
+
+Omitting any of these returns `400 invalid_request` with detail `<person_type> persons require claim types [...]; missing: [...]`. You can include additional claims in the same request (and usually will, to round out the person's profile).
 
 ## Natural vs. legal persons
 
@@ -13,8 +20,10 @@ Every person is built from [claims](/docs/onboarding/claims) — typed data poin
 
 | `person_type` | Represents | Example claim types |
 |---|---|---|
-| `natural` | A human | `identity`, `nationalities`, `residence`, `tax_residencies`, `pep_status`, `employment`, `financial_profile` |
-| `legal` | A company, trust, partnership, or other legal entity | `registration`, `contact_details`, `lei`, `registered_address`, `operating_address`, `business_nature`, `relationships` |
+| `natural` | A human | `identity`, `contact_details`, `nationalities`, `residence`, `tax_residencies`, `pep_status`, `employment`, `financial_profile` |
+| `legal` | A company, trust, partnership, or other legal entity | `registration`, `contact_details`, `lei`, `registered_address`, `business_nature`, `relationships` |
+
+`operating_address` is also a legal-person claim. You only add it when the legal owner's `registered_address` has `operating_address_is_same: false` — see [conditional requirements](/docs/onboarding/applications#conditional-requirements).
 
 Legal persons declare counterparties (directors, shareholders, UBOs, trustees, signatories) via a [`relationships`](/docs/onboarding/claims#relationships) claim. Related persons must already exist.
 
@@ -42,6 +51,11 @@ response = requests.post(
                 "first_name": "Ada",
                 "last_name": "Lovelace",
                 "date_of_birth": "1985-12-10",
+            },
+            {
+                "claim_type": "contact_details",
+                "phone_number": "+447700900123",
+                "email": "ada@example.com",
             },
             {
                 "claim_type": "residence",
@@ -75,6 +89,11 @@ const response = await fetch(
           date_of_birth: "1985-12-10",
         },
         {
+          claim_type: "contact_details",
+          phone_number: "+447700900123",
+          email: "ada@example.com",
+        },
+        {
           claim_type: "residence",
           line1: "1 Example Street",
           postal_code: "SW1A 1AA",
@@ -106,6 +125,11 @@ func main() {
 				"first_name":    "Ada",
 				"last_name":     "Lovelace",
 				"date_of_birth": "1985-12-10",
+			},
+			{
+				"claim_type":   "contact_details",
+				"phone_number": "+447700900123",
+				"email":        "ada@example.com",
 			},
 			{
 				"claim_type":   "residence",
@@ -144,6 +168,11 @@ String json = """
                 "date_of_birth": "1985-12-10"
             },
             {
+                "claim_type": "contact_details",
+                "phone_number": "+447700900123",
+                "email": "ada@example.com"
+            },
+            {
                 "claim_type": "residence",
                 "line1": "1 Example Street",
                 "postal_code": "SW1A 1AA",
@@ -179,6 +208,11 @@ var payload = new {
             date_of_birth = "1985-12-10"
         },
         new {
+            claim_type = "contact_details",
+            phone_number = "+447700900123",
+            email = "ada@example.com"
+        },
+        new {
             claim_type = "residence",
             line1 = "1 Example Street",
             postal_code = "SW1A 1AA",
@@ -209,27 +243,32 @@ A successful request returns `201 Created`:
     {
       "id": "clm_abc123",
       "created_at": "2026-04-18T09:30:00Z",
-      "modified_at": "2026-04-18T09:30:00Z",
-      "claim_type": "identity",
       "status": "pending",
-      "data": {
-        "first_name": "Ada",
-        "last_name": "Lovelace",
-        "date_of_birth": "1985-12-10"
-      }
+      "claim_type": "identity",
+      "first_name": "Ada",
+      "last_name": "Lovelace",
+      "date_of_birth": "1985-12-10"
     },
     {
       "id": "clm_def456",
       "created_at": "2026-04-18T09:30:00Z",
-      "modified_at": "2026-04-18T09:30:00Z",
-      "claim_type": "residence",
       "status": "pending",
-      "data": {
-        "line1": "1 Example Street",
-        "postal_code": "SW1A 1AA",
-        "city": "London",
-        "country_code": "GB"
-      }
+      "claim_type": "contact_details",
+      "phone_number": "+447700900123",
+      "email": "ada@example.com"
+    },
+    {
+      "id": "clm_ghi789",
+      "created_at": "2026-04-18T09:30:00Z",
+      "status": "pending",
+      "claim_type": "residence",
+      "line1": "1 Example Street",
+      "line2": null,
+      "line3": null,
+      "district_county": null,
+      "postal_code": "SW1A 1AA",
+      "city": "London",
+      "country_code": "GB"
     }
   ]
 }
@@ -240,7 +279,7 @@ A successful request returns `201 Created`:
 | `id` | The person's unique ID, prefix `per_`. |
 | `person_type` | `natural` or `legal`. |
 | `full_name` | Natural: `"{first_name} {last_name}"` from the identity claim. Legal: `entity_name` from registration, or empty. |
-| `claims` | The claims you provided, with IDs and `status: pending`. See [claim lifecycle](/docs/onboarding/claims#lifecycle). |
+| `claims` | The claims you provided. Each element carries `id`, `created_at`, `status: pending`, `claim_type`, and the fields defined for that `claim_type`. To get the full claim (with `person`, `verified_at`, `superseded_at`) for a specific claim later, call [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim). See [claim lifecycle](/docs/onboarding/claims#lifecycle). |
 
 <Note>
 Persons don't have their own status — lifecycle lives on claims. See [lifecycle](/docs/onboarding/claims#lifecycle).
@@ -252,14 +291,14 @@ Persons don't have their own status — lifecycle lives on claims. See [lifecycl
 
 ## Retrieving a person
 
-Use [`GET /persons/{id}`](/api-reference/retrieve-a-person) to fetch a person with its claims:
+Use [`GET /persons/{id}`](/api-reference/retrieve-a-person) to fetch the person record. Claims aren't included — list them separately.
 
 ```bash
 curl https://api.engine.usesophic.com/persons/per_m4k7r9s2 \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
-Use [`GET /persons/{person_id}/claims`](/api-reference/list-claims-for-a-person) to filter claims by type or status:
+Use [`GET /persons/{person_id}/claims`](/api-reference/list-claims-for-a-person) to list the person's claims, filtered by `claim_type` or `status`. By default you get the latest `pending` and latest `verified` per type; add `include_history=true` for the full audit trail. See [listing and retrieving claims](/docs/onboarding/claims#listing-and-retrieving-claims).
 
 ```bash
 curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?status=verified" \

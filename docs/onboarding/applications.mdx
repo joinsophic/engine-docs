@@ -5,7 +5,7 @@ description: "Submit an onboarding application referencing persons, consents, an
 
 An **onboarding application** (`onba_...`) ties [persons](/docs/onboarding/persons), consents, and evidence together into one request that kicks off compliance review.
 
-Submission is synchronous. We validate against your tenant's requirements and either accept (`pending`, awaiting review) or return `400` with a precise explanation.
+Submission is synchronous. We validate and either accept (`pending`, awaiting review) or return `400` with a precise explanation.
 
 ## Request structure
 
@@ -18,7 +18,7 @@ Submission is synchronous. We validate against your tenant's requirements and ei
 | `consents` | array | no | Legal document consents. Defaults to empty. |
 | `evidence` | array | no | Evidence files. Defaults to empty. |
 
-Items reference persons via `person` (not `person_id`).
+Items reference persons via `person`.
 
 ### Authorities
 
@@ -45,17 +45,17 @@ The duplicate-person check runs before the authority-type check. If the same `pe
 
 ### Consents
 
-A consent records that a person agreed to a specific [legal document version](/api-reference/list-versions-of-a-legal-document). See [required consents](#required-consents).
+A consent records that a person agreed to a specific [legal document version](/api-reference/list-versions-of-a-legal-document), or made an attestation. See [required consents](#required-consents).
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
 | `person` | string | yes | An authority or related person — see [attribution](#per-person-attribution). |
-| `consent_type` | string | yes | E.g. `terms_of_service`. Must match a required consent for the customer type. |
-| `legal_document_version` | string | yes | ID of a [legal document version](/api-reference/list-versions-of-a-legal-document). |
+| `consent_type` | string | yes | E.g. `terms_of_service`, `data_accuracy`. See [required consents](#required-consents) for the full list. |
+| `legal_document_version` | string | conditional | Required for every `consent_type` except `data_accuracy`. For `data_accuracy`, omit. |
 | `consented_at` | datetime | yes | ISO-8601 timestamp. |
 
 <Warning>
-Every consent needs a valid `legal_document_version`. Missing or unknown IDs fail the application with `400 invalid_request`.
+Legal-document consents need a valid `legal_document_version` whose document type matches the `consent_type`. `data_accuracy` is an attestation — omit `legal_document_version` entirely. Either rule violated returns `400 invalid_request`.
 </Warning>
 
 ### Evidence
@@ -66,7 +66,7 @@ Upload files via the [Files API](/api-reference/create-a-file), then reference t
 |---|---|---|---|
 | `person` | string | yes | Person this evidence is for. |
 | `evidence_type` | enum | yes | See [evidence taxonomy](#evidence-taxonomy). |
-| `document_type` | enum \| null | conditional | Required for most types; must be `null` for `selfie`. |
+| `document_type` | enum \| null | conditional | See the `document_type` column in the [evidence taxonomy](#evidence-taxonomy). |
 | `file` | string | yes | ID of an uploaded file. |
 
 ## Per-person attribution
@@ -75,17 +75,13 @@ Every consent and evidence item's `person` must be either an **authority** on th
 
 ## Duplicate submissions
 
-Applications are de-duplicated by `customer_type` and the set of `(person, authority_type)` pairs in `authorities`. Consents and evidence aren't part of the key.
+Applications are de-duplicated by `customer_type` and the set of `(person, authority_type)` pairs in `authorities`.
 
 While an earlier matching application is `pending` or `processing`, a new submission returns `409 conflict`. Once it reaches `completed`, you can resubmit. There's no self-service cancellation — contact support.
 
 ## Requirements by customer type
 
 Requirements are defined **per authority slot** — each `(customer_type, authority_type)` pair carries its own required claims, evidence bundles, consents, expected `person_type`, and count. A business `owner` and `signatory` have different sets; neither inherits.
-
-<Note>
-These are the current defaults. Requirements are tenant configuration and evolve — don't hard-code them. Drive your integration from the current error responses; breaking changes ship through our release channels.
-</Note>
 
 ### Authority composition
 
@@ -103,7 +99,7 @@ Any other `(customer_type, authority_type)` combination returns `400 invalid_req
 
 One natural-person `owner`.
 
-**Required claims**: `identity`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
+**Required claims**: `identity`, `contact_details`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
 
 **Required evidence** — three independent requirements:
 
@@ -120,7 +116,7 @@ One natural-person `owner`.
 |---|---|
 | | One `proof_of_address` with any compatible document type (see [evidence taxonomy](#evidence-taxonomy)) |
 
-**Consents**: owner supplies the standard set (see [required consents](#required-consents)).
+**Consents**: owner supplies every consent in [required consents](#required-consents), attributed to themselves.
 
 ### Business
 
@@ -128,23 +124,34 @@ One legal-person `owner`, at least one natural-person `signatory`, plus related 
 
 #### Owner (legal person)
 
-**Required claims**: `registration`, `contact_details`, `relationships`.
+**Required claims**: `registration`, `lei`, `contact_details`, `registered_address`, `business_nature`, `relationships`.
+
+An additional `operating_address` claim is required when `registered_address.operating_address_is_same` is `false`. See [conditional requirements](#conditional-requirements).
 
 **Required evidence**:
 
-| Claim | Acceptable bundles |
-|---|---|
-| On `registration` | One `certificate_of_good_standing` |
+| On claim | Required | When |
+|---|---|---|
+| `registration` | One `certificate_of_good_standing` | Always. |
+| `registered_address` | One `proof_of_registered_address` | Always. |
+| `operating_address` | One `proof_of_operating_address` | When `registered_address.operating_address_is_same` is `false`. |
+| `business_nature` | One `financial_statements` | Always. |
+| `relationships` | One `certificate_of_directors` | Always. |
+| `relationships` | One `certificate_of_shareholders` | Always. |
+| `relationships` | One `ownership_structure` | Always. |
+| `relationships` | One `nominee_agreement` | When `business_nature.has_nominee_shareholders` is `true`. |
 
-**Consents**: the legal owner supplies the standard set. Signatories don't consent personally.
+Six items are always required; two are predicate-gated. Missing or unmatched evidence surfaces as `400 invalid_request` with `detail: "No acceptable evidence bundle submitted for claim '<claim_type>' on person <legal_owner_person_id>."` — the `<claim_type>` matches the first column above, so you can map the error straight back to the row you missed.
+
+**Consents**: none. The legal owner's consent bundle is empty — consents come from the signatories.
 
 **Related persons**: see [related-person requirements](#related-person-requirements).
 
 #### Signatory (natural person)
 
-One per person signing for the business. Signatories don't need legal-entity claims.
+One per person signing for the business. Signatories carry the full natural-person profile.
 
-**Required claims**: `identity`, `nationalities`, `residence`, `pep_status`.
+**Required claims**: `identity`, `contact_details`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
 
 **Required evidence**:
 
@@ -157,13 +164,21 @@ One per person signing for the business. Signatories don't need legal-entity cla
 |---|---|
 | | A single `selfie` (no `document_type`) |
 
-No `proof_of_address` needed. Consents are covered by the legal owner.
+| For the `residence` claim | Acceptable bundles |
+|---|---|
+| | One `proof_of_address` with any compatible document type |
+
+| Authorising claim | Required |
+|---|---|
+| For signing authority | One `board_resolution`, attributed to this signatory |
+
+**Consents**: each signatory supplies every consent in [required consents](#required-consents), attributed to themselves.
 
 ### Joint
 
 One natural-person `owner` plus one or more natural-person `joint_owner`s. Every party carries the same requirements as an individual owner, each attributed to that person.
 
-**Required claims (per party)**: `identity`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
+**Required claims (per party)**: `identity`, `contact_details`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
 
 **Required evidence (per party)** — three independent requirements:
 
@@ -180,7 +195,7 @@ One natural-person `owner` plus one or more natural-person `joint_owner`s. Every
 |---|---|
 | | One `proof_of_address` with any compatible document type |
 
-**Consents**: every natural authority supplies the standard set, each attributed to the party giving it.
+**Consents**: every natural authority supplies every consent in [required consents](#required-consents), each attributed to the party giving it.
 
 ### Required consents
 
@@ -188,79 +203,141 @@ Who supplies the consents depends on customer type:
 
 - **Individual** — the owner.
 - **Joint** — every natural authority, each attributed to themselves.
-- **Business** — the legal owner. Signatories don't consent personally.
+- **Business** — every signatory, each attributed to themselves. The legal-entity owner does not consent.
+
+The same nine consents apply in every case:
+
+| `consent_type` | `legal_document_version` |
+|---|---|
+| `terms_of_service` | required |
+| `investment_service_agreement` | required |
+| `risk_disclosures` | required |
+| `conflicts_of_interest_policy` | required |
+| `complaints_handling_policy` | required |
+| `client_assets_safeguarding_policy` | required |
+| `investor_compensation_fund_policy` | required |
+| `order_execution_policy` | required |
+| `data_accuracy` | must be omitted |
+
+`data_accuracy` is an attestation — the person attests that the information they provided is accurate, so there is no legal document to version. Sending `legal_document_version` with it returns `400 invalid_request`.
+
+For every other consent, fetch a live document version via [`GET /legal-documents/{legal_document_id}/versions`](/api-reference/list-versions-of-a-legal-document) and pass its ID. The version's document type must equal the `consent_type` — mismatches return `400 invalid_request`.
 
 <Note>
-These are the current defaults. The required set is tenant configuration and may change — drive your integration from error responses.
+On a business application, any consent attributed to the legal-entity `owner` is accepted silently and counts for nothing. Missing the required consents on the signatories will still fail the application. Make sure you attribute every consent to a natural `signatory`.
 </Note>
-
-| `consent_type` | What the customer agrees to |
-|---|---|
-| `terms_of_service` | Your terms of service. |
-| `risk_disclosures` | Applicable investor risk disclosures. |
-| `data_accuracy` | A statement that the information provided is accurate. |
-
-Each consent needs a live `legal_document_version` — list them via [`GET /legal-documents/{legal_document_id}/versions`](/api-reference/list-versions-of-a-legal-document).
 
 ## Related-person requirements
 
-Persons declared in a legal authority's `relationships` claim carry their own requirements per `relationship_type`.
+Persons declared in a legal authority's `relationships` claim carry their own claim and evidence requirements. Related persons don't supply consents — the application's natural authorities (owner, signatory, joint owners) carry that surface; see [required consents](#required-consents).
 
-<Note>
-These are current defaults and evolve with compliance configuration — drive your integration from error responses.
-</Note>
+**Required claims (every relationship type)** — the full natural-person KYC set, identical to what a natural owner or signatory supplies: `identity`, `contact_details`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
 
-### `director`
+Missing any of these returns `400 invalid_request` with `detail: "Missing required claims on {relationship_type} {related_person_id}: [...]"` — the list names the missing `claim_type` values.
 
-**Required claims**: `identity`, `nationalities`.
+**Evidence** — only the appointment-authority bundle varies by role:
 
-**Required evidence**:
-
-| For the `identity` claim | Acceptable bundles |
+| `relationship_type` | Required evidence attributed to this person |
 |---|---|
-| | A single `identity_document` of type `passport` |
-| | **or** two `identity_document` items: one `national_id_front` **and** one `national_id_back` |
+| `director`, `authorised_signatory` | One `identity_document` (passport, **or** `national_id_front` + `national_id_back`); one `selfie` (no `document_type`); one `proof_of_address`; one `board_resolution`. |
+| `shareholder`, `beneficial_owner`, `trustee`, `settlor` | One `identity_document` (passport, **or** `national_id_front` + `national_id_back`); one `selfie` (no `document_type`); one `proof_of_address`. |
 
-| For the `identity` claim | Acceptable bundles |
-|---|---|
-| | A single `selfie` (no `document_type`) |
+## Conditional requirements
 
-No consents required from related persons.
+Two requirements on a business application depend on the content of the legal owner's claims. Send the claim values first, then assemble the application with the matching evidence.
 
-### Other relationship types
+### Operating address
 
-`shareholder`, `beneficial_owner`, `trustee`, `settlor`, and `authorised_signatory` aren't enforced at submission today — they're captured on the application, but any follow-up checks happen in compliance processing.
+If the legal entity operates from its registered address, set `operating_address_is_same` to `true` on the `registered_address` claim and you're done:
 
-<Note>
-Unenforced relationship types may become enforced as compliance configuration evolves. Don't assume today's behaviour is permanent.
-</Note>
+```json
+{
+  "claim_type": "registered_address",
+  "line1": "10 Castle Street",
+  "city": "Douglas",
+  "postal_code": "IM1 2EZ",
+  "country_code": "IM",
+  "operating_address_is_same": true
+}
+```
+
+If the operating address differs, set it to `false`, add an `operating_address` claim, and attach a `proof_of_operating_address` evidence to the legal owner:
+
+```json
+{
+  "claim_type": "registered_address",
+  "line1": "10 Castle Street",
+  "city": "Douglas",
+  "postal_code": "IM1 2EZ",
+  "country_code": "IM",
+  "operating_address_is_same": false
+}
+```
+
+```json
+{
+  "claim_type": "operating_address",
+  "line1": "25 Harbour Road",
+  "city": "Douglas",
+  "postal_code": "IM1 4LB",
+  "country_code": "IM"
+}
+```
+
+Missing either piece returns `400 invalid_request` referencing the legal owner's `person_id`.
+
+### Nominee agreement
+
+If the legal entity uses nominee shareholders, set `has_nominee_shareholders` to `true` on the `business_nature` claim and attach a `nominee_agreement` evidence to the legal owner:
+
+```json
+{
+  "claim_type": "business_nature",
+  "business_activity": "financial_services",
+  "annual_turnover_eur": "1m_3m",
+  "is_regulated": true,
+  "issues_bearer_shares": false,
+  "has_nominee_shareholders": true,
+  "has_shell_bank_relationships": false
+}
+```
+
+Without the evidence, submission fails. If the entity has no nominees, set the field to `false` and omit the evidence.
+
+<Tip>
+The exact error string names the missing claim or evidence and the `person_id` it was expected on. Log these — they tell you exactly what to add before you retry.
+</Tip>
 
 ## Evidence taxonomy
 
 Combinations outside this matrix return `400 invalid_request`.
 
-| `evidence_type` | Allowed `document_type` values |
-|---|---|
-| `identity_document` | `passport`, `national_id_front`, `national_id_back`, `driving_license`, `driving_license_front`, `driving_license_back` |
-| `proof_of_address` | `utility_bill`, `bank_statement`, `tax_document` |
-| `selfie` | *(none — `document_type` must be `null`)* |
-| `certificate_of_shareholders` | `shareholder_register`, `share_certificate` |
-| `certificate_of_directors` | `director_register`, `board_minutes` |
-| `certificate_of_good_standing` | `certificate_of_good_standing`, `incumbency_certificate` |
-| `financial_statements` | `audited_accounts`, `management_accounts` |
-| `ownership_structure` | `ubo_declaration`, `org_chart` |
-| `proof_of_registered_address` | `utility_bill`, `bank_statement` |
-| `proof_of_operating_address` | `utility_bill`, `bank_statement` |
-| `nominee_agreement` | `trust_deed`, `nominee_agreement` |
-| `board_resolution` | `board_resolution` |
+| `evidence_type` | `document_type` | Allowed values |
+|---|---|---|
+| `identity_document` | required | `passport`, **or** `national_id_front` + `national_id_back` |
+| `selfie` | null only | — |
+| `board_resolution` | required | `board_resolution` |
+| `proof_of_address` | optional | `utility_bill`, `bank_statement`, `tax_document` |
+| `proof_of_registered_address` | optional | `utility_bill`, `bank_statement` |
+| `proof_of_operating_address` | optional | `utility_bill`, `bank_statement` |
+| `certificate_of_good_standing` | optional | `certificate_of_good_standing`, `incumbency_certificate` |
+| `certificate_of_shareholders` | optional | `shareholder_register`, `share_certificate` |
+| `certificate_of_directors` | optional | `director_register`, `board_minutes` |
+| `financial_statements` | optional | `audited_accounts`, `management_accounts` |
+| `ownership_structure` | optional | `ubo_declaration`, `org_chart` |
+| `nominee_agreement` | optional | `trust_deed`, `nominee_agreement` |
+
+`optional` means: omit `document_type` to match the generic bundle, or pass one of the listed values to pin the kind. Any other value returns `400 invalid_request` with `detail: "document_type '<Y>' is not compatible with evidence_type '<X>'"`. Sending `document_type` for `selfie` returns `Evidence type 'selfie' does not accept a document_type.`
 
 <Note>
-National IDs always use the `national_id_front` + `national_id_back` pair — no single-sided `national_id`. Driving licences accept either the single-sided `driving_license` or the front/back pair.
+`driving_license`, `driving_license_front`, and `driving_license_back` are in the `DocumentType` enum but don't satisfy the default `identity_document` bundle. National IDs are always the front + back pair — there's no single-sided `national_id`.
 </Note>
 
 ### Which evidence types apply to each person type
 
-Natural-person evidence (`identity_document`, `proof_of_address`, `selfie`) is only valid against natural-person authorities and related persons. Legal-entity evidence (`certificate_of_*`, `financial_statements`, `ownership_structure`, `proof_of_registered_address`, `proof_of_operating_address`, `nominee_agreement`, `board_resolution`) is only valid against legal-person authorities. Mismatches return `400`.
+Natural-person evidence (`identity_document`, `proof_of_address`, `selfie`, `board_resolution`) is only valid against natural-person authorities and related persons. Legal-entity evidence (`certificate_of_*`, `financial_statements`, `ownership_structure`, `proof_of_registered_address`, `proof_of_operating_address`, `nominee_agreement`) is only valid against legal-person authorities. Mismatches return `400`.
+
+`board_resolution` belongs to the natural person it authorises — the signatory on a business application, or the `director` / `authorised_signatory` related person on the legal owner's `relationships` claim. Attribute it via that person's `person_id`, not the legal entity's.
 
 ## Response
 
@@ -312,8 +389,55 @@ Natural-person evidence (`identity_document`, `proof_of_address`, `selfie`) is o
 | `withdrawn` | Withdrawn before a decision. |
 
 <Note>
-Post-submission transitions happen in our compliance systems. Poll the application — webhooks aren't emitted for these yet.
+Post-submission transitions happen in our compliance systems. Poll the application via [`GET /onboarding-applications/{id}`](#retrieving-an-application) for updates.
 </Note>
+
+## Retrieving an application
+
+`GET /onboarding-applications/{id}` with the `read` scope. Use it to poll an application after submission — reads have no side effects and are safe to call repeatedly.
+
+```bash
+curl https://api.engine.usesophic.com/onboarding-applications/onba_m4k7r9s2 \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+| Path parameter | Required | Notes |
+|---|---|---|
+| `id` | yes | The application ID returned by `POST /onboarding-applications`. Format `onba_<suffix>`. |
+
+A successful request returns `200 OK` with the same shape as the submission response. `status` and `outcome` reflect the current lifecycle; `application` is the payload exactly as persisted at submission time — we don't re-derive it from the person's current claims or re-run validation.
+
+```json
+{
+  "id": "onba_m4k7r9s2",
+  "created_at": "2026-04-18T09:30:00Z",
+  "modified_at": "2026-04-18T10:15:00Z",
+  "customer_type": "individual",
+  "status": "processing",
+  "outcome": null,
+  "application": {
+    "customer_type": "individual",
+    "authorities": [
+      {"person": "per_ada", "authority_type": "owner"}
+    ],
+    "consents": [
+      {"person": "per_ada", "consent_type": "terms_of_service", "legal_document_version": "legal_doc_ver_tos_v3", "consented_at": "2026-04-18T09:30:00Z"}
+    ],
+    "evidence": [
+      {"person": "per_ada", "evidence_type": "identity_document", "document_type": "passport", "file": "fil_passport"}
+    ]
+  }
+}
+```
+
+Unknown or invisible IDs return `404 not_found`:
+
+```json
+{
+  "code": "not_found",
+  "detail": "Not Found"
+}
+```
 
 ## Errors
 
