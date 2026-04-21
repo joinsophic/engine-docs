@@ -99,7 +99,7 @@ Any other `(customer_type, authority_type)` combination returns `400 invalid_req
 
 One natural-person `owner`.
 
-**Required claims**: `identity`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
+**Required claims**: `identity`, `contact_details`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
 
 **Required evidence** — three independent requirements:
 
@@ -151,7 +151,7 @@ Six items are always required; two are predicate-gated. Missing or unmatched evi
 
 One per person signing for the business. Signatories carry the full natural-person profile.
 
-**Required claims**: `identity`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
+**Required claims**: `identity`, `contact_details`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
 
 **Required evidence**:
 
@@ -178,7 +178,7 @@ One per person signing for the business. Signatories carry the full natural-pers
 
 One natural-person `owner` plus one or more natural-person `joint_owner`s. Every party carries the same requirements as an individual owner, each attributed to that person.
 
-**Required claims (per party)**: `identity`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
+**Required claims (per party)**: `identity`, `contact_details`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
 
 **Required evidence (per party)** — three independent requirements:
 
@@ -231,7 +231,7 @@ On a business application, any consent attributed to the legal-entity `owner` is
 
 Persons declared in a legal authority's `relationships` claim carry their own claim and evidence requirements. Related persons don't supply consents — the application's natural authorities (owner, signatory, joint owners) carry that surface; see [required consents](#required-consents).
 
-**Required claims (every relationship type)** — the full natural-person KYC set, identical to what a natural owner or signatory supplies: `identity`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
+**Required claims (every relationship type)** — the full natural-person KYC set, identical to what a natural owner or signatory supplies: `identity`, `contact_details`, `nationalities`, `residence`, `tax_residencies`, `fatca_status`, `pep_status`, `employment`, `financial_profile`, `investment_experience`, `expected_activity`.
 
 Missing any of these returns `400 invalid_request` with `detail: "Missing required claims on {relationship_type} {related_person_id}: [...]"` — the list names the missing `claim_type` values.
 

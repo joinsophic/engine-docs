@@ -20,23 +20,23 @@ Returned from `POST /persons` and `POST /persons/{person_id}/claims`.
 
 | HTTP | `code` | When |
 |---|---|---|
-| 400 | `invalid_request` | The request body fails validation. The body is a discriminated union keyed on `claim_type` (one variant per claim type — see [claim type reference](/docs/onboarding/claims#claim-type-reference)); errors are reported against the variant matched by `claim_type`. Typical causes: missing or unknown `claim_type`, missing required field on the selected variant, unknown field, or a conditional rule isn't met (e.g. `pep_role` is missing while `is_pep` is `true`). |
+| 400 | `invalid_request` | The request body fails validation. The body is the claim itself; we validate the fields for the `claim_type` you send — see the [claim type reference](/docs/onboarding/claims#claim-type-reference). Typical causes: missing or unknown `claim_type`, missing required field, unknown field, or a conditional rule isn't met (e.g. `pep_role` is missing while `is_pep` is `true`). |
+| 400 | `invalid_request` | `POST /persons` — the request is missing a mandatory claim for the declared `person_type`. Detail reads `<person_type> persons require claim types ['<type>', ...]; missing: ['<type>', ...]`. See [mandatory claims](/docs/onboarding/persons). |
 | 400 | `invalid_request` | The `claim_type` isn't valid for the target person's `person_type`. Detail reads `Claim type '<claim_type>' is not allowed on natural persons.` or `... on legal persons.` Use a claim type that matches the person — see [natural-person claims](/docs/onboarding/claims#natural-person-claims) and [legal-person claims](/docs/onboarding/claims#legal-person-claims). |
 | 400 | `invalid_request` | A `relationships` claim references a `related_person` ID that doesn't exist. The whole request fails and no person is created — build the related persons first. |
 | 404 | `not_found` | `POST /persons/{person_id}/claims` — the person ID in the path doesn't exist. |
 | 401 | `invalid_token` | Missing or invalid bearer token. |
 | 403 | `forbidden` | The token lacks the `write` scope. |
 
-## Claim retrieval and deletion errors
+## Claim retrieval errors
 
-Returned from `GET` and `DELETE` endpoints under `/persons/{person_id}/claims`.
+Returned from the `GET` endpoints under `/persons/{person_id}/claims`.
 
 | HTTP | `code` | When |
 |---|---|---|
-| 400 | `invalid_request` | `DELETE` — the claim exists but its status is not `pending`. Detail reads `Only pending claims can be deleted; claim '<id>' has status '<status>'`. Verified rows can't be deleted whether or not their `superseded_at` is set. |
 | 404 | `not_found` | The person or claim doesn't exist. |
 | 401 | `invalid_token` | Missing or invalid bearer token. |
-| 403 | `forbidden` | The token lacks the `read` scope (`GET`) or `write` scope (`DELETE`). |
+| 403 | `forbidden` | The token lacks the `read` scope. |
 
 ## Onboarding application errors
 

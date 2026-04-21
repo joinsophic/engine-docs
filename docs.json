@@ -118,8 +118,7 @@
               "GET /persons/{id}/authorities",
               "POST /persons/{person_id}/claims",
               "GET /persons/{person_id}/claims",
-              "GET /persons/{person_id}/claims/{claim_id}",
-              "DELETE /persons/{person_id}/claims/{claim_id}"
+              "GET /persons/{person_id}/claims/{claim_id}"
             ]
           },
           {

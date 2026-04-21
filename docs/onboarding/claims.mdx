@@ -3,38 +3,33 @@ title: Claims
 description: "Typed, versioned data points attached to a person"
 ---
 
-A **claim** (`clm_...`) is a typed data point on a [person](/docs/onboarding/persons). Each has a `claim_type`, a `status`, and the spec fields at the root, validated against a strict schema. Applications validate against claims.
+A **claim** (`clm_...`) is a typed data point on a [person](/docs/onboarding/persons). Each has a `claim_type`, a `status`, and the fields defined for that type, validated against a strict schema. Applications validate against claims.
 
 ## Lifecycle
 
 | Status | Description |
 |---|---|
 | `pending` | Submitted, not yet confirmed by compliance. |
-| `verified` | Confirmed by compliance. `verified_at` populated. A verified claim whose `superseded_at` is non-null is the historical row — a newer verified claim of the same type has taken over. |
+| `verified` | Confirmed by compliance. `verified_at` is set. |
 
 ### State transitions
 
 ```
 pending ──▶ verified
-   │           │
-   │           └──▶ verified (historical, superseded_at set)
-   └──▶ (deleted)
 ```
 
 | From | To | Trigger |
 |---|---|---|
-| *(none)* | `pending` | [`POST /persons`](/api-reference/create-a-person) or [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). |
-| `pending` | *(deleted)* | [`DELETE /persons/{person_id}/claims/{claim_id}`](/api-reference/delete-a-pending-claim). Pending only. |
+| *(none)* | `pending` | [`POST /persons`](/api-reference/create-a-person) or [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). Each submission creates a fresh claim; prior claims of the same type are left as they were. |
 | `pending` | `verified` | Compliance review. Not self-service. |
-| `verified` (current) | `verified` (historical) | A newer verified claim of the same type is recorded. The old row's `status` stays `verified`; its `superseded_at` is set. |
 
 <Note>
-There's no `superseded` status — supersession is a derived state. Filter for currently authoritative claims by checking `status == "verified"` and `superseded_at == null`.
+A person can have more than one claim of the same `claim_type`. The current value is the latest `verified` claim. To update it, submit a new claim — it replaces the current value once compliance verifies it.
 </Note>
 
-### Supersession
+### Updating a claim value
 
-To update already-verified info, submit a fresh claim of the same type. The new claim is recorded as `pending`; the prior verified row (if any) is retired in the same transaction:
+Post a new claim of the same type. It starts as `pending` and becomes the current value once compliance verifies it.
 
 ```bash
 curl -X POST https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims \
@@ -49,11 +44,9 @@ curl -X POST https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims \
   }'
 ```
 
-After the call: the new claim is `pending`, the prior verified row (if any) keeps `status: "verified"` but gets a non-null `superseded_at`, and any still-pending claim of the same type is left untouched.
-
 ## Creating a claim
 
-`POST /persons/{person_id}/claims` with the claim spec as the body. The body is a discriminated union keyed on `claim_type` — there's no outer envelope.
+`POST /persons/{person_id}/claims` with the claim as the body. `claim_type` tells us which claim you're sending.
 
 <CodeGroup>
 ```python Python
@@ -136,7 +129,7 @@ var response = await client.PostAsJsonAsync(
 ```
 </CodeGroup>
 
-The response is the full claim, with the spec fields at the root:
+The response is the full claim:
 
 ```json
 {
@@ -164,47 +157,41 @@ The response is the full claim, with the spec fields at the root:
 | `created_at` | ISO-8601 timestamp of when the claim was submitted. |
 | `status` | `pending` or `verified`. See [lifecycle](#lifecycle). |
 | `verified_at` | ISO-8601 timestamp of verification, or `null` if still pending. |
-| `superseded_at` | ISO-8601 timestamp set when a newer verified claim of the same type takes over, or `null` for the current row. |
-| `claim_type` | The claim's type — also the discriminator for the response variant. |
-| _spec fields_ | The variant-specific fields (e.g. `is_pep`, `pep_role`, …). See [claim type reference](#claim-type-reference). |
+| `superseded_at` | Always `null` today. Reserved for a future verification workflow that will stamp a previously authoritative verified claim when a newer verified claim of the same type replaces it. Submitting a new claim never sets this. |
+| `claim_type` | The claim's type. Determines which other fields are present. |
+| _other fields_ | Depend on `claim_type` (e.g. `is_pep`, `pep_role`, …). See [claim type reference](#claim-type-reference). |
 
 <Note>
-The OpenAPI schema exposes one response variant per claim type — `IdentityPersonClaim`, `NationalitiesPersonClaim`, …, `RelationshipsPersonClaim` — discriminated on `claim_type`. SDK generators can emit per-variant types instead of a single dynamic shape.
+Per-variant response shapes (`IdentityPersonClaim`, `NationalitiesPersonClaim`, …, `RelationshipsPersonClaim`) are exposed in the OpenAPI schema for SDK generation.
 </Note>
 
 ## Listing and retrieving claims
 
-List a person's claims, optionally filtered:
+List a person's claims, optionally filtered by type or status. By default each `claim_type` collapses to at most two rows — the latest `pending` and the latest `verified` — so you see the current value for each type plus any in-flight update. Pass `include_history=true` for the full audit trail. Results come back newest-first.
 
 ```bash
-curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?claim_type=residence&status=verified" \
+curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?claim_type=residence" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
 | Query parameter | Values | Notes |
 |---|---|---|
 | `claim_type` | Any [`claim_type`](#claim-type-reference) | Optional. |
-| `status` | `pending`, `verified` | Optional. To get only the currently authoritative verified claim for each type, filter `status=verified` and discard rows where `superseded_at` is non-null. |
+| `status` | `pending`, `verified` | Optional. Combine with the default collapse to get one row per type — e.g. `status=verified` returns the current value for each type. |
+| `include_history` | `true`, `false` | Optional, default `false`. Set to `true` to disable the collapse and return every matching row (for audit / history views). Other filters still apply. |
 
-Retrieve a single claim via [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim).
+Retrieve a specific claim by ID via [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim). This always returns the exact claim you asked for, even if it would be hidden by the default collapse on the list endpoint.
 
-## Deleting a pending claim
-
-Only `pending` claims can be deleted.
-
-```bash
-curl -X DELETE https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims/clm_abc123 \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
-```
-
-Returns `204 No Content`. Deleting any non-pending claim returns `400 invalid_request` with detail `Only pending claims can be deleted; claim '<id>' has status '<status>'` — that includes verified rows whether or not they've been superseded.
+<Note>
+Claims can't be deleted. To correct a submission — including a pending one — post a new claim of the same type via [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). See [updating a claim value](#updating-a-claim-value).
+</Note>
 
 ## Claim type reference
 
 Unknown fields are rejected. Dates are ISO-8601, country codes ISO-3166-1 alpha-2.
 
 <Warning>
-Claim types are split between natural and legal persons. Creating a claim whose `claim_type` doesn't match the target's `person_type` returns `400 invalid_request` (e.g. `Claim type 'relationships' is not allowed on natural persons.`). See [claim creation errors](/docs/onboarding/errors#person-creation-errors).
+Most claim types are specific to natural or legal persons; `contact_details` is valid on both. Creating a claim whose `claim_type` isn't valid for the target's `person_type` returns `400 invalid_request` (e.g. `Claim type 'relationships' is not allowed on natural persons.`). See [claim creation errors](/docs/onboarding/errors#person-creation-errors).
 </Warning>
 
 ### Natural-person claims
@@ -319,6 +306,19 @@ Supply a `tin` or `tin_exemption_reason` for each tax residency. The claim layer
 | `annual_transactions` | string | yes | Band value: `1_10`, `11_20`, `21_50`, `gt_50`. |
 | `investment_amount` | string | yes | See [EUR amount bands](#eur-amount-bands). |
 
+### Shared claim types
+
+Acceptable on both natural and legal persons.
+
+#### `contact_details`
+
+How to reach the person. Required on every `POST /persons`.
+
+| Field | Type | Required |
+|---|---|---|
+| `phone_number` | string | yes |
+| `email` | string \| null | no |
+
 ### Legal-person claims
 
 Acceptable when `person_type` is `legal`.
@@ -333,13 +333,6 @@ Acceptable when `person_type` is `legal`.
 | `date_of_incorporation` | date | yes | |
 | `country_of_incorporation` | string | yes | ISO-3166-1 alpha-2. |
 | `entity_type` | enum | yes | `private_limited_company`, `public_limited_company`, `partnership`, `llp`, `sole_proprietorship`, `trust`, `foundation`, `nonprofit`, `other`. |
-
-#### `contact_details`
-
-| Field | Type | Required |
-|---|---|---|
-| `phone_number` | string | yes |
-| `email` | string \| null | no |
 
 #### `lei`
 
