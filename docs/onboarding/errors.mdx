@@ -40,7 +40,7 @@ Returned from the `GET` endpoints under `/persons/{person_id}/claims`.
 
 ## Onboarding application errors
 
-Returned from `POST /onboarding-applications`. Every `400` below carries `code: "invalid_request"` with a specific `detail` message.
+Returned from `POST /onboarding-applications`. Every `400` below returns a `code` of `invalid_request` with a specific `detail` message.
 
 <Note>
 **One error at a time.** An onboarding application is validated in stages and we return on the first failing stage — structural checks first, then authority composition, then per-person claims, consents, and evidence. If the response mentions a missing claim, there may still be missing consents or evidence behind it. Fix what's reported, resubmit, and expect the next thing to surface.

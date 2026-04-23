@@ -23,7 +23,7 @@ Omitting any of these returns `400 invalid_request` with detail `<person_type> p
 | `natural` | A human | `identity`, `contact_details`, `nationalities`, `residence`, `tax_residencies`, `pep_status`, `employment`, `financial_profile` |
 | `legal` | A company, trust, partnership, or other legal entity | `registration`, `contact_details`, `lei`, `registered_address`, `business_nature`, `relationships` |
 
-`operating_address` is also a legal-person claim. You only add it when the legal owner's `registered_address` has `operating_address_is_same: false` — see [conditional requirements](/docs/onboarding/applications#conditional-requirements).
+`operating_address` is also a legal-person claim. You only add it when the legal owner's `registered_address` has `operating_address_is_same` set to `false` — see [conditional requirements](/docs/onboarding/applications#conditional-requirements).
 
 Legal persons declare counterparties (directors, shareholders, UBOs, trustees, signatories) via a [`relationships`](/docs/onboarding/claims#relationships) claim. Related persons must already exist.
 
@@ -279,7 +279,7 @@ A successful request returns `201 Created`:
 | `id` | The person's unique ID, prefix `per_`. |
 | `person_type` | `natural` or `legal`. |
 | `full_name` | Natural: `"{first_name} {last_name}"` from the identity claim. Legal: `entity_name` from registration, or empty. |
-| `claims` | The claims you provided. Each element carries `id`, `created_at`, `status: pending`, `claim_type`, and the fields defined for that `claim_type`. To get the full claim (with `person`, `verified_at`, `superseded_at`) for a specific claim later, call [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim). See [claim lifecycle](/docs/onboarding/claims#lifecycle). |
+| `claims` | The claims you provided. Each element carries `id`, `created_at`, `status: pending`, `claim_type`, and the fields defined for that `claim_type`. To get the full claim (with `person`, `lifecycle`, `verified_at`, `superseded_at`, `archived_at`) for a specific claim later, call [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim). See [claim lifecycle](/docs/onboarding/claims#lifecycle). |
 
 <Note>
 Persons don't have their own status — lifecycle lives on claims. See [lifecycle](/docs/onboarding/claims#lifecycle).
@@ -298,7 +298,7 @@ curl https://api.engine.usesophic.com/persons/per_m4k7r9s2 \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
-Use [`GET /persons/{person_id}/claims`](/api-reference/list-claims-for-a-person) to list the person's claims, filtered by `claim_type` or `status`. By default you get the latest `pending` and latest `verified` per type; add `include_history=true` for the full audit trail. See [listing and retrieving claims](/docs/onboarding/claims#listing-and-retrieving-claims).
+Use [`GET /persons/{person_id}/claims`](/api-reference/list-claims-for-a-person) to list the person's claims, filtered by `claim_type` or `status`. By default you get every row for the person — current and historical — newest-first. Pass `include_history=false` to collapse to just the current rows (`active` + `in_flight`) per type. See [listing and retrieving claims](/docs/onboarding/claims#listing-and-retrieving-claims).
 
 ```bash
 curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?status=verified" \
