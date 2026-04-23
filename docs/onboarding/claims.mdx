@@ -7,10 +7,33 @@ A **claim** (`clm_...`) is a typed data point on a [person](/docs/onboarding/per
 
 ## Lifecycle
 
-| Status | Description |
+Every claim row carries a `status` plus two retirement timestamps — `archived_at` (pending-only) and `superseded_at` (verified-only) — plus a convenience `lifecycle` discriminator derived from them.
+
+### `status`
+
+| Value | Description |
 |---|---|
 | `pending` | Submitted, not yet confirmed by compliance. |
 | `verified` | Confirmed by compliance. `verified_at` is set. |
+
+### Retirement timestamps
+
+| Field | Set on | Meaning |
+|---|---|---|
+| `archived_at` | pending rows only | Stamped when a subsequent `POST /persons/{id}/claims` for the same `(person, claim_type)` replaces this pending row. |
+| `superseded_at` | verified rows only | Stamped when compliance approves a newer pending and displaces this verified row as the authoritative value. |
+
+At most one row per `(person, claim_type)` is "current" for each status — the current pending (`status=pending AND archived_at IS NULL`) and the current verified (`status=verified AND superseded_at IS NULL`).
+
+### `lifecycle`
+
+`lifecycle` is a convenience discriminator that tells you, in one field, where a claim sits.
+
+| Value | Meaning |
+|---|---|
+| `active` | The most recent verified claim for its type — the currently authoritative value. |
+| `in_flight` | A pending claim waiting for compliance to verify it. |
+| `historical` | A claim (pending or verified) that's been replaced by a newer one. Kept for audit. |
 
 ### State transitions
 
@@ -20,16 +43,16 @@ pending ──▶ verified
 
 | From | To | Trigger |
 |---|---|---|
-| *(none)* | `pending` | [`POST /persons`](/api-reference/create-a-person) or [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). Each submission creates a fresh claim; prior claims of the same type are left as they were. |
-| `pending` | `verified` | Compliance review. Not self-service. |
+| *(none)* | `pending` | [`POST /persons`](/api-reference/create-a-person) or [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). The new row is `in_flight`. If a current pending for the same `claim_type` already exists, its `archived_at` is stamped in the same transaction and it becomes `historical`. Verified rows are not touched. |
+| `pending` | `verified` | Compliance review. If a prior `active` verified of the same type exists, its `superseded_at` is stamped in the same step and it becomes `historical`. Not self-service. |
 
 <Note>
-A person can have more than one claim of the same `claim_type`. The current value is the latest `verified` claim. To update it, submit a new claim — it replaces the current value once compliance verifies it.
+A person can have more than one claim of the same `claim_type`. The current value is the row whose `lifecycle` is `active`. Submitting a new claim of the same type archives the current pending (if any) atomically and inserts a fresh `in_flight` pending. That new row takes over as `active` once compliance verifies it — which also stamps `superseded_at` on the prior active row.
 </Note>
 
 ### Updating a claim value
 
-Post a new claim of the same type. It starts as `pending` and becomes the current value once compliance verifies it.
+Post a new claim of the same type. Any current pending for that type is archived atomically (its `archived_at` is stamped; its `status` stays `pending` and it remains retrievable). The new row starts as `pending` with `lifecycle: in_flight`, and becomes the current `active` value once compliance verifies it.
 
 ```bash
 curl -X POST https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims \
@@ -137,8 +160,10 @@ The response is the full claim:
   "person": "per_m4k7r9s2",
   "created_at": "2026-04-18T09:30:00Z",
   "status": "pending",
+  "lifecycle": "in_flight",
   "verified_at": null,
   "superseded_at": null,
+  "archived_at": null,
   "claim_type": "pep_status",
   "is_pep": false,
   "has_pep_association": false,
@@ -156,14 +181,20 @@ The response is the full claim:
 | `person` | ID of the person this claim belongs to. |
 | `created_at` | ISO-8601 timestamp of when the claim was submitted. |
 | `status` | `pending` or `verified`. See [lifecycle](#lifecycle). |
+| `lifecycle` | `active`, `in_flight`, or `historical`. Derived per row — tells you whether this is the current value, the current pending update, or history. See [lifecycle](#lifecycle). |
 | `verified_at` | ISO-8601 timestamp of verification, or `null` if still pending. |
-| `superseded_at` | Always `null` today. Reserved for a future verification workflow that will stamp a previously authoritative verified claim when a newer verified claim of the same type replaces it. Submitting a new claim never sets this. |
+| `superseded_at` | ISO-8601 timestamp stamped by compliance when a newer verified claim of the same type displaces this verified row. `null` while this is the current `active` verified. Only ever set on verified rows. |
+| `archived_at` | ISO-8601 timestamp stamped when a subsequent `POST /persons/{id}/claims` for the same `claim_type` replaces this pending row. `null` while this is the current `in_flight` pending. Only ever set on pending rows. |
 | `claim_type` | The claim's type. Determines which other fields are present. |
 | _other fields_ | Depend on `claim_type` (e.g. `is_pep`, `pep_role`, …). See [claim type reference](#claim-type-reference). |
 
 ## Listing and retrieving claims
 
-List a person's claims, optionally filtered by type or status. By default each `claim_type` collapses to at most two rows — the latest `pending` and the latest `verified` — so you see the current value for each type plus any in-flight update. Pass `include_history=true` for the full audit trail. Results come back newest-first.
+List a person's claims, optionally filtered by type or status. By default the endpoint returns **every row** for the person — current and historical — newest-first by `created_at` (with `id` as a tiebreaker). This gives you an audit-ready view without a second request. Pass `?include_history=false` to collapse to at most two rows per `claim_type`: the current `active` verified (if any) and the current `in_flight` pending (if any).
+
+<Warning>
+**Breaking change.** `include_history` previously defaulted to `false` (bare GET returned only current rows). It now defaults to `true` (bare GET returns full history). If you were relying on the old behavior, pass `?include_history=false` explicitly.
+</Warning>
 
 ```bash
 curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?claim_type=residence" \
@@ -173,13 +204,13 @@ curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?claim_type=re
 | Query parameter | Values | Notes |
 |---|---|---|
 | `claim_type` | Any [`claim_type`](#claim-type-reference) | Optional. |
-| `status` | `pending`, `verified` | Optional. Combine with the default collapse to get one row per type — e.g. `status=verified` returns the current value for each type. |
-| `include_history` | `true`, `false` | Optional, default `false`. Set to `true` to disable the collapse and return every matching row (for audit / history views). Other filters still apply. |
+| `status` | `pending`, `verified` | Optional. `status=pending` on the default view returns every pending (current + archived); `status=verified` returns every verified (current + superseded). Combine with `include_history=false` to get just the current pending or current verified per type. |
+| `include_history` | `true`, `false` | Optional, default `true`. Set to `false` to collapse to the current rows only (`active` + `in_flight`). |
 
-Retrieve a specific claim by ID via [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim). This always returns the exact claim you asked for, even if it would be hidden by the default collapse on the list endpoint.
+Retrieve a specific claim by ID via [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim). This always returns the exact claim you asked for — including archived pendings and superseded verifieds — with `lifecycle` on the response.
 
 <Note>
-Claims can't be deleted. To correct a submission — including a pending one — post a new claim of the same type via [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). See [updating a claim value](#updating-a-claim-value).
+Claims can't be deleted. To correct a pending submission — or update a previously verified one — post a new claim of the same type via [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). Any current pending for that type is archived automatically. See [updating a claim value](#updating-a-claim-value).
 </Note>
 
 ## Claim type reference
@@ -354,7 +385,7 @@ The legal registration address.
 
 #### `operating_address`
 
-Where the business trades from. Same shape as [`residence`](#residence). Send this claim only when the legal owner's `registered_address` has `operating_address_is_same: false` (the default). See [conditional requirements](/docs/onboarding/applications#conditional-requirements).
+Where the business trades from. Same shape as [`residence`](#residence). Send this claim only when the legal owner's `registered_address` has `operating_address_is_same` set to `false` (the default). See [conditional requirements](/docs/onboarding/applications#conditional-requirements).
 
 #### `business_nature`
 

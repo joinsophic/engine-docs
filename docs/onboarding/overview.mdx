@@ -98,7 +98,7 @@ Individual end-to-end. For a business, create a person for the legal entity plus
     ```
   </Step>
   <Step title="Wait for compliance review">
-    You'll get `status: "pending"`, `outcome: null`. Poll [`GET /onboarding-applications/{id}`](/docs/onboarding/applications#retrieving-an-application) for updates — the customer and accounts appear once compliance approves.
+    You'll get back `status` `pending` with no `outcome` yet. Poll [`GET /onboarding-applications/{id}`](/docs/onboarding/applications#retrieving-an-application) for updates — the customer and accounts appear once compliance approves.
   </Step>
 </Steps>
 
