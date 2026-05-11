@@ -107,7 +107,8 @@
             "pages": [
               "GET /instruments/{id_or_symbol}",
               "GET /instruments",
-              "GET /prices"
+              "GET /prices",
+              "GET /bills/otr"
             ]
           },
           {
