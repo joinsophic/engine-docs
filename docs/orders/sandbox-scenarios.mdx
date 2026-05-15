@@ -26,7 +26,7 @@ Trigger values must match **exactly**. Use `"5001"`, not `5001` or `"5001.00"`. 
 | Scenario | How to trigger | Terminal status | Webhooks |
 |---|---|---|---|
 | Unfilled cancel | Buy, `cash_amount: "5001"` | `cancelled` | `order.placed` → `order.executing` → `order.cancelled` |
-| Partial fill | Buy, `cash_amount: "5002"` | `filled` | `order.placed` → `order.executing` → `trade.executed` → `order.filled` |
+| Partial fill (40%) | Buy, `cash_amount: "5002"` | `filled` | `order.placed` → `order.executing` → `trade.executed` → `order.filled` |
 | Full fill (buy) | Buy, `cash_amount: "5003"` | `filled` | `order.placed` → `order.executing` → `trade.executed` → `order.filled` |
 | Full fill (sell) | Sell, `quantity` less than `12`, no `cash_amount` | `filled` | `order.placed` → `order.executing` → `trade.executed` → `order.filled` |
 | Default full fill | Any other valid order | `filled` | `order.placed` → `order.executing` → `trade.executed` → `order.filled` |
@@ -35,16 +35,16 @@ Some orders pass through `pending` before `executing`; many skip `pending` entir
 
 ## Partial fill
 
-The partial-fill scenario is the easy one to misread. We **do not** end the order in `cancelled` — we record a trade first, then mark the order `filled` because some quantity executed.
+The partial-fill scenario is the easy one to misread. We **do not** end the order in `cancelled` — we record a trade for **40%** of the order quantity, cancel the remainder at the broker, then mark the order `filled` because some quantity executed.
 
-When you use `cash_amount: "5002"`, the synthetic trade leg uses these fixed values (useful for assertions in tests):
+For a market buy, we derive the order quantity from `cash_amount` using a default price of **100** when you do not set `price` on the order. With `cash_amount: "5002"`, that implies an order quantity of **50.02**. The **trade** leg executes **40%** of that:
 
 | Field | Value |
 |---|---|
-| `quantity` | `600` |
-| `remaining_quantity` | `634.56` |
-| `total_quantity_executed` | `600` |
-| `notional` | `60000` |
+| `quantity` | `20.008` |
+| `remaining_quantity` | `30.012` |
+| `total_quantity_executed` | `20.008` |
+| `notional` | `2000.80` |
 
 You'll receive `trade.executed`, then `order.filled`. Fetch the order or trade via the API to verify `traded_quantity` and related fields.
 
@@ -138,7 +138,7 @@ const order = await response.json();
 ```
 </CodeGroup>
 
-Expect `trade.executed` followed by `order.filled`.
+Expect `trade.executed` followed by `order.filled`. The trade payload should reflect the 40% partial fill values in the table above (`quantity` `20.008`, `notional` `2000.80`, and so on).
 
 ### Sell full fill
 
