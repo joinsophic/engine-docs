@@ -1,244 +1,221 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Sophic Engine",
-  "fonts": {
-    "family": "Geist"
-  },
-  "colors": {
-    "primary": "#2A3141",
-    "light": "#E6EDF3",
-    "dark": "#FF0000"
-  },
-  "styling": {
-    "eyebrows": "section",
-    "codeblocks": {
-      "theme": "catppuccin-mocha"
-    }
-  },
-  "contextual": {
-    "options":[
-      "view",
-      "copy",
-      "chatgpt",
-      "claude"
-    ]
-  },
-  "appearance": {
-    "default": "light",
-    "strict": true
-  },
-  "background": {
-    "color": {
-      "light": "#ffffff"
-    }
-  },
-  "favicon": "/favicon.svg",
-  "api": {
-    "openapi": "https://api.engine.usesophic.com/openapi.json"
-  },
-  "navigation": {
-    "tabs": [
-      {
-        "tab": "Documentation",
-        "icon": "book-open",
-        "groups": [
-          {
-            "group": "Getting Started",
-            "pages": [
-              "docs/intro"
-            ]
-          },
-          {
-            "group": "Onboarding",
-            "pages": [
-              "docs/onboarding/overview",
-              "docs/onboarding/persons",
-              "docs/onboarding/claims",
-              "docs/onboarding/applications",
-              "docs/onboarding/errors"
-            ]
-          },
-          {
-            "group": "Orders",
-            "pages": [
-              "docs/orders/overview",
-              "docs/orders/sandbox-scenarios",
-              "docs/orders/lifecycle",
-              "docs/orders/rollovers",
-              "docs/orders/errors",
-              "docs/orders/best-practices"
-            ]
-          },
-          {
-            "group": "Webhooks",
-            "pages": [
-              "docs/webhooks/overview",
-              "docs/webhooks/verifying-signatures",
-              "docs/webhooks/deliveries",
-              "docs/webhooks/best-practices"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API Reference",
-        "icon": "square-terminal",
-        "openapi": "https://api.engine.usesophic.com/openapi.json",
-        "groups": [
-          {
-            "group": "Topics",
-            "pages": [
-              "api-reference/auth",
-              "api-reference/idempotency",
-              "api-reference/errors",
-              "api-reference/versioning",
-              "api-reference/best-practices"
-            ]
-          },
-          {
-            "group": "Authentication",
-            "pages": [
-              "POST /auth/token",
-              "GET /me"
-            ]
-          },
-          {
-            "group": "Catalog",
-            "pages": [
-              "GET /instruments/{id_or_symbol}",
-              "GET /instruments",
-              "GET /prices",
-              "GET /bills/otr"
-            ]
-          },
-          {
-            "group": "Persons",
-            "pages": [
-              "POST /persons",
-              "GET /persons/{id}",
-              "GET /persons/{id}/authorities",
-              "POST /persons/{person_id}/claims",
-              "GET /persons/{person_id}/claims",
-              "GET /persons/{person_id}/claims/{claim_id}"
-            ]
-          },
-          {
-            "group": "Onboarding",
-            "pages": [
-              "POST /onboarding-applications"
-            ]
-          },
-          {
-            "group": "Customers & Accounts",
-            "pages": [
-              "GET /customers/{id}",
-              "GET /accounts/{id_or_reference}",
-              "GET /accounts/{id}/transactions"
-            ]
-          },
-          {
-            "group": "Holdings",
-            "pages": [
-              "GET /accounts/{account_id}/positions/{position_id}",
-              "GET /accounts/{account_id}/positions",
-              "GET /accounts/{account_id}/cash-balances"
-            ]
-          },
-          {
-            "group": "Payments",
-            "pages": [
-              "GET /accounts/{account_id}/funding-accounts",
-              "GET /accounts/{account_id}/deposits/{deposit_id}",
-              "POST /accounts/{account_id}/deposits",
-              "GET /accounts/{account_id}/withdrawals/{withdrawal_id}",
-              "POST /accounts/{account_id}/withdrawals"
-            ]
-          },
-          {
-            "group": "Trading",
-            "pages": [
-              "GET /accounts/{account_id}/orders/{order_id}",
-              "GET /accounts/{account_id}/orders",
-              "GET /accounts/{account_id}/pending-orders",
-              "POST /accounts/{account_id}/orders"
-            ]
-          },
-          {
-            "group": "Valuation",
-            "pages": [
-              "GET /accounts/{account_id}/valuation",
-              "GET /accounts/{account_id}/valuation-history"
-            ]
-          },
-          {
-            "group": "Performance",
-            "pages": [
-              "GET /accounts/{account_id}/earnings"
-            ]
-          },
-          {
-            "group": "Billing",
-            "pages": [
-              "GET /fee-charges/{fee_charge_id}"
-            ]
-          },
-          {
-            "group": "Files",
-            "pages": [
-              "POST /signed-uploads",
-              "POST /files"
-            ]
-          },
-          {
-            "group": "Legal Documents",
-            "pages": [
-              "GET /legal-documents/{legal_document_id}",
-              "GET /legal-documents",
-              "GET /legal-documents/{legal_document_id}/versions",
-              "GET /legal-documents/{legal_document_id}/versions/{version_id}",
-              "GET /legal-documents/{legal_document_id}/latest/file",
-              "GET /legal-documents/{legal_document_id}/versions/{version_id}/file"
-            ]
-          },
-          {
-            "group": "Events",
-            "pages": [
-              "GET /events"
-            ]
-          },
-          {
-            "group": "Webhooks",
-            "pages": [
-              "POST /webhooks",
-              "GET /webhooks/{webhook_id}",
-              "GET /webhooks",
-              "PUT /webhooks/{webhook_id}"
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  "logo": {
-    "light": "https://cdn.usesophic.com/logo-black.svg",
-    "dark": "https://cdn.usesophic.com/logo-white.svg"
-  },
-  "navbar": {
-    "links": [
-      { "label": "Support", "href": "mailto:hello@usesophic.com" }
-    ]
-  },
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/docs/intro"
-    }
-  ],
-  "footer": {
-    "socials": {
-      "github": "https://github.com/athloscap",
-      "linkedin": "https://www.linkedin.com/company/sophicwealth/"
-    }
-  }
+	"$schema": "https://mintlify.com/docs.json",
+	"theme": "mint",
+	"name": "Sophic Engine",
+	"fonts": {
+		"family": "Geist"
+	},
+	"colors": {
+		"primary": "#2A3141",
+		"light": "#E6EDF3",
+		"dark": "#FF0000"
+	},
+	"styling": {
+		"eyebrows": "section",
+		"codeblocks": {
+			"theme": "catppuccin-mocha"
+		}
+	},
+	"contextual": {
+		"options": ["view", "copy", "chatgpt", "claude"]
+	},
+	"appearance": {
+		"default": "light",
+		"strict": true
+	},
+	"background": {
+		"color": {
+			"light": "#ffffff"
+		}
+	},
+	"favicon": "/favicon.svg",
+	"api": {
+		"openapi": "https://api.engine.usesophic.com/openapi.json"
+	},
+	"navigation": {
+		"tabs": [
+			{
+				"tab": "Documentation",
+				"icon": "book-open",
+				"groups": [
+					{
+						"group": "Getting Started",
+						"pages": ["docs/intro"]
+					},
+					{
+						"group": "Onboarding",
+						"pages": [
+							"docs/onboarding/overview",
+							"docs/onboarding/persons",
+							"docs/onboarding/claims",
+							"docs/onboarding/applications",
+							"docs/onboarding/errors"
+						]
+					},
+					{
+						"group": "Orders",
+						"pages": [
+							"docs/orders/overview",
+							"docs/orders/testing",
+							"docs/orders/lifecycle",
+							"docs/orders/rollovers",
+							"docs/orders/errors",
+							"docs/orders/best-practices"
+						]
+					},
+					{
+						"group": "Webhooks",
+						"pages": [
+							"docs/webhooks/overview",
+							"docs/webhooks/verifying-signatures",
+							"docs/webhooks/deliveries",
+							"docs/webhooks/best-practices"
+						]
+					}
+				]
+			},
+			{
+				"tab": "API Reference",
+				"icon": "square-terminal",
+				"openapi": "https://api.engine.usesophic.com/openapi.json",
+				"groups": [
+					{
+						"group": "Topics",
+						"pages": [
+							"api-reference/auth",
+							"api-reference/idempotency",
+							"api-reference/errors",
+							"api-reference/versioning",
+							"api-reference/best-practices"
+						]
+					},
+					{
+						"group": "Authentication",
+						"pages": ["POST /auth/token", "GET /me"]
+					},
+					{
+						"group": "Catalog",
+						"pages": [
+							"GET /instruments/{id_or_symbol}",
+							"GET /instruments",
+							"GET /prices",
+							"GET /bills/otr"
+						]
+					},
+					{
+						"group": "Persons",
+						"pages": [
+							"POST /persons",
+							"GET /persons/{id}",
+							"GET /persons/{id}/authorities",
+							"POST /persons/{person_id}/claims",
+							"GET /persons/{person_id}/claims",
+							"GET /persons/{person_id}/claims/{claim_id}"
+						]
+					},
+					{
+						"group": "Onboarding",
+						"pages": ["POST /onboarding-applications"]
+					},
+					{
+						"group": "Customers & Accounts",
+						"pages": [
+							"GET /customers/{id}",
+							"GET /accounts/{id_or_reference}",
+							"GET /accounts/{id}/transactions"
+						]
+					},
+					{
+						"group": "Holdings",
+						"pages": [
+							"GET /accounts/{account_id}/positions/{position_id}",
+							"GET /accounts/{account_id}/positions",
+							"GET /accounts/{account_id}/cash-balances"
+						]
+					},
+					{
+						"group": "Payments",
+						"pages": [
+							"GET /accounts/{account_id}/funding-accounts",
+							"GET /accounts/{account_id}/deposits/{deposit_id}",
+							"POST /accounts/{account_id}/deposits",
+							"GET /accounts/{account_id}/withdrawals/{withdrawal_id}",
+							"POST /accounts/{account_id}/withdrawals"
+						]
+					},
+					{
+						"group": "Trading",
+						"pages": [
+							"GET /accounts/{account_id}/orders/{order_id}",
+							"GET /accounts/{account_id}/orders",
+							"GET /accounts/{account_id}/pending-orders",
+							"POST /accounts/{account_id}/orders"
+						]
+					},
+					{
+						"group": "Valuation",
+						"pages": [
+							"GET /accounts/{account_id}/valuation",
+							"GET /accounts/{account_id}/valuation-history"
+						]
+					},
+					{
+						"group": "Performance",
+						"pages": ["GET /accounts/{account_id}/earnings"]
+					},
+					{
+						"group": "Billing",
+						"pages": ["GET /fee-charges/{fee_charge_id}"]
+					},
+					{
+						"group": "Files",
+						"pages": ["POST /signed-uploads", "POST /files"]
+					},
+					{
+						"group": "Legal Documents",
+						"pages": [
+							"GET /legal-documents/{legal_document_id}",
+							"GET /legal-documents",
+							"GET /legal-documents/{legal_document_id}/versions",
+							"GET /legal-documents/{legal_document_id}/versions/{version_id}",
+							"GET /legal-documents/{legal_document_id}/latest/file",
+							"GET /legal-documents/{legal_document_id}/versions/{version_id}/file"
+						]
+					},
+					{
+						"group": "Events",
+						"pages": ["GET /events"]
+					},
+					{
+						"group": "Webhooks",
+						"pages": [
+							"POST /webhooks",
+							"GET /webhooks/{webhook_id}",
+							"GET /webhooks",
+							"PUT /webhooks/{webhook_id}"
+						]
+					}
+				]
+			}
+		]
+	},
+	"logo": {
+		"light": "https://cdn.usesophic.com/logo-black.svg",
+		"dark": "https://cdn.usesophic.com/logo-white.svg"
+	},
+	"navbar": {
+		"links": [{ "label": "Support", "href": "mailto:hello@usesophic.com" }]
+	},
+	"redirects": [
+		{
+			"source": "/",
+			"destination": "/docs/intro"
+		}
+	],
+	"footer": {
+		"socials": {
+			"github": "https://github.com/athloscap",
+			"linkedin": "https://www.linkedin.com/company/sophicwealth/"
+		}
+	}
 }

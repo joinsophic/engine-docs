@@ -1,11 +1,11 @@
 ---
-title: Sandbox scenarios
+title: Testing
 description: "Predefined order outcomes you can trigger in the sandbox environment"
 ---
 
 In the **sandbox environment**, order execution is deterministic. You exercise specific outcomes — full fill, unfilled cancel, or partial fill — by placing orders with particular field values. We ship a fixed set of scenarios; you **cannot** add or change them.
 
-You'll need sandbox credentials from us. Sandbox execution is enabled on our side for that environment.
+Testing execution is enabled on our side for the sandbox environment.
 
 ## How scenarios are selected
 
@@ -36,15 +36,6 @@ Some orders pass through `pending` before `executing`; many skip `pending` entir
 ## Partial fill
 
 The partial-fill scenario is the easy one to misread. We **do not** end the order in `cancelled` — we record a trade for **40%** of the order quantity, cancel the remainder at the broker, then mark the order `filled` because some quantity executed.
-
-For a market buy, we derive the order quantity from `cash_amount` using a default price of **100** when you do not set `price` on the order. With `cash_amount: "5002"`, that implies an order quantity of **50.02**. The **trade** leg executes **40%** of that:
-
-| Field | Value |
-|---|---|
-| `quantity` | `20.008` |
-| `remaining_quantity` | `30.012` |
-| `total_quantity_executed` | `20.008` |
-| `notional` | `2000.80` |
 
 You'll receive `trade.executed`, then `order.filled`. Fetch the order or trade via the API to verify `traded_quantity` and related fields.
 
@@ -138,7 +129,7 @@ const order = await response.json();
 ```
 </CodeGroup>
 
-Expect `trade.executed` followed by `order.filled`. The trade payload should reflect the 40% partial fill values in the table above (`quantity` `20.008`, `notional` `2000.80`, and so on).
+Expect `trade.executed` followed by `order.filled`. The trade payload should reflect the 40% partial fill values in the table above (`quantity` **20**, `notional` **2000.80**, and so on).
 
 ### Sell full fill
 

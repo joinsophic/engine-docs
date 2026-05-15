@@ -16,7 +16,7 @@ When writing or editing documentation about specific API behavior, verify the va
 
 ## Instructions
 
-1. The backend codebase is at `../sophic-backend` (sibling directory to this repo).
+1. The backend codebase is at `../backend` (sibling directory to this repo).
 2. Search for the relevant domain logic. Common locations:
    - **Models:** `sophic/domain/*/models/`
    - **Actions/services:** `sophic/domain/*/actions.py`
