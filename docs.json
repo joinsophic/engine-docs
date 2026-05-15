@@ -63,6 +63,7 @@
             "group": "Orders",
             "pages": [
               "docs/orders/overview",
+              "docs/orders/sandbox-scenarios",
               "docs/orders/lifecycle",
               "docs/orders/rollovers",
               "docs/orders/errors",

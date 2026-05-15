@@ -1,0 +1,196 @@
+---
+title: Sandbox scenarios
+description: "Predefined order outcomes you can trigger in the sandbox environment"
+---
+
+In the **sandbox environment**, order execution is deterministic. You exercise specific outcomes — full fill, unfilled cancel, or partial fill — by placing orders with particular field values. We ship a fixed set of scenarios; you **cannot** add or change them.
+
+You'll need sandbox credentials from us. Sandbox execution is enabled on our side for that environment.
+
+## How scenarios are selected
+
+When we route your order for execution, we match it against a predefined list. The **first** scenario whose conditions all match wins. If nothing matches, you get the **default full fill**.
+
+Matchers use the same fields you send when [placing an order](/docs/orders/overview):
+
+- **Buy orders:** set `cash_amount` to the exact string shown below.
+- **Sell orders:** set `quantity` (and do not set `cash_amount`).
+- **Everything else:** default full fill.
+
+<Warning>
+Trigger values must match **exactly**. Use `"5001"`, not `5001` or `"5001.00"`. A buy with `cash_amount` of `"5001.00"` will not hit the cancel scenario — it falls through to the default full fill.
+</Warning>
+
+## Scenario reference
+
+| Scenario | How to trigger | Terminal status | Webhooks |
+|---|---|---|---|
+| Unfilled cancel | Buy, `cash_amount: "5001"` | `cancelled` | `order.placed` → `order.executing` → `order.cancelled` |
+| Partial fill | Buy, `cash_amount: "5002"` | `filled` | `order.placed` → `order.executing` → `trade.executed` → `order.filled` |
+| Full fill (buy) | Buy, `cash_amount: "5003"` | `filled` | `order.placed` → `order.executing` → `trade.executed` → `order.filled` |
+| Full fill (sell) | Sell, `quantity` less than `12`, no `cash_amount` | `filled` | `order.placed` → `order.executing` → `trade.executed` → `order.filled` |
+| Default full fill | Any other valid order | `filled` | `order.placed` → `order.executing` → `trade.executed` → `order.filled` |
+
+Some orders pass through `pending` before `executing`; many skip `pending` entirely. See the [order lifecycle](/docs/orders/lifecycle) for status definitions and the full webhook list.
+
+## Partial fill
+
+The partial-fill scenario is the easy one to misread. We **do not** end the order in `cancelled` — we record a trade first, then mark the order `filled` because some quantity executed.
+
+When you use `cash_amount: "5002"`, the synthetic trade leg uses these fixed values (useful for assertions in tests):
+
+| Field | Value |
+|---|---|
+| `quantity` | `600` |
+| `remaining_quantity` | `634.56` |
+| `total_quantity_executed` | `600` |
+| `notional` | `60000` |
+
+You'll receive `trade.executed`, then `order.filled`. Fetch the order or trade via the API to verify `traded_quantity` and related fields.
+
+## Examples
+
+### Unfilled cancel
+
+<CodeGroup>
+```python Python
+import requests
+
+response = requests.post(
+    "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+    headers={
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json",
+    },
+    json={
+        "instrument": "ins_xyz789",
+        "order_type": "market",
+        "side": "buy",
+        "cash_amount": "5001",
+    },
+)
+order = response.json()
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+  {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer YOUR_ACCESS_TOKEN",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      instrument: "ins_xyz789",
+      order_type: "market",
+      side: "buy",
+      cash_amount: "5001",
+    }),
+  }
+);
+const order = await response.json();
+```
+</CodeGroup>
+
+Expect `order.cancelled` and a terminal status of `cancelled`. No `trade.executed` event.
+
+### Partial fill
+
+<CodeGroup>
+```python Python
+import requests
+
+response = requests.post(
+    "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+    headers={
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json",
+    },
+    json={
+        "instrument": "ins_xyz789",
+        "order_type": "market",
+        "side": "buy",
+        "cash_amount": "5002",
+    },
+)
+order = response.json()
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+  {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer YOUR_ACCESS_TOKEN",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      instrument: "ins_xyz789",
+      order_type: "market",
+      side: "buy",
+      cash_amount: "5002",
+    }),
+  }
+);
+const order = await response.json();
+```
+</CodeGroup>
+
+Expect `trade.executed` followed by `order.filled`.
+
+### Sell full fill
+
+Use a quantity under `12` (for example `10`) and omit `cash_amount`:
+
+<CodeGroup>
+```python Python
+import requests
+
+response = requests.post(
+    "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+    headers={
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json",
+    },
+    json={
+        "instrument": "ins_xyz789",
+        "order_type": "market",
+        "side": "sell",
+        "quantity": "10",
+    },
+)
+order = response.json()
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+  {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer YOUR_ACCESS_TOKEN",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      instrument: "ins_xyz789",
+      order_type: "market",
+      side: "sell",
+      quantity: "10",
+    }),
+  }
+);
+const order = await response.json();
+```
+</CodeGroup>
+
+Expect `trade.executed` with `quantity` of `10`, then `order.filled`.
+
+## Tracking results
+
+Subscribe to [webhooks](/docs/webhooks/overview) for real-time updates, or poll [Retrieve order](/api-reference/retrieve-an-order) after each placement. Webhook delivery is at-least-once — deduplicate using the event ID or `Webhook-Id` header.
+
+<Note>
+Sandbox execution does not mirror production routing, venue behavior, or FIX lifecycles. Use it to test your integration against predictable order and trade outcomes, not to validate production execution logic.
+</Note>
