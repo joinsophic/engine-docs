@@ -14,11 +14,11 @@ When we route your order for execution, we match it against a predefined list. T
 Matchers use the same fields you send when [placing an order](/docs/orders/overview):
 
 - **Buy orders:** set `cash_amount` to the exact string shown below.
-- **Sell orders:** set `quantity` (and do not set `cash_amount`).
+- **Sell orders:** set `quantity` to the exact string shown below (and do not set `cash_amount`).
 - **Everything else:** default full fill.
 
 <Warning>
-Trigger values must match **exactly**. Use `"5001"`, not `5001` or `"5001.00"`. A buy with `cash_amount` of `"5001.00"` will not hit the cancel scenario — it falls through to the default full fill.
+Trigger values must match **exactly**. Use `"5001"`, not `5001` or `"5001.00"`. A buy with `cash_amount` of `"5001.00"` will not hit the cancel scenario — it falls through to the default full fill. The same applies to sell `quantity` values (for example `"20"`, not `20` or `"20.00"`).
 </Warning>
 
 ## Scenario reference
@@ -26,18 +26,26 @@ Trigger values must match **exactly**. Use `"5001"`, not `5001` or `"5001.00"`. 
 | Scenario | How to trigger | Terminal status | Webhooks |
 |---|---|---|---|
 | Unfilled cancel | Buy, `cash_amount: "5001"` | `cancelled` | `order.placed` → `order.executing` → `order.cancelled` |
-| Partial fill (40%) | Buy, `cash_amount: "5002"` | `filled` | `order.placed` → `order.executing` → `trade.executed` → `order.filled` |
+| Partial fill (40%, buy) | Buy, `cash_amount: "5002"` | `filled` | `order.placed` → `order.executing` → `trade.executed` → `order.filled` |
 | Full fill (buy) | Buy, `cash_amount: "5003"` | `filled` | `order.placed` → `order.executing` → `trade.executed` → `order.filled` |
-| Full fill (sell) | Sell, `quantity` less than `12`, no `cash_amount` | `filled` | `order.placed` → `order.executing` → `trade.executed` → `order.filled` |
+| Full fill (sell) | Sell, `quantity` of `"12"` or less, no `cash_amount` | `filled` | `order.placed` → `order.executing` → `trade.executed` → `order.filled` |
+| Partial fill (25%, sell) | Sell, `quantity: "20"`, no `cash_amount` | `filled` | `order.placed` → `order.executing` → `trade.executed` → `order.filled` |
 | Default full fill | Any other valid order | `filled` | `order.placed` → `order.executing` → `trade.executed` → `order.filled` |
 
 Some orders pass through `pending` before `executing`; many skip `pending` entirely. See the [order lifecycle](/docs/orders/lifecycle) for status definitions and the full webhook list.
 
-## Partial fill
+## Partial fills
 
-The partial-fill scenario is the easy one to misread. We **do not** end the order in `cancelled` — we record a trade for **40%** of the order quantity, cancel the remainder at the broker, then mark the order `filled` because some quantity executed.
+Partial scenarios are easy to misread. We **do not** end the order in `cancelled` — we record a trade for a fraction of the order, cancel the remainder at the broker, then mark the order `filled` because some quantity executed.
 
-You'll receive `trade.executed`, then `order.filled`. Fetch the order or trade via the API to verify `traded_quantity` and related fields.
+You'll receive `trade.executed`, then `order.filled` (not `order.cancelled`). Fetch the order or trade via the API to verify `traded_quantity` and related fields.
+
+| Trigger | Fill % | Trade `quantity` | Trade `notional` |
+|---|---|---|---|
+| Buy, `cash_amount: "5002"` | 40% | `20` | `2000.80` |
+| Sell, `quantity: "20"` | 25% | `5` | `497.50` |
+
+Exact trade fields depend on the instrument's quote at execution time; the values above assume a reference price of **100**.
 
 ## Examples
 
@@ -129,11 +137,58 @@ const order = await response.json();
 ```
 </CodeGroup>
 
-Expect `trade.executed` followed by `order.filled`. The trade payload should reflect the 40% partial fill values in the table above (`quantity` **20**, `notional` **2000.80**, and so on).
+Expect `trade.executed` followed by `order.filled`. The trade payload should reflect the 40% partial fill (`quantity` **20**, `notional` **2000.80**, and so on).
+
+### Sell partial fill
+
+Use `quantity: "20"` and omit `cash_amount`:
+
+<CodeGroup>
+```python Python
+import requests
+
+response = requests.post(
+    "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+    headers={
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json",
+    },
+    json={
+        "instrument": "ins_xyz789",
+        "order_type": "market",
+        "side": "sell",
+        "quantity": "20",
+    },
+)
+order = response.json()
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+  {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer YOUR_ACCESS_TOKEN",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      instrument: "ins_xyz789",
+      order_type: "market",
+      side: "sell",
+      quantity: "20",
+    }),
+  }
+);
+const order = await response.json();
+```
+</CodeGroup>
+
+Expect `trade.executed` with `quantity` of `5`, then `order.filled`.
 
 ### Sell full fill
 
-Use a quantity under `12` (for example `10`) and omit `cash_amount`:
+Use a quantity of `"12"` or less (for example `"10"`) and omit `cash_amount`:
 
 <CodeGroup>
 ```python Python
