@@ -40,10 +40,10 @@ Partial scenarios are easy to misread. We **do not** end the order in `cancelled
 
 You'll receive `trade.executed`, then `order.filled` (not `order.cancelled`). Fetch the order or trade via the API to verify `traded_quantity` and related fields.
 
-| Trigger | Fill % | Trade `quantity` | Trade `notional` |
-|---|---|---|---|
-| Buy, `cash_amount: "5002"` | 40% | `20` | `2000.80` |
-| Sell, `quantity: "20"` | 25% | `5` | `497.50` |
+| Trigger | Fill % | Trade `quantity`
+|---|---|---|
+| Buy, `cash_amount: "5002"` | 40% | `20` |
+| Sell, `quantity: "20"` | 25% | `5` |
 
 Exact trade fields depend on the instrument's quote at execution time; the values above assume a reference price of **100**.
 
