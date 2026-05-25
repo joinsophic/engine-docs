@@ -36,16 +36,14 @@ Some orders pass through `pending` before `executing`; many skip `pending` entir
 
 ## Partial fills
 
-Partial scenarios are easy to misread. We **do not** end the order in `cancelled`; we record a trade for a fraction of the order, cancel the remainder at the broker, then mark the order `filled` because some quantity executed.
+Partial scenarios are easy to misread. The order ends as **`filled`**, not `cancelled`: we execute part of the order, then cancel what is left. You get `trade.executed`, then `order.filled` (not `order.cancelled`). Use [Retrieve order](/api-reference/retrieve-an-order) or the trade resource to check `traded_quantity` and related fields.
 
-You'll receive `trade.executed`, then `order.filled` (not `order.cancelled`). Fetch the order or trade via the API to verify `traded_quantity` and related fields.
-
-| Trigger | Fill % | Trade `quantity`
+| Trigger | Fill % | What to expect |
 |---|---|---|
-| Buy, `cash_amount: "5002"` | 40% | `20` |
-| Sell, `quantity: "20"` | 25% | `5` |
+| Buy, `cash_amount: "5002"` | 40% | Roughly 40% of the order fills; exact trade `quantity` and `notional` depend on the instrument and your order |
+| Sell, `quantity: "20"` | 25% | Trade `quantity` of `5`, then `order.filled` |
 
-Exact trade fields depend on the instrument's quote at execution time; the values above assume a reference price of **100**.
+The same triggers work for **currency pairs**. Statuses and webhooks match the table above; trade amounts follow your FX quote rather than the sell example.
 
 ## Examples
 
@@ -137,7 +135,7 @@ const order = await response.json();
 ```
 </CodeGroup>
 
-Expect `trade.executed` followed by `order.filled`. The trade payload should reflect the 40% partial fill (`quantity` **20**, `notional` **2000.80**, and so on).
+Expect `trade.executed` followed by `order.filled`. The trade should reflect a partial fill (about 40% of the order); check the response for exact amounts.
 
 ### Sell partial fill
 

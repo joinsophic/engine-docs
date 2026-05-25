@@ -23,7 +23,7 @@ Sandbox and Live are completely isolated. Each environment has its own databases
 | **Credentials** | Sandbox client ID and secret (issued at onboarding) | Live client ID and secret (issued separately) |
 | **Data** | Isolated test data | Production customer data |
 | **Order execution** | Deterministic; trigger outcomes with specific order fields. See [Testing](/docs/orders/testing). | Real market routing and execution |
-| **Prices** | Simulated (Bloomberg quotes where available, otherwise a fallback reference price) | Live market feeds |
+| **Prices** | Simulated (market quotes where available, otherwise a fallback price) | Live market feeds |
 | **Webhooks & events** | Same event types and delivery mechanics | Same event types and delivery mechanics |
 | **Onboarding** | Full API flow; compliance integrations use sandbox third-party services | Production compliance and KYC |
 
