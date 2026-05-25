@@ -11,7 +11,7 @@ To place an order, you'll need:
 
 - An [authenticated API session](/api-reference/auth) with a valid Bearer token
 - An **account ID** for the customer placing the order
-- The **instrument ID** for the security being traded — you can look these up via the [instruments endpoints](/api-reference/get-instruments)
+- The **instrument ID** for the security being traded; you can look these up via the [instruments endpoints](/api-reference/get-instruments)
 - Sufficient **cash balance** (for buy orders) or **position units** (for sell orders) in the account
 
 <Tip>
@@ -26,7 +26,7 @@ Send a `POST` request to `/accounts/{account_id}/orders`. The request body depen
 
 ### Buy orders
 
-Buy orders are **cash-based** — you specify how much money to invest, not how many units to buy. We calculate the quantity based on the current price.
+Buy orders are **cash-based**: you specify how much money to invest, not how many units to buy. We calculate the quantity based on the current price.
 
 <CodeGroup>
 ```python Python
@@ -111,11 +111,11 @@ String json = """
     """;
 
 HttpRequest request = HttpRequest.newBuilder()
-    .uri(URI.create("https://api.engine.usesophic.com/accounts/{account_id}/orders"))
-    .header("Authorization", "Bearer YOUR_ACCESS_TOKEN")
-    .header("Content-Type", "application/json")
-    .POST(HttpRequest.BodyPublishers.ofString(json))
-    .build();
+   .uri(URI.create("https://api.engine.usesophic.com/accounts/{account_id}/orders"))
+   .header("Authorization", "Bearer YOUR_ACCESS_TOKEN")
+   .header("Content-Type", "application/json")
+   .POST(HttpRequest.BodyPublishers.ofString(json))
+   .build();
 
 HttpResponse<String> response = client.send(request,
     HttpResponse.BodyHandlers.ofString());
@@ -140,7 +140,7 @@ var response = await client.PostAsJsonAsync(
 
 ### Sell orders
 
-Sell orders are **unit-based** — you specify how many units to sell, not how much cash to receive.
+Sell orders are **unit-based**: you specify how many units to sell, not how much cash to receive.
 
 <CodeGroup>
 ```python Python
@@ -225,11 +225,11 @@ String json = """
     """;
 
 HttpRequest request = HttpRequest.newBuilder()
-    .uri(URI.create("https://api.engine.usesophic.com/accounts/{account_id}/orders"))
-    .header("Authorization", "Bearer YOUR_ACCESS_TOKEN")
-    .header("Content-Type", "application/json")
-    .POST(HttpRequest.BodyPublishers.ofString(json))
-    .build();
+   .uri(URI.create("https://api.engine.usesophic.com/accounts/{account_id}/orders"))
+   .header("Authorization", "Bearer YOUR_ACCESS_TOKEN")
+   .header("Content-Type", "application/json")
+   .POST(HttpRequest.BodyPublishers.ofString(json))
+   .build();
 
 HttpResponse<String> response = client.send(request,
     HttpResponse.BodyHandlers.ofString());
@@ -307,7 +307,7 @@ A successful request returns `201 Created` with the order object:
 Key fields to note:
 
 - **`status`** starts at `placed`. See the [order lifecycle](/docs/orders/lifecycle) for how it progresses.
-- **`position`** is `null` until the order is executed — it gets populated when a trade is recorded.
+- **`position`** is `null` until the order is executed; it gets populated when a trade is recorded.
 - **`traded_quantity`** and **`traded_notional`** are `"0"` initially and increase as trades execute.
 - **`fees`** reflects the total fee amount for this order.
 - **`net_cash_amount`** is the amount that actually gets traded (cash amount minus fees).
@@ -315,7 +315,7 @@ Key fields to note:
 - **`purpose`** is set by us. Orders you place through the API will always have `user_request`.
 
 <Note>
-Order creation is synchronous — we validate the request and return the order immediately. Everything after that (execution, settlement) happens asynchronously. Use [webhooks](/docs/webhooks/overview) or poll the [Retrieve order](/api-reference/retrieve-an-order) endpoint to track progress.
+Order creation is synchronous; we validate the request and return the order immediately. Everything after that (execution, settlement) happens asynchronously. Use [webhooks](/docs/webhooks/overview) or poll the [Retrieve order](/api-reference/retrieve-an-order) endpoint to track progress.
 </Note>
 
 ## Retrieving orders
@@ -327,4 +327,4 @@ curl https://api.engine.usesophic.com/accounts/{account_id}/orders/{order_id} \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
-To list all orders for an account, use the [List orders](/api-reference/list-orders) endpoint. To list only orders that haven't reached a terminal state, use the [List pending orders](/api-reference/list-pending-orders) endpoint — this is useful for building dashboards or monitoring active trades.
+To list all orders for an account, use the [List orders](/api-reference/list-orders) endpoint. To list only orders that haven't reached a terminal state, use the [List pending orders](/api-reference/list-pending-orders) endpoint; this is useful for building dashboards or monitoring active trades.

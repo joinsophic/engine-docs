@@ -14,7 +14,7 @@ A **Webhook Delivery** tracks the delivery attempts for an event to a webhook en
 
 ## Retry schedule
 
-We use **at-least-once delivery**, which means we guarantee that every event reaches your endpoint at least once — but it may arrive more than once in some cases (see [Handling duplicates](#handling-duplicates)).
+We use **at-least-once delivery**, which means we guarantee that every event reaches your endpoint at least once, but it may arrive more than once in some cases (see [Handling duplicates](#handling-duplicates)).
 
 If your endpoint doesn't return a `2xx` response, we'll retry the delivery with exponential backoff and jitter, up to **10 attempts**:
 

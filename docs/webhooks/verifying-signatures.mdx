@@ -44,7 +44,7 @@ A request is valid if **any** of the signatures matches your computed value.
 </Steps>
 
 <Note>
-Use the **raw request body** when computing the HMAC. Parsing the JSON first and re-serializing it can silently alter the payload — for example, some languages round floating-point numbers or reorder keys — which will cause the signature check to fail.
+Use the **raw request body** when computing the HMAC. Parsing the JSON first and re-serializing it can silently alter the payload (for example, some languages round floating-point numbers or reorder keys) which will cause the signature check to fail.
 </Note>
 
 ## Examples
@@ -188,7 +188,7 @@ Your verification code should accept the delivery if **any** of the signatures i
 When we rotate a secret, here's what to expect:
 
 1. We'll notify you that a rotation is starting.
-2. Both the old and new secrets become active — deliveries are signed with both.
+2. Both the old and new secrets become active; deliveries are signed with both.
 3. You have **48 hours** to update your verification code to use the new secret.
 4. After 48 hours, the old secret is retired and only the new secret will be used to sign deliveries.
 

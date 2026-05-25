@@ -1,0 +1,98 @@
+---
+title: Environments
+description: "Sandbox and live API environments. URLs, credentials, and behavioral differences"
+---
+
+You'll integrate with us in two environments: **Sandbox** for building and testing, and **Live** for production. Both expose the same API surface, but they run on separate infrastructure with isolated data and different execution behavior.
+
+Use Sandbox to validate your integration end-to-end (authentication, onboarding, order placement, webhooks) without real money or market impact. Move to Live when you're ready to go to production.
+
+## Sandbox vs. Live
+
+**Sandbox** is a safe place to experiment. Order execution is deterministic: you trigger specific outcomes (full fill, partial fill, cancel) by placing orders with particular field values. Webhooks, events, and the rest of the API behave the same way they do in Live, but nothing here involves real trading or regulated production flows.
+
+**Live** is production. Orders route through our real execution infrastructure, prices come from live market feeds, and onboarding and trading are fully regulated.
+
+Sandbox and Live are completely isolated. Each environment has its own databases, credentials, accounts, and webhook subscriptions. Data you create in Sandbox never appears in Live, and vice versa.
+
+## At a glance
+
+| | **Sandbox** | **Live** |
+|---|---|---|
+| **API base URL** | `https://api-sandbox.engine.usesophic.com` | `https://api.engine.usesophic.com` |
+| **Credentials** | Sandbox client ID and secret (issued at onboarding) | Live client ID and secret (issued separately) |
+| **Data** | Isolated test data | Production customer data |
+| **Order execution** | Deterministic; trigger outcomes with specific order fields. See [Testing](/docs/orders/testing). | Real market routing and execution |
+| **Prices** | Simulated (Bloomberg quotes where available, otherwise a fallback reference price) | Live market feeds |
+| **Webhooks & events** | Same event types and delivery mechanics | Same event types and delivery mechanics |
+| **Onboarding** | Full API flow; compliance integrations use sandbox third-party services | Production compliance and KYC |
+
+## API URLs
+
+All endpoints share the same paths in both environments. Only the host changes.
+
+| Resource | Sandbox | Live |
+|---|---|---|
+| Engine API | `https://api-sandbox.engine.usesophic.com` | `https://api.engine.usesophic.com` |
+| Token endpoint | `POST /auth/token` | `POST /auth/token` |
+| OpenAPI spec | `{base_url}/openapi.json` | `{base_url}/openapi.json` |
+
+Point your HTTP client at the Sandbox base URL while you're building, then switch to Live for production. Every code example in these docs uses the Live URL; substitute the Sandbox host when testing.
+
+### Authenticating in Sandbox
+
+Obtain a token the same way you would in Live, but call the Sandbox base URL with your **Sandbox** client credentials:
+
+```bash
+curl -X POST https://api-sandbox.engine.usesophic.com/auth/token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "client_id=YOUR_SANDBOX_CLIENT_ID" \
+  -d "client_secret=YOUR_SANDBOX_CLIENT_SECRET" \
+  -d "grant_type=client_credentials"
+```
+
+Use the returned Bearer token for all subsequent Sandbox requests. Tokens are scoped to Sandbox and won't work against Live. See [Authentication](/api-reference/auth) for the full token flow.
+
+<Warning>
+Never use Live credentials against the Sandbox API (or Sandbox credentials against Live). Each environment validates tokens independently.
+</Warning>
+
+## Orders
+
+Order placement works the same in both environments: same endpoints, request shapes, and validation. The difference is what happens after you submit.
+
+In **Sandbox**, we route orders through a deterministic execution simulator. You control the outcome by setting specific values on the order:
+
+- **Buy orders:** set `cash_amount` to `"5001"` (cancel), `"5002"` (40% partial fill), or `"5003"` (full fill).
+- **Sell orders:** set `quantity` to `"20"` (25% partial fill) or `"12"` or less (full fill).
+- **Everything else:** default full fill.
+
+See the full [Testing](/docs/orders/testing) reference for terminal statuses, webhook sequences, and code examples.
+
+In **Live**, orders follow real execution routing: venue selection, market rules, and settlement timelines apply. You can't trigger outcomes with magic field values, and partial fills or cancellations depend on market conditions.
+
+<Note>
+Sandbox execution does not mirror production routing, venue behavior, or FIX lifecycles. Use it to test your integration against predictable order and trade outcomes, not to validate production execution logic.
+</Note>
+
+## Events and webhooks
+
+Both environments emit the same [webhook events](/docs/webhooks/overview) and expose them via [`GET /events`](/api-reference/list-events). Delivery mechanics (headers, signatures, retries, deduplication) are identical.
+
+Register webhooks separately in each environment. A Sandbox webhook URL receives Sandbox events only; Live webhooks receive Live events only.
+
+In Sandbox, order-related events fire in quick succession because execution is simulated. In Live, the timing between events reflects real processing and market conditions. See [Order lifecycle](/docs/orders/lifecycle) for status definitions and [Testing](/docs/orders/testing) for Sandbox-specific event sequences.
+
+## Recommended workflow
+
+<Steps>
+  <Step title="Build against Sandbox">
+    Authenticate with Sandbox credentials, register a webhook, and walk through onboarding and order flows. Use [Testing](/docs/orders/testing) to exercise every order outcome your integration handles.
+  </Step>
+  <Step title="Verify webhooks and event handling">
+    Confirm signature verification, deduplication, and idempotent processing work correctly. See [Verifying signatures](/docs/webhooks/verifying-signatures) and [Deliveries & retries](/docs/webhooks/deliveries).
+  </Step>
+  <Step title="Switch to Live">
+    Update your base URL and credentials, re-register webhooks, and run a controlled end-to-end test before opening to customers.
+  </Step>
+</Steps>

@@ -113,8 +113,9 @@ Add a new object to the `groups` array inside the relevant tab:
 
 Write as if you're a knowledgeable colleague explaining something to a fellow developer. The tone should be:
 
-- **Conversational but precise.** Use "we" to refer to the API and "you" to address the reader. Avoid stiff, formal phrasing — prefer "you'll need to" over "it is necessary to".
-- **Helpful, not patronizing.** Assume the reader is a competent developer. Don't over-explain obvious things, but do explain the non-obvious — the *why*, not just the *what*.
+- **Conversational but precise.** Use "we" to refer to the API and "you" to address the reader. Avoid stiff, formal phrasing; prefer "you'll need to" over "it is necessary to".
+- **Helpful, not patronizing.** Assume the reader is a competent developer. Don't over-explain obvious things, but do explain the non-obvious: the *why*, not just the *what*.
+- **No em dashes in prose.** Avoid em dashes (—) in sentences. Use commas, colons, parentheses, or a separate sentence instead. Em dashes are fine as empty placeholders in table cells.
 - **Direct.** Get to the point. Lead with what the reader needs to know, then provide context. Put examples close to the concepts they illustrate.
 
 ### Content guidelines

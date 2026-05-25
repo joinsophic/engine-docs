@@ -18,6 +18,7 @@ documentation" section of the project README.md.
 5. **Keep pages focused.** One topic per page. If it's getting long, split it.
 6. **Use Mintlify components.** Prefer `<Steps>`, `<CodeGroup>`, `<Note>`, `<Warning>`, `<Tip>`, and `<CardGroup>` where appropriate.
 7. **Reference the real implementation.** When documenting behavior (retry schedules, timeouts, headers), check the backend codebase at `../sophic-backend` to ensure accuracy.
+8. **No em dashes in prose.** Avoid em dashes (—) in sentences. Use commas, colons, parentheses, or a separate sentence instead. Em dashes are fine as empty placeholders in table cells.
 
 ## Style reference
 

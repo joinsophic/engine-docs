@@ -40,7 +40,7 @@
 				"groups": [
 					{
 						"group": "Getting Started",
-						"pages": ["docs/intro"]
+						"pages": ["docs/intro", "docs/environments"]
 					},
 					{
 						"group": "Onboarding",

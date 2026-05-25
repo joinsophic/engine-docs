@@ -48,7 +48,7 @@ Generate equivalent code examples in all five supported languages, wrapped in a 
 </CodeGroup>
 ```
 
-3. Each implementation must be **functionally equivalent** — same inputs, same outputs, same behavior.
+3. Each implementation must be **functionally equivalent**: same inputs, same outputs, same behavior.
 4. Use each language's **idiomatic style**. Don't transliterate Python into Java.
 5. For cryptographic operations, always use **constant-time comparison**:
    - Python: `hmac.compare_digest`

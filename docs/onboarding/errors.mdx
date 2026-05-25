@@ -3,7 +3,7 @@ title: Errors
 description: "Every validation error the onboarding endpoints return and how to fix it"
 ---
 
-Onboarding endpoints prefer loud, specific errors over silent defaults. Most failures you'll see during integration come back as `400 invalid_request` with a `detail` message that identifies exactly which person, claim, consent, or evidence item caused the failure — fix it and resubmit.
+Onboarding endpoints prefer loud, specific errors over silent defaults. Most failures you'll see during integration come back as `400 invalid_request` with a `detail` message that identifies exactly which person, claim, consent, or evidence item caused the failure; fix it and resubmit.
 
 All error responses follow the [standard error format](/api-reference/errors):
 
@@ -20,11 +20,11 @@ Returned from `POST /persons` and `POST /persons/{person_id}/claims`.
 
 | HTTP | `code` | When |
 |---|---|---|
-| 400 | `invalid_request` | The request body fails validation. The body is the claim itself; we validate the fields for the `claim_type` you send — see the [claim type reference](/docs/onboarding/claims#claim-type-reference). Typical causes: missing or unknown `claim_type`, missing required field, unknown field, or a conditional rule isn't met (e.g. `pep_role` is missing while `is_pep` is `true`). |
-| 400 | `invalid_request` | `POST /persons` — the request is missing a mandatory claim for the declared `person_type`. Detail reads `<person_type> persons require claim types ['<type>', ...]; missing: ['<type>', ...]`. See [mandatory claims](/docs/onboarding/persons). |
-| 400 | `invalid_request` | The `claim_type` isn't valid for the target person's `person_type`. Detail reads `Claim type '<claim_type>' is not allowed on natural persons.` or `... on legal persons.` Use a claim type that matches the person — see [natural-person claims](/docs/onboarding/claims#natural-person-claims) and [legal-person claims](/docs/onboarding/claims#legal-person-claims). |
-| 400 | `invalid_request` | A `relationships` claim references a `related_person` ID that doesn't exist. The whole request fails and no person is created — build the related persons first. |
-| 404 | `not_found` | `POST /persons/{person_id}/claims` — the person ID in the path doesn't exist. |
+| 400 | `invalid_request` | The request body fails validation. The body is the claim itself; we validate the fields for the `claim_type` you send; see the [claim type reference](/docs/onboarding/claims#claim-type-reference). Typical causes: missing or unknown `claim_type`, missing required field, unknown field, or a conditional rule isn't met (e.g. `pep_role` is missing while `is_pep` is `true`). |
+| 400 | `invalid_request` | `POST /persons`: the request is missing a mandatory claim for the declared `person_type`. Detail reads `<person_type> persons require claim types ['<type>',...]; missing: ['<type>',...]`. See [mandatory claims](/docs/onboarding/persons). |
+| 400 | `invalid_request` | The `claim_type` isn't valid for the target person's `person_type`. Detail reads `Claim type '<claim_type>' is not allowed on natural persons.` or `... on legal persons.` Use a claim type that matches the person; see [natural-person claims](/docs/onboarding/claims#natural-person-claims) and [legal-person claims](/docs/onboarding/claims#legal-person-claims). |
+| 400 | `invalid_request` | A `relationships` claim references a `related_person` ID that doesn't exist. The whole request fails and no person is created; build the related persons first. |
+| 404 | `not_found` | `POST /persons/{person_id}/claims`: the person ID in the path doesn't exist. |
 | 401 | `invalid_token` | Missing or invalid bearer token. |
 | 403 | `forbidden` | The token lacks the `write` scope. |
 
@@ -43,27 +43,27 @@ Returned from the `GET` endpoints under `/persons/{person_id}/claims`.
 Returned from `POST /onboarding-applications`. Every `400` below returns a `code` of `invalid_request` with a specific `detail` message.
 
 <Note>
-**One error at a time.** An onboarding application is validated in stages and we return on the first failing stage — structural checks first, then authority composition, then per-person claims, consents, and evidence. If the response mentions a missing claim, there may still be missing consents or evidence behind it. Fix what's reported, resubmit, and expect the next thing to surface.
+**One error at a time.** An onboarding application is validated in stages and we return on the first failing stage; structural checks first, then authority composition, then per-person claims, consents, and evidence. If the response mentions a missing claim, there may still be missing consents or evidence behind it. Fix what's reported, resubmit, and expect the next thing to surface.
 
-Within a single stage, we do report every failure we can see. For example, a single "missing required claims" response will list all the claims that person is missing — not just the first.
+Within a single stage, we do report every failure we can see. For example, a single "missing required claims" response will list all the claims that person is missing; not just the first.
 
-One gotcha worth calling out: on a business application, consents attributed to the legal-entity `owner` are accepted silently. If the signatories don't carry the [required consents](/docs/onboarding/applications#required-consents), the application still fails — the detail points at the signatory, not at the silently-ignored entry. See the [attribution note](/docs/onboarding/applications#required-consents).
+One gotcha worth calling out: on a business application, consents attributed to the legal-entity `owner` are accepted silently. If the signatories don't carry the [required consents](/docs/onboarding/applications#required-consents), the application still fails; the detail points at the signatory, not at the silently-ignored entry. See the [attribution note](/docs/onboarding/applications#required-consents).
 </Note>
 
 ### Structural errors
 
 | `detail` pattern | Cause | Fix |
 |---|---|---|
-| `Referenced persons not found: [...]` | One or more authority `person` IDs don't exist. | Verify the IDs — create missing persons first. |
+| `Referenced persons not found: [...]` | One or more authority `person` IDs don't exist. | Verify the IDs; create missing persons first. |
 | `Evidence references non-existent files: [...]` | An `evidence[].file` ID doesn't exist. | Confirm the file was uploaded successfully and the returned ID is used verbatim. |
 
 ### Per-authority composition errors
 
-Requirements are defined per `(customer_type, authority_type)` slot. These errors fire when the submitted authorities don't match the slot configuration — wrong authority type, wrong person type, too few, too many, or duplicates.
+Requirements are defined per `(customer_type, authority_type)` slot. These errors fire when the submitted authorities don't match the slot configuration; wrong authority type, wrong person type, too few, too many, or duplicates.
 
 | `detail` pattern | Cause | Fix |
 |---|---|---|
-| `Customer type '{ct}' does not accept authority type '{at}'.` | The authority type isn't configured for this customer type (e.g. `signatory` on `individual`, or `power_of_attorney` on any current customer type). | Use one of the authority types listed for this customer type — see [authority composition](/docs/onboarding/applications#authority-composition). |
+| `Customer type '{ct}' does not accept authority type '{at}'.` | The authority type isn't configured for this customer type (e.g. `signatory` on `individual`, or `power_of_attorney` on any current customer type). | Use one of the authority types listed for this customer type; see [authority composition](/docs/onboarding/applications#authority-composition). |
 | `Authority '{at}' on '{ct}' customer requires a {expected} person, got {actual} (person_id=...).` | The referenced person's `person_type` doesn't match the slot (e.g. a natural person submitted as a business `owner`, or a legal person submitted as a `signatory`). | Either use a person of the correct type, or change the `authority_type` to one that accepts the person you have. |
 | `Customer type '{ct}' requires at least {n} '{at}' authority; got {m}.` | A mandatory authority slot wasn't filled the minimum number of times (e.g. a business application with zero signatories, or a joint application with zero joint owners). | Add the missing authorities. |
 | `Customer type '{ct}' allows at most {n} '{at}' authority; got {m}.` | A slot with an upper bound was over-supplied (e.g. two `owner` authorities on a business). | Remove the extras so the count matches the slot's maximum. |
@@ -71,13 +71,13 @@ Requirements are defined per `(customer_type, authority_type)` slot. These error
 
 ### Missing or mis-shaped requirements
 
-Required claims, consents, and evidence are defined per authority slot — a business `owner` and a business `signatory` have different required sets. These errors tell you which authority is short and exactly what's missing.
+Required claims, consents, and evidence are defined per authority slot; a business `owner` and a business `signatory` have different required sets. These errors tell you which authority is short and exactly what's missing.
 
 | `detail` pattern | Cause | Fix |
 |---|---|---|
-| `Missing required claims -- {person_id}: [...]` | The authority is missing one or more claims required for its specific slot. The missing list is what that slot needs — it's not shared across authority types. | Create the missing claims on the person before resubmitting. See [requirements by customer type](/docs/onboarding/applications#requirements-by-customer-type) for each slot's claim set. |
+| `Missing required claims -- {person_id}: [...]` | The authority is missing one or more claims required for its specific slot. The missing list is what that slot needs; it's not shared across authority types. | Create the missing claims on the person before resubmitting. See [requirements by customer type](/docs/onboarding/applications#requirements-by-customer-type) for each slot's claim set. |
 | `Missing required consents for person {person_id}: [...]` | One of the required consent types isn't present for the authority. | Add a consent entry for each missing `consent_type`, attributed to that person. |
-| `No acceptable evidence bundle submitted for claim '{claim_type}' on person {person_id}.` | You didn't provide any of the bundles that satisfy the evidence requirement for that claim on that authority. | Supply one of the acceptable bundles — see [requirements by customer type](/docs/onboarding/applications#requirements-by-customer-type). |
+| `No acceptable evidence bundle submitted for claim '{claim_type}' on person {person_id}.` | You didn't provide any of the bundles that satisfy the evidence requirement for that claim on that authority. | Supply one of the acceptable bundles; see [requirements by customer type](/docs/onboarding/applications#requirements-by-customer-type). |
 | `Missing required claims on {relationship_type} {related_person_id}: [...]` | A related person (e.g. a director) is missing the claims required for their relationship type. | Add the missing claims on the related person. |
 
 ### Consent errors
@@ -85,10 +85,10 @@ Required claims, consents, and evidence are defined per authority slot — a bus
 | `detail` pattern | Cause | Fix |
 |---|---|---|
 | `Consent '...' is missing a legal_document_version.` | A legal-document consent (anything other than `data_accuracy`) was sent without `legal_document_version`. | Supply the ID of the legal document version the customer agreed to. |
-| `Consent '...' references unknown legal_document_version: ...` | The referenced version doesn't exist. | Fetch valid versions via [`GET /legal-documents/{legal_document_id}/versions`](/api-reference/list-versions-of-a-legal-document). |
+| `Consent '...' references unknown legal_document_version:...` | The referenced version doesn't exist. | Fetch valid versions via [`GET /legal-documents/{legal_document_id}/versions`](/api-reference/list-versions-of-a-legal-document). |
 | `Consent '...' references a legal_document_version whose document_type is '...'; consent_type and document_type must match.` | You pointed a consent at a legal document version of a different type (e.g. `consent_type: terms_of_service` but the referenced version is a `risk_disclosures` document). | Reference a version whose document type matches the `consent_type`. |
 | `Consent '...' is attributed to person '...', which is neither an authority nor a related person on this application.` | The consent's `person` isn't on the application. | Attribute the consent to an authority or a person declared in a `relationships` claim. |
-| `Consent '...' must not include a legal_document_version.` | A `data_accuracy` consent was sent with a `legal_document_version`. | `data_accuracy` is an attestation — omit `legal_document_version`. |
+| `Consent '...' must not include a legal_document_version.` | A `data_accuracy` consent was sent with a `legal_document_version`. | `data_accuracy` is an attestation; omit `legal_document_version`. |
 
 ### Evidence errors
 
@@ -97,7 +97,7 @@ Required claims, consents, and evidence are defined per authority slot — a bus
 | `Evidence type '...' is not allowed for customer type '...'` | The evidence type is unsupported for this customer type (e.g. `certificate_of_good_standing` on an `individual` application). | Remove the evidence item or switch to an allowed type. |
 | `Evidence type '...' does not accept a document_type.` | A `document_type` was supplied for `selfie`. | Omit `document_type` for `selfie`. |
 | `document_type '...' is not compatible with evidence_type '...'` | The combination isn't in the [evidence taxonomy](/docs/onboarding/applications#evidence-taxonomy). | Use one of the allowed document types for that evidence type. |
-| `Evidence type '...' is not allowed for natural person '...'` *or* `... for legal person '...'` | You attributed legal-entity evidence to a natural person, or natural-person evidence to a legal person. Common cause: attaching `board_resolution` to the legal-entity owner instead of to the natural person it authorises (a signatory, director, or authorised signatory). | Attribute the evidence item to a person of the correct type. `board_resolution` belongs to the authorised natural person — see [evidence taxonomy](/docs/onboarding/applications#which-evidence-types-apply-to-each-person-type). |
+| `Evidence type '...' is not allowed for natural person '...'` *or* `... for legal person '...'` | You attributed legal-entity evidence to a natural person, or natural-person evidence to a legal person. Common cause: attaching `board_resolution` to the legal-entity owner instead of to the natural person it authorises (a signatory, director, or authorised signatory). | Attribute the evidence item to a person of the correct type. `board_resolution` belongs to the authorised natural person; see [evidence taxonomy](/docs/onboarding/applications#which-evidence-types-apply-to-each-person-type). |
 | `Evidence '...' is attributed to person '...', which is neither an authority nor a related person on this application.` | The evidence's `person` isn't on the application. | Attribute it to an authority or a declared related person. |
 
 ### Relationship errors
@@ -110,7 +110,7 @@ Required claims, consents, and evidence are defined per authority slot — a bus
 
 | HTTP | `code` | `detail` | Cause | Fix |
 |---|---|---|---|---|
-| 409 | `conflict` | `An active onboarding application already exists for this combination of customer type and authorities.` | An earlier application with the same `customer_type` + authority set is still `pending` or `processing`. | Wait for that application to terminate, or contact support to cancel it. Consents and evidence don't affect de-duplication — see [duplicate submissions](/docs/onboarding/applications#duplicate-submissions). |
+| 409 | `conflict` | `An active onboarding application already exists for this combination of customer type and authorities.` | An earlier application with the same `customer_type` + authority set is still `pending` or `processing`. | Wait for that application to terminate, or contact support to cancel it. Consents and evidence don't affect de-duplication; see [duplicate submissions](/docs/onboarding/applications#duplicate-submissions). |
 
 ### Auth errors
 

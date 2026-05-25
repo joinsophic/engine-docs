@@ -26,12 +26,12 @@ Check that all internal links in documentation pages point to valid destinations
    - Open the target page.
    - Verify a heading exists that would produce that anchor ID (Mintlify generates IDs by lowercasing and hyphenating heading text, e.g. `## Handling Duplicates` becomes `#handling-duplicates`).
 
-4. **Flag auto-generated page links.** Links to API endpoint pages (e.g. `/api-reference/create-a-webhook`) depend on how Mintlify generates slugs from the OpenAPI spec. These can't be verified statically — flag them for manual review.
+4. **Flag auto-generated page links.** Links to API endpoint pages (e.g. `/api-reference/create-a-webhook`) depend on how Mintlify generates slugs from the OpenAPI spec. These can't be verified statically; flag them for manual review.
 
 5. **Check for stale references.** If any files were renamed or moved during this session, search all `.mdx` files for references to the old paths and update them.
 
 ## Common Issues
 
 - **Renamed pages without updating references.** Always search for the old path after renaming.
-- **Wrong slug for auto-generated API pages.** The slug depends on the OpenAPI operationId or method+path — when unsure, note the link for verification.
+- **Wrong slug for auto-generated API pages.** The slug depends on the OpenAPI operationId or method+path. When unsure, note the link for verification.
 - **Page exists on disk but missing from docs.json.** The page won't be accessible until it's added to navigation.

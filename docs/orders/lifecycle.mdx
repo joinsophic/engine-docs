@@ -24,7 +24,7 @@ placed → pending → executing → filled → settled
    └─────────┴──────────┴──→ cancelled
 ```
 
-The typical happy path is `placed` → `pending` → `executing` → `filled` → `settled`. Not every order passes through `pending` — if no prerequisites need to be resolved, the order can move directly from `placed` to `executing`.
+The typical happy path is `placed` → `pending` → `executing` → `filled` → `settled`. Not every order passes through `pending`; if no prerequisites need to be resolved, the order can move directly from `placed` to `executing`.
 
 An order can be cancelled from `placed`, `pending`, or `executing`, but not after it's been `filled`.
 
@@ -35,7 +35,7 @@ An order can be cancelled from `placed`, `pending`, or `executing`, but not afte
     You send a `POST` request with the instrument, side, and either `cash_amount` (buy) or `quantity` (sell). We validate the request, check that the instrument is tradable, verify the account has sufficient funds or units, reserve the cash or units, and submit the order for execution. The order starts at `placed`.
   </Step>
   <Step title="The order becomes pending (sometimes)">
-    If the order is waiting on a prerequisite — for example, a price feed update or a pre-trade compliance check — it moves to `pending`. Many orders skip this step entirely.
+    If the order is waiting on a prerequisite (for example, a price feed update or a pre-trade compliance check) it moves to `pending`. Many orders skip this step entirely.
   </Step>
   <Step title="The order starts executing">
     Once submitted to our execution infrastructure, the order moves to `executing`. At this point, the order is actively being worked.
@@ -52,8 +52,8 @@ An order can be cancelled from `placed`, `pending`, or `executing`, but not afte
 
 An order can be cancelled at any point before it fills:
 
-- **By the system** — We'll cancel an order if validation fails during processing (e.g. the instrument stops trading, or the account is suspended), or if execution fails for a reason that can't be retried.
-- **During execution** — If the order is `executing`, cancellation depends on whether trades have already been recorded. If no trades have been executed, the order can be cancelled.
+- **By the system**: We'll cancel an order if validation fails during processing (e.g. the instrument stops trading, or the account is suspended), or if execution fails for a reason that can't be retried.
+- **During execution**: If the order is `executing`, cancellation depends on whether trades have already been recorded. If no trades have been executed, the order can be cancelled.
 
 When an order is cancelled, any reserved cash or units are released back to the account.
 
@@ -70,7 +70,7 @@ An order is considered complete when it reaches one of these terminal states:
 | `settled` | The order was executed and all trades have settled. |
 | `cancelled` | The order was cancelled and won't be executed. |
 
-Your integration should handle both. Don't assume every order will eventually settle — always implement a path for cancellations.
+Your integration should handle both. Don't assume every order will eventually settle; always implement a path for cancellations.
 
 ## Webhook events
 
@@ -114,5 +114,5 @@ We may add new fields to event payloads at any time. Your integration should ign
 </Warning>
 
 <Note>
-Webhook delivery is at-least-once — your handler may receive the same event more than once. Use the event ID or `Webhook-Id` header to [deduplicate](/docs/webhooks/deliveries#handling-duplicates).
+Webhook delivery is at-least-once; your handler may receive the same event more than once. Use the event ID or `Webhook-Id` header to [deduplicate](/docs/webhooks/deliveries#handling-duplicates).
 </Note>

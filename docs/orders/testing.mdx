@@ -3,7 +3,7 @@ title: Testing
 description: "Predefined order outcomes you can trigger in the sandbox environment"
 ---
 
-In the **sandbox environment**, order execution is deterministic. You exercise specific outcomes — full fill, unfilled cancel, or partial fill — by placing orders with particular field values. We ship a fixed set of scenarios; you **cannot** add or change them.
+In the **sandbox environment**, order execution is deterministic. You exercise specific outcomes (full fill, unfilled cancel, or partial fill) by placing orders with particular field values. We ship a fixed set of scenarios; you **cannot** add or change them.
 
 Testing execution is enabled on our side for the sandbox environment.
 
@@ -18,7 +18,7 @@ Matchers use the same fields you send when [placing an order](/docs/orders/overv
 - **Everything else:** default full fill.
 
 <Warning>
-Trigger values must match **exactly**. Use `"5001"`, not `5001` or `"5001.00"`. A buy with `cash_amount` of `"5001.00"` will not hit the cancel scenario — it falls through to the default full fill. The same applies to sell `quantity` values (for example `"20"`, not `20` or `"20.00"`).
+Trigger values must match **exactly**. Use `"5001"`, not `5001` or `"5001.00"`. A buy with `cash_amount` of `"5001.00"` will not hit the cancel scenario; it falls through to the default full fill. The same applies to sell `quantity` values (for example `"20"`, not `20` or `"20.00"`).
 </Warning>
 
 ## Scenario reference
@@ -36,7 +36,7 @@ Some orders pass through `pending` before `executing`; many skip `pending` entir
 
 ## Partial fills
 
-Partial scenarios are easy to misread. We **do not** end the order in `cancelled` — we record a trade for a fraction of the order, cancel the remainder at the broker, then mark the order `filled` because some quantity executed.
+Partial scenarios are easy to misread. We **do not** end the order in `cancelled`; we record a trade for a fraction of the order, cancel the remainder at the broker, then mark the order `filled` because some quantity executed.
 
 You'll receive `trade.executed`, then `order.filled` (not `order.cancelled`). Fetch the order or trade via the API to verify `traded_quantity` and related fields.
 
@@ -235,7 +235,7 @@ Expect `trade.executed` with `quantity` of `10`, then `order.filled`.
 
 ## Tracking results
 
-Subscribe to [webhooks](/docs/webhooks/overview) for real-time updates, or poll [Retrieve order](/api-reference/retrieve-an-order) after each placement. Webhook delivery is at-least-once — deduplicate using the event ID or `Webhook-Id` header.
+Subscribe to [webhooks](/docs/webhooks/overview) for real-time updates, or poll [Retrieve order](/api-reference/retrieve-an-order) after each placement. Webhook delivery is at-least-once; deduplicate using the event ID or `Webhook-Id` header.
 
 <Note>
 Sandbox execution does not mirror production routing, venue behavior, or FIX lifecycles. Use it to test your integration against predictable order and trade outcomes, not to validate production execution logic.

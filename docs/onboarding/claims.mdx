@@ -7,7 +7,7 @@ A **claim** (`clm_...`) is a typed data point on a [person](/docs/onboarding/per
 
 ## Lifecycle
 
-Every claim row carries a `status` plus two retirement timestamps — `archived_at` (pending-only) and `superseded_at` (verified-only) — plus a convenience `lifecycle` discriminator derived from them.
+Every claim row carries a `status` plus two retirement timestamps (`archived_at` (pending-only) and `superseded_at` (verified-only)) plus a convenience `lifecycle` discriminator derived from them.
 
 ### `status`
 
@@ -23,7 +23,7 @@ Every claim row carries a `status` plus two retirement timestamps — `archived_
 | `archived_at` | pending rows only | Stamped when a subsequent `POST /persons/{id}/claims` for the same `(person, claim_type)` replaces this pending row. |
 | `superseded_at` | verified rows only | Stamped when compliance approves a newer pending and displaces this verified row as the authoritative value. |
 
-At most one row per `(person, claim_type)` is "current" for each status — the current pending (`status=pending AND archived_at IS NULL`) and the current verified (`status=verified AND superseded_at IS NULL`).
+At most one row per `(person, claim_type)` is "current" for each status; the current pending (`status=pending AND archived_at IS NULL`) and the current verified (`status=verified AND superseded_at IS NULL`).
 
 ### `lifecycle`
 
@@ -31,7 +31,7 @@ At most one row per `(person, claim_type)` is "current" for each status — the 
 
 | Value | Meaning |
 |---|---|
-| `active` | The most recent verified claim for its type — the currently authoritative value. |
+| `active` | The most recent verified claim for its type; the currently authoritative value. |
 | `in_flight` | A pending claim waiting for compliance to verify it. |
 | `historical` | A claim (pending or verified) that's been replaced by a newer one. Kept for audit. |
 
@@ -47,7 +47,7 @@ pending ──▶ verified
 | `pending` | `verified` | Compliance review. If a prior `active` verified of the same type exists, its `superseded_at` is stamped in the same step and it becomes `historical`. Not self-service. |
 
 <Note>
-A person can have more than one claim of the same `claim_type`. The current value is the row whose `lifecycle` is `active`. Submitting a new claim of the same type archives the current pending (if any) atomically and inserts a fresh `in_flight` pending. That new row takes over as `active` once compliance verifies it — which also stamps `superseded_at` on the prior active row.
+A person can have more than one claim of the same `claim_type`. The current value is the row whose `lifecycle` is `active`. Submitting a new claim of the same type archives the current pending (if any) atomically and inserts a fresh `in_flight` pending. That new row takes over as `active` once compliance verifies it; which also stamps `superseded_at` on the prior active row.
 </Note>
 
 ### Updating a claim value
@@ -132,11 +132,11 @@ String json = """
     """;
 
 HttpRequest request = HttpRequest.newBuilder()
-    .uri(URI.create("https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims"))
-    .header("Authorization", "Bearer YOUR_ACCESS_TOKEN")
-    .header("Content-Type", "application/json")
-    .POST(HttpRequest.BodyPublishers.ofString(json))
-    .build();
+   .uri(URI.create("https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims"))
+   .header("Authorization", "Bearer YOUR_ACCESS_TOKEN")
+   .header("Content-Type", "application/json")
+   .POST(HttpRequest.BodyPublishers.ofString(json))
+   .build();
 ```
 
 ```csharp C#
@@ -181,7 +181,7 @@ The response is the full claim:
 | `person` | ID of the person this claim belongs to. |
 | `created_at` | ISO-8601 timestamp of when the claim was submitted. |
 | `status` | `pending` or `verified`. See [lifecycle](#lifecycle). |
-| `lifecycle` | `active`, `in_flight`, or `historical`. Derived per row — tells you whether this is the current value, the current pending update, or history. See [lifecycle](#lifecycle). |
+| `lifecycle` | `active`, `in_flight`, or `historical`. Derived per row; tells you whether this is the current value, the current pending update, or history. See [lifecycle](#lifecycle). |
 | `verified_at` | ISO-8601 timestamp of verification, or `null` if still pending. |
 | `superseded_at` | ISO-8601 timestamp stamped by compliance when a newer verified claim of the same type displaces this verified row. `null` while this is the current `active` verified. Only ever set on verified rows. |
 | `archived_at` | ISO-8601 timestamp stamped when a subsequent `POST /persons/{id}/claims` for the same `claim_type` replaces this pending row. `null` while this is the current `in_flight` pending. Only ever set on pending rows. |
@@ -190,7 +190,7 @@ The response is the full claim:
 
 ## Listing and retrieving claims
 
-List a person's claims, optionally filtered by type or status. By default the endpoint returns **every row** for the person — current and historical — newest-first by `created_at` (with `id` as a tiebreaker). This gives you an audit-ready view without a second request. Pass `?include_history=false` to collapse to at most two rows per `claim_type`: the current `active` verified (if any) and the current `in_flight` pending (if any).
+List a person's claims, optionally filtered by type or status. By default the endpoint returns **every row** for the person (current and historical) newest-first by `created_at` (with `id` as a tiebreaker). This gives you an audit-ready view without a second request. Pass `?include_history=false` to collapse to at most two rows per `claim_type`: the current `active` verified (if any) and the current `in_flight` pending (if any).
 
 <Warning>
 **Breaking change.** `include_history` previously defaulted to `false` (bare GET returned only current rows). It now defaults to `true` (bare GET returns full history). If you were relying on the old behavior, pass `?include_history=false` explicitly.
@@ -207,10 +207,10 @@ curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?claim_type=re
 | `status` | `pending`, `verified` | Optional. `status=pending` on the default view returns every pending (current + archived); `status=verified` returns every verified (current + superseded). Combine with `include_history=false` to get just the current pending or current verified per type. |
 | `include_history` | `true`, `false` | Optional, default `true`. Set to `false` to collapse to the current rows only (`active` + `in_flight`). |
 
-Retrieve a specific claim by ID via [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim). This always returns the exact claim you asked for — including archived pendings and superseded verifieds — with `lifecycle` on the response.
+Retrieve a specific claim by ID via [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim). This always returns the exact claim you asked for (including archived pendings and superseded verifieds) with `lifecycle` on the response.
 
 <Note>
-Claims can't be deleted. To correct a pending submission — or update a previously verified one — post a new claim of the same type via [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). Any current pending for that type is archived automatically. See [updating a claim value](#updating-a-claim-value).
+Claims can't be deleted. To correct a pending submission (or update a previously verified one) post a new claim of the same type via [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). Any current pending for that type is archived automatically. See [updating a claim value](#updating-a-claim-value).
 </Note>
 
 ## Claim type reference
@@ -381,7 +381,7 @@ The legal registration address.
 | `postal_code` | string | yes | |
 | `city` | string | yes | |
 | `country_code` | string | yes | ISO-3166-1 alpha-2. |
-| `operating_address_is_same` | boolean | no | Defaults to `false`. Set `true` if the entity operates from its registered address — in that case the `operating_address` claim and `proof_of_operating_address` evidence aren't required on an application. |
+| `operating_address_is_same` | boolean | no | Defaults to `false`. Set `true` if the entity operates from its registered address; in that case the `operating_address` claim and `proof_of_operating_address` evidence aren't required on an application. |
 
 #### `operating_address`
 

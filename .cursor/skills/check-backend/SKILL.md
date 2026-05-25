@@ -12,7 +12,7 @@ When writing or editing documentation about specific API behavior, verify the va
 - When documenting specific numbers: retry counts, timeout values, delay intervals.
 - When describing headers, status enums, error types, or schemas.
 - When a user asks you to document a feature and you're unsure of the exact details.
-- When updating existing docs — the backend may have changed since the docs were last written.
+- When updating existing docs, the backend may have changed since the docs were last written.
 
 ## Instructions
 

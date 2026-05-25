@@ -22,7 +22,8 @@ Read through the page and check for the following issues. Fix any you find.
 - **"Sophic Engine" in body text.** Replace with "we" or "our API". Only acceptable in page titles or site metadata.
 - **Passive voice where active is clearer.** Prefer "we retry the delivery" over "the delivery is retried".
 - **Overly formal phrasing.** Replace "it is necessary to" → "you'll need to", "one should" → "you should", "the implementor" → "you".
-- **Missing contractions.** Use "we'll", "won't", "don't", "you'll" — not "we will", "will not", "do not", "you will".
+- **Missing contractions.** Use "we'll", "won't", "don't", "you'll", not "we will", "will not", "do not", "you will".
+- **Em dashes in prose.** Avoid em dashes (—) in sentences. Replace with commas, colons, parentheses, or a separate sentence. Em dashes are fine as empty placeholders in table cells.
 
 ### Structural issues
 
@@ -47,3 +48,4 @@ Verify before finishing:
 - Related pages are cross-linked
 - `<Note>` and `<Warning>` used for gotchas
 - No unnecessary jargon or over-explanation
+- No em dashes (—) in prose (table cell placeholders are OK)

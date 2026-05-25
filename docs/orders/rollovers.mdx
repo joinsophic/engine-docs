@@ -5,7 +5,7 @@ description: "How automatic rollovers work for treasury bill positions"
 
 When a treasury bill matures, the investor receives the face value in cash. A **rollover** reinvests that cash into a new bill of a similar maturity, so the customer stays invested without any manual action.
 
-Rollovers apply to **bills only** — bonds don't support automatic rollovers.
+Rollovers apply to **bills only**: bonds don't support automatic rollovers.
 
 ## How it works
 
@@ -13,7 +13,7 @@ When a customer buys a bill with `automatic_rollover` set to `true`, we'll autom
 
 ## Timing
 
-We place the rollover order **before** the bill matures — early enough that the new buy order can settle by the maturity date. The exact timing depends on the instrument's settlement cycle:
+We place the rollover order **before** the bill matures; early enough that the new buy order can settle by the maturity date. The exact timing depends on the instrument's settlement cycle:
 
 | Settlement cycle | Rollover placed | Example |
 |---|---|---|
@@ -35,7 +35,7 @@ The rollover creates a brief period where the customer holds both the maturing b
     A buy order is placed for the new bill, using the nominal value of the maturing position as the cash amount. This order has `purpose` set to `rollover`.
   </Step>
   <Step title="The new position is created">
-    Once the rollover order executes, the customer has a new position in the replacement bill. Cash is debited from the account to fund this purchase — this means the account's cash balance may go negative until the old bill matures and pays out.
+    Once the rollover order executes, the customer has a new position in the replacement bill. Cash is debited from the account to fund this purchase; this means the account's cash balance may go negative until the old bill matures and pays out.
   </Step>
   <Step title="The old bill matures">
     On the maturity date, the old bill's face value is credited back to the account as cash, and the old position is closed.
@@ -56,4 +56,4 @@ Customers can toggle `automatic_rollover` on or off for a position, but there's 
 
 ## Webhook events
 
-Rollover orders fire the same [order events](/docs/orders/lifecycle#webhook-events) as any other order (`order.placed`, `order.filled`, etc.). You can distinguish them by checking the `purpose` field on the order — rollover orders have `purpose` set to `rollover`.
+Rollover orders fire the same [order events](/docs/orders/lifecycle#webhook-events) as any other order (`order.placed`, `order.filled`, etc.). You can distinguish them by checking the `purpose` field on the order; rollover orders have `purpose` set to `rollover`.

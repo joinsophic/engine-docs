@@ -5,7 +5,7 @@ description: "Natural and legal parties that fuel onboarding applications"
 
 A **person** (`per_...`) is a natural person (human) or legal person (company, trust, other entity). Persons are standalone until an [onboarding application](/docs/onboarding/applications) referencing them is approved.
 
-Every person is built from [claims](/docs/onboarding/claims) — typed data points capturing identity, residence, ownership, PEP status, and so on. Every `POST /persons` must include at least the mandatory claim set for its `person_type`:
+Every person is built from [claims](/docs/onboarding/claims), typed data points capturing identity, residence, ownership, PEP status, and so on. Every `POST /persons` must include at least the mandatory claim set for its `person_type`:
 
 | `person_type` | Mandatory claims |
 |---|---|
@@ -23,7 +23,7 @@ Omitting any of these returns `400 invalid_request` with detail `<person_type> p
 | `natural` | A human | `identity`, `contact_details`, `nationalities`, `residence`, `tax_residencies`, `pep_status`, `employment`, `financial_profile` |
 | `legal` | A company, trust, partnership, or other legal entity | `registration`, `contact_details`, `lei`, `registered_address`, `business_nature`, `relationships` |
 
-`operating_address` is also a legal-person claim. You only add it when the legal owner's `registered_address` has `operating_address_is_same` set to `false` — see [conditional requirements](/docs/onboarding/applications#conditional-requirements).
+`operating_address` is also a legal-person claim. You only add it when the legal owner's `registered_address` has `operating_address_is_same` set to `false`; see [conditional requirements](/docs/onboarding/applications#conditional-requirements).
 
 Legal persons declare counterparties (directors, shareholders, UBOs, trustees, signatories) via a [`relationships`](/docs/onboarding/claims#relationships) claim. Related persons must already exist.
 
@@ -31,7 +31,7 @@ Claim types are enforced against `person_type`: mismatches on `POST /persons` or
 
 ## Creating a person
 
-`POST /persons` with `person_type` and a non-empty `claims` array. Creation is **atomic** — if any claim fails validation, nothing is persisted.
+`POST /persons` with `person_type` and a non-empty `claims` array. Creation is **atomic**: if any claim fails validation, nothing is persisted.
 
 <CodeGroup>
 ```python Python
@@ -184,11 +184,11 @@ String json = """
     """;
 
 HttpRequest request = HttpRequest.newBuilder()
-    .uri(URI.create("https://api.engine.usesophic.com/persons"))
-    .header("Authorization", "Bearer YOUR_ACCESS_TOKEN")
-    .header("Content-Type", "application/json")
-    .POST(HttpRequest.BodyPublishers.ofString(json))
-    .build();
+   .uri(URI.create("https://api.engine.usesophic.com/persons"))
+   .header("Authorization", "Bearer YOUR_ACCESS_TOKEN")
+   .header("Content-Type", "application/json")
+   .POST(HttpRequest.BodyPublishers.ofString(json))
+   .build();
 
 HttpResponse<String> response = client.send(request,
     HttpResponse.BodyHandlers.ofString());
@@ -282,7 +282,7 @@ A successful request returns `201 Created`:
 | `claims` | The claims you provided. Each element carries `id`, `created_at`, `status: pending`, `claim_type`, and the fields defined for that `claim_type`. To get the full claim (with `person`, `lifecycle`, `verified_at`, `superseded_at`, `archived_at`) for a specific claim later, call [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim). See [claim lifecycle](/docs/onboarding/claims#lifecycle). |
 
 <Note>
-Persons don't have their own status — lifecycle lives on claims. See [lifecycle](/docs/onboarding/claims#lifecycle).
+Persons don't have their own status; lifecycle lives on claims. See [lifecycle](/docs/onboarding/claims#lifecycle).
 </Note>
 
 <Warning>
@@ -291,14 +291,14 @@ Persons don't have their own status — lifecycle lives on claims. See [lifecycl
 
 ## Retrieving a person
 
-Use [`GET /persons/{id}`](/api-reference/retrieve-a-person) to fetch the person record. Claims aren't included — list them separately.
+Use [`GET /persons/{id}`](/api-reference/retrieve-a-person) to fetch the person record. Claims aren't included; list them separately.
 
 ```bash
 curl https://api.engine.usesophic.com/persons/per_m4k7r9s2 \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
-Use [`GET /persons/{person_id}/claims`](/api-reference/list-claims-for-a-person) to list the person's claims, filtered by `claim_type` or `status`. By default you get every row for the person — current and historical — newest-first. Pass `include_history=false` to collapse to just the current rows (`active` + `in_flight`) per type. See [listing and retrieving claims](/docs/onboarding/claims#listing-and-retrieving-claims).
+Use [`GET /persons/{person_id}/claims`](/api-reference/list-claims-for-a-person) to list the person's claims, filtered by `claim_type` or `status`. By default you get every row for the person (current and historical) newest-first. Pass `include_history=false` to collapse to just the current rows (`active` + `in_flight`) per type. See [listing and retrieving claims](/docs/onboarding/claims#listing-and-retrieving-claims).
 
 ```bash
 curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?status=verified" \
@@ -354,6 +354,6 @@ Create one person for the legal entity and one for every director, shareholder, 
 }
 ```
 
-Related persons must already exist — an unknown `related_person` ID fails the request with `400` and nothing is persisted.
+Related persons must already exist; an unknown `related_person` ID fails the request with `400` and nothing is persisted.
 
 See [claim types](/docs/onboarding/claims#relationships) for the full `relationships` schema.

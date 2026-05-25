@@ -9,7 +9,7 @@ Onboard a customer by describing the parties involved as **persons** and **claim
 
 <Steps>
   <Step title="Build the parties">
-    Create a [person](/docs/onboarding/persons) for every party — the customer plus any directors, shareholders, or beneficial owners for a business — from a list of typed [claims](/docs/onboarding/claims).
+    Create a [person](/docs/onboarding/persons) for every party (the customer plus any directors, shareholders, or beneficial owners for a business) from a list of typed [claims](/docs/onboarding/claims).
   </Step>
   <Step title="Submit the application">
     Submit a single [onboarding application](/docs/onboarding/applications) referencing those persons as **authorities**, attaching per-person **consents** and **evidence files**.
@@ -20,7 +20,7 @@ We validate synchronously against the customer type's required claims, evidence,
 
 ## Persons vs. customers
 
-A **person** (`per_...`) is a party — natural or legal — that you create. A [customer](/api-reference/retrieve-a-customer) is formed once an application is approved, establishing an active relationship with us; your persons are granted the requested authority over the customer and are linked to any provisioned accounts.
+A **person** (`per_...`) is a party (natural or legal) that you create. A [customer](/api-reference/retrieve-a-customer) is formed once an application is approved, establishing an active relationship with us; your persons are granted the requested authority over the customer and are linked to any provisioned accounts.
 
 <Note>
 You don't create customers directly. Submit an application and we provision the customer and accounts on approval.
@@ -63,7 +63,7 @@ Individual end-to-end. For a business, create a person for the legal entity plus
       }'
     ```
 
-    Keep the returned `id` — you'll reference it in the application.
+    Keep the returned `id`; you'll reference it in the application.
   </Step>
   <Step title="Upload evidence files">
     Upload the passport and selfie via the [Files API](/api-reference/create-a-file); hold onto the returned file IDs.
@@ -98,12 +98,12 @@ Individual end-to-end. For a business, create a person for the legal entity plus
     ```
   </Step>
   <Step title="Wait for compliance review">
-    You'll get back `status` `pending` with no `outcome` yet. Poll [`GET /onboarding-applications/{id}`](/docs/onboarding/applications#retrieving-an-application) for updates — the customer and accounts appear once compliance approves.
+    You'll get back `status` `pending` with no `outcome` yet. Poll [`GET /onboarding-applications/{id}`](/docs/onboarding/applications#retrieving-an-application) for updates; the customer and accounts appear once compliance approves.
   </Step>
 </Steps>
 
 <Note>
-Every consent here except `data_accuracy` references a `legal_document_version`. `data_accuracy` is an attestation — omit the field. List valid document versions via the [legal document versions endpoint](/api-reference/list-versions-of-a-legal-document). See [required consents](/docs/onboarding/applications#required-consents) for the full breakdown.
+Every consent here except `data_accuracy` references a `legal_document_version`. `data_accuracy` is an attestation; omit the field. List valid document versions via the [legal document versions endpoint](/api-reference/list-versions-of-a-legal-document). See [required consents](/docs/onboarding/applications#required-consents) for the full breakdown.
 </Note>
 
 ## Where to next
