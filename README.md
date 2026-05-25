@@ -4,16 +4,23 @@ Source for the Sophic Engine API documentation, built with [Mintlify](https://mi
 
 ## Local development
 
+Install node if you haven't. The project uses nvm so if you have that installed run:
+```bash
+nvm install
+```
+
+If not then download and install node `v24.16.0`.
+
 Install the [Mintlify CLI](https://www.npmjs.com/package/mint):
 
 ```bash
-npm i -g mint
+pnpm i
 ```
 
 Run the dev server from the root of this repo (where `docs.json` lives):
 
 ```bash
-mint dev
+pnpm run dev
 ```
 
 Preview at `http://localhost:3000`. Changes to `.mdx` files and `docs.json` are reflected automatically.
