@@ -130,7 +130,8 @@
 						"pages": [
 							"GET /accounts/{account_id}/positions/{position_id}",
 							"GET /accounts/{account_id}/positions",
-							"GET /accounts/{account_id}/cash-balances"
+							"GET /accounts/{account_id}/cash-balances",
+							"PUT /positions/{id}"
 						]
 					},
 					{
