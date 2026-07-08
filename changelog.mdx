@@ -1,3 +1,117 @@
 ---
 title: "Changelog"
+description: "API updates, new features, and breaking changes"
+rss: true
 ---
+
+Track what's new and what's changed in our API. We publish an entry for every user-facing change, and we're explicit about whether a change is backwards compatible or requires a new [API version](/api-reference/versioning).
+
+Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
+
+<Update label="July 3, 2026" description="additions">
+  ## ETF fields and person reads
+
+  We added risk metadata on ETF instruments and fixed person reads when
+  optional columns are unset in storage.
+
+  **Added**
+  - `sri` and `hedge_currency` on ETF instruments returned from [List instruments](/api-reference/list-instruments) and [Retrieve an instrument](/api-reference/retrieve-an-instrument).
+
+  **Fixed**
+  - [Retrieve a person](/api-reference/retrieve-a-person) no longer returns `500` when optional person columns are null in storage.
+</Update>
+
+<Update label="June 30, 2026" description="additions">
+  ## Richer instruments and more reliable valuation
+
+  Instrument responses carry more ETF detail, and account valuation reads are
+  more consistent across price providers.
+
+  **Added**
+  - `about` and `net_assets` on ETF instrument responses.
+  - `trading_increment` on instrument responses.
+  - Date-based API versioning via the `Api-Version` header (current version remains `2026-01-01`). See [Versioning](/api-reference/versioning).
+
+  **Changed** (backwards compatible)
+  - `investment_objective` on money market fund instruments is now optional in responses.
+  - `GET /accounts/{account_id}/valuation` uses the latest price per timestamp across providers.
+  - ETF listings no longer include `exchange_mic`; use the instrument's `exchange_id` (an ISO 10383 MIC code) instead.
+
+  **Fixed**
+  - Unrealized earnings percentage on `GET /accounts/{account_id}/earnings` no longer errors on zero cost basis.
+</Update>
+
+<Update label="May 11, 2026" description="additions">
+  ## On-the-run bills and fixed-income pricing detail
+
+  You can look up the current on-the-run treasury bill per maturity period,
+  and price responses now include accrued interest for bonds and bills.
+
+  **Added**
+  - `GET /bills/otr` to retrieve the on-the-run bill matrix for an issuer country. Periods with no matching bill are omitted.
+  - ETF as an instrument type on [List instruments](/api-reference/list-instruments) and [Retrieve an instrument](/api-reference/retrieve-an-instrument).
+  - `accrued_interest` on `GET /prices` responses.
+  - `next_coupon_date` on fixed income instruments.
+</Update>
+
+<Update label="April 23, 2026" description="additions">
+  ## Person creation and claim history
+
+  You can create persons directly and see the full claim audit trail by default
+  when listing claims.
+
+  **Added**
+  - [Create a person](/api-reference/create-a-person) to create a person from claims with verification evidence. See [Persons](/docs/onboarding/persons).
+  - `joint_customer` as a customer type on [Retrieve a customer](/api-reference/retrieve-a-customer).
+  - `archived_at` and `lifecycle` on person claim responses.
+  - Idempotent onboarding submissions: a duplicate pending [Submit an onboarding application](/api-reference/submit-an-onboarding-application) returns `409 conflict`.
+
+  **Changed** (backwards compatible)
+  - [List claims for a person](/api-reference/list-claims-for-a-person) now defaults to `include_history=true` (full audit trail, newest first). Pass `?include_history=false` to collapse to the current pending and verified row per claim type. See [Claims](/docs/onboarding/claims).
+</Update>
+
+<Update label="March 16, 2026" description="additions">
+  ## Events, legal documents, and lifecycle webhooks
+
+  We added event polling, versioned legal document reads, and a broader set of
+  webhook event types so you can react to orders, trades, positions, and
+  accounts without polling.
+
+  **Added**
+  - `GET /legal-documents` and related version and file download endpoints.
+  - [Retrieve a person claim](/api-reference/retrieve-a-person-claim).
+  - Webhook event types delivered to your registered endpoints: `order.placed`, `order.pending`, `order.executing`, `order.filled`, `order.settled`, `order.cancelled`, `trade.executed`, `trade.settled`, `position.opened`, `position.closing`, `position.closed`, `account.opened`, `account.suspended`, `account.activated`, `account.closing`, `account.closed`, and `customer.closed`. See [Webhooks](/docs/webhooks/overview).
+
+  **Changed** (backwards compatible)
+  - `POST /auth/token` accepts only the `client_credentials` grant.
+  - `purpose` is required on `POST /signed-uploads`.
+</Update>
+
+<Update label="February 19, 2026" description="additions">
+  ## Event reads and webhook delivery
+
+  You can list events from the API, and we started delivering webhook payloads
+  automatically with retries.
+
+  **Added**
+  - [List events](/api-reference/list-events) for tenant-scoped event reads.
+  - Automatic webhook delivery with retries for subscribed event types. See [Deliveries](/docs/webhooks/deliveries).
+</Update>
+
+<Update label="January 1, 2026" description="2026-01-01">
+  ## Initial API release
+
+  <Info>New API version `2026-01-01`. See [Versioning](/api-reference/versioning).</Info>
+
+  We shipped the first public version of our API. This is the baseline for
+  [date-based versioning](/api-reference/versioning); every future breaking
+  change will ship as a new dated version, and everything below is available
+  on `2026-01-01`.
+
+  **Added**
+  - Authentication with bearer tokens. See [Authentication](/api-reference/auth).
+  - Onboarding for persons, claims, and applications. See [Onboarding](/docs/onboarding/overview).
+  - Trading, holdings, valuation, and payments endpoints across accounts.
+  - Webhooks with at-least-once delivery, signature verification, and automatic retries. See [Webhooks](/docs/webhooks/overview).
+  - Idempotency support for write requests. See [Idempotency](/api-reference/idempotency).
+</Update>

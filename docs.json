@@ -197,6 +197,11 @@
 						]
 					}
 				]
+			},
+			{
+				"tab": "Changelog",
+				"icon": "clock-rotate-left",
+				"pages": ["changelog"]
 			}
 		]
 	},
