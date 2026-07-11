@@ -1,0 +1,210 @@
+name: update-docs
+
+on:
+  repository_dispatch:
+    types: [production-deployed]
+  workflow_dispatch:
+    inputs:
+      backend_prev_revision:
+        description: Previous production backend revision
+        required: true
+        type: string
+      backend_current_revision:
+        description: Current production backend revision
+        required: true
+        type: string
+      force_docs_update:
+        description: Run the docs agent even when generated artifacts are unchanged
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: production-api-docs-${{ github.event.client_payload.backend_current_revision || inputs.backend_current_revision }}
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CURSOR_AUTOMATION_WEBHOOK_URL: ${{ vars.CURSOR_AUTOMATION_WEBHOOK_URL }}
+      CURSOR_AUTOMATION_KEY: ${{ secrets.CURSOR_AUTOMATION_KEY }}
+      BACKEND_PREV_REVISION: ${{ github.event.client_payload.backend_prev_revision || inputs.backend_prev_revision }}
+      BACKEND_CURRENT_REVISION: ${{ github.event.client_payload.backend_current_revision || inputs.backend_current_revision }}
+      FORCE_DOCS_UPDATE: ${{ github.event.client_payload.force_docs_update || inputs.force_docs_update || false }}
+
+    steps:
+      - name: Check out documentation
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate deployment payload
+        shell: bash
+        run: |
+          if [[ ! "$BACKEND_PREV_REVISION" =~ ^[0-9a-fA-F]{8}$ ]]; then
+            echo "::error::backend_prev_revision must be an 8-character Git revision"
+            exit 1
+          fi
+          if [[ ! "$BACKEND_CURRENT_REVISION" =~ ^[0-9a-fA-F]{8}$ ]]; then
+            echo "::error::backend_current_revision must be an 8-character Git revision"
+            exit 1
+          fi
+          if [[ -z "$CURSOR_AUTOMATION_WEBHOOK_URL" ]]; then
+            echo "::error::Set the CURSOR_AUTOMATION_WEBHOOK_URL repository variable"
+            exit 1
+          fi
+          if [[ -z "$CURSOR_AUTOMATION_KEY" ]]; then
+            echo "::error::Set the CURSOR_AUTOMATION_KEY repository secret"
+            exit 1
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Download verified production artifacts
+        run: |
+          node scripts/sync-api-artifacts.mjs \
+            --expected-revision "$(printf '%s' "$BACKEND_CURRENT_REVISION" | tr '[:upper:]' '[:lower:]')"
+
+      - name: Check whether documentation work is needed
+        id: gate
+        shell: bash
+        run: |
+          if [[ -n "$(git status --porcelain -- \
+            openapi.json \
+            metadata/docs.json \
+            snippets/autogen/error-codes.jsx \
+            snippets/autogen/webhook-events.jsx)" ]]; then
+            generated_changed=true
+          else
+            generated_changed=false
+          fi
+
+          case "${FORCE_DOCS_UPDATE,,}" in
+            true|1|yes) force_docs_update=true ;;
+            *) force_docs_update=false ;;
+          esac
+
+          if [[ "$generated_changed" == true || "$force_docs_update" == true ]]; then
+            should_run=true
+          else
+            should_run=false
+            echo "::notice::Generated API artifacts are unchanged; skipping the docs agent"
+          fi
+
+          echo "generated_changed=$generated_changed" >> "$GITHUB_OUTPUT"
+          echo "should_run=$should_run" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare deployment branch
+        if: steps.gate.outputs.should_run == 'true'
+        id: branch
+        shell: bash
+        run: |
+          curr="$(printf '%s' "$BACKEND_CURRENT_REVISION" | tr '[:upper:]' '[:lower:]')"
+          branch="automation/api-docs-$curr"
+
+          git restore --worktree -- \
+            openapi.json \
+            metadata/docs.json \
+            snippets/autogen/error-codes.jsx \
+            snippets/autogen/webhook-events.jsx
+
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+            git fetch origin "$branch"
+            git switch --create "$branch" --track "origin/$branch"
+          else
+            git switch --create "$branch"
+          fi
+
+          echo "name=$branch" >> "$GITHUB_OUTPUT"
+
+      - name: Regenerate artifacts on the deployment branch
+        if: steps.gate.outputs.should_run == 'true'
+        run: |
+          node scripts/sync-api-artifacts.mjs \
+            --expected-revision "$(printf '%s' "$BACKEND_CURRENT_REVISION" | tr '[:upper:]' '[:lower:]')"
+
+      - name: Commit generated artifacts
+        if: steps.gate.outputs.should_run == 'true'
+        id: commit
+        shell: bash
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "GitHub Actions"
+          git add \
+            openapi.json \
+            metadata/docs.json \
+            snippets/autogen/error-codes.jsx \
+            snippets/autogen/webhook-events.jsx
+
+          if git diff --cached --quiet; then
+            echo "created=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "[docs] Sync production API artifacts"
+            echo "created=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          git push --set-upstream origin HEAD
+
+      - name: Open generated documentation pull request
+        if: steps.gate.outputs.generated_changed == 'true'
+        id: pull_request
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DOCS_BRANCH: ${{ steps.branch.outputs.name }}
+        run: |
+          pull_request_url="$(gh pr list \
+            --head "$DOCS_BRANCH" \
+            --base main \
+            --state open \
+            --json url \
+            --jq '.[0].url')"
+
+          if [[ -z "$pull_request_url" ]]; then
+            pull_request_url="$(gh pr create \
+              --base main \
+              --head "$DOCS_BRANCH" \
+              --title "[docs] Update production API documentation" \
+              --body "Synchronizes the committed OpenAPI document and API metadata with backend revision \`$BACKEND_CURRENT_REVISION\`.")"
+          fi
+
+          echo "url=$pull_request_url" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger changelog automation
+        if: steps.gate.outputs.should_run == 'true'
+        shell: bash
+        env:
+          DOCS_BRANCH: ${{ steps.branch.outputs.name }}
+        run: |
+          jq -n \
+            --arg backend_prev_revision "$(printf '%s' "$BACKEND_PREV_REVISION" | tr '[:upper:]' '[:lower:]')" \
+            --arg backend_current_revision "$(printf '%s' "$BACKEND_CURRENT_REVISION" | tr '[:upper:]' '[:lower:]')" \
+            --arg branch "$DOCS_BRANCH" \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg pull_request_url "${{ steps.pull_request.outputs.url }}" \
+            '{
+              backend_prev_revision: $backend_prev_revision,
+              backend_current_revision: $backend_current_revision,
+              branch: $branch,
+              repository: $repository,
+              pull_request_url: $pull_request_url
+            }' > "$RUNNER_TEMP/cursor-payload.json"
+
+          curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            --request POST \
+            --header "Authorization: Bearer $CURSOR_AUTOMATION_KEY" \
+            --header "Content-Type: application/json" \
+            --data-binary "@$RUNNER_TEMP/cursor-payload.json" \
+            "$CURSOR_AUTOMATION_WEBHOOK_URL"

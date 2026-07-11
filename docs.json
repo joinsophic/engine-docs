@@ -30,7 +30,7 @@
 	},
 	"favicon": "/favicon.svg",
 	"api": {
-		"openapi": "https://api.engine.usesophic.com/openapi.json"
+		"openapi": "openapi.json"
 	},
 	"navigation": {
 		"tabs": [
@@ -77,7 +77,7 @@
 			{
 				"tab": "API Reference",
 				"icon": "square-terminal",
-				"openapi": "https://api.engine.usesophic.com/openapi.json",
+				"openapi": "openapi.json",
 				"groups": [
 					{
 						"group": "Topics",

@@ -1,0 +1,184 @@
+// Generated from metadata/docs.json. Do not edit manually.
+
+export const errorCodes = [
+  {
+    "code": "api_version_invalid",
+    "detail": "The Api-Version header is not a valid ISO-8601 date (YYYY-MM-DD)."
+  },
+  {
+    "code": "api_version_unsupported",
+    "detail": "The Api-Version header refers to a version that is not supported."
+  },
+  {
+    "code": "buy_order_forbidden",
+    "detail": "Buy orders are not enabled for this account."
+  },
+  {
+    "code": "client_request_id_too_long",
+    "detail": "The Client-Request-Id header value exceeds the maximum length."
+  },
+  {
+    "code": "conflict",
+    "detail": "The provided param or resource conflicts with an existing resource."
+  },
+  {
+    "code": "currency_not_supported",
+    "detail": "The requested currency is not supported for this account."
+  },
+  {
+    "code": "deposit_advance_forbidden",
+    "detail": "Deposit advances are not enabled for this account."
+  },
+  {
+    "code": "deposit_forbidden",
+    "detail": "Deposits are not enabled for this account."
+  },
+  {
+    "code": "duplicate",
+    "detail": "The provided param or resource already exists."
+  },
+  {
+    "code": "duplicate_funding_account",
+    "detail": "A funding account with the same IBAN and bank code already exists for this account."
+  },
+  {
+    "code": "duplicate_webhook",
+    "detail": "A webhook with the same URL already exists."
+  },
+  {
+    "code": "email_forbidden",
+    "detail": "The email address is not allowed for this operation."
+  },
+  {
+    "code": "expired",
+    "detail": "The provided param or resource has expired."
+  },
+  {
+    "code": "file_not_uploaded",
+    "detail": "The file has not been uploaded to the storage yet."
+  },
+  {
+    "code": "forbidden",
+    "detail": "The credentials are not authorized to perform this operation."
+  },
+  {
+    "code": "idempotency_key_too_long",
+    "detail": "The Idempotency-Key header value exceeds the maximum length."
+  },
+  {
+    "code": "instrument_not_trading",
+    "detail": "The instrument is not currently tradable."
+  },
+  {
+    "code": "insufficient_funds",
+    "detail": "The account does not have sufficient available cash balance."
+  },
+  {
+    "code": "insufficient_scope",
+    "detail": "The token does not have the required scope for this operation."
+  },
+  {
+    "code": "insufficient_units",
+    "detail": "The account does not have sufficient available units to sell."
+  },
+  {
+    "code": "invalid_client",
+    "detail": "The OAuth client is invalid, inactive, or not authorized for this request."
+  },
+  {
+    "code": "invalid_param",
+    "detail": "A parameter is invalid."
+  },
+  {
+    "code": "invalid_request",
+    "detail": "The request parameters are invalid."
+  },
+  {
+    "code": "invalid_token",
+    "detail": "The authentication credentials are invalid or expired."
+  },
+  {
+    "code": "invalid_trading_currency",
+    "detail": "The instrument is not tradable in the requested currency."
+  },
+  {
+    "code": "limit_budget_too_small",
+    "detail": "The cash budget is too small to buy one trading increment at the limit price."
+  },
+  {
+    "code": "method_not_allowed",
+    "detail": "This HTTP method is not allowed for this endpoint."
+  },
+  {
+    "code": "missing_param",
+    "detail": "A required parameter is missing."
+  },
+  {
+    "code": "missing_price",
+    "detail": "Pricing data is not available for this operation."
+  },
+  {
+    "code": "missing_token",
+    "detail": "The request is missing authentication credentials."
+  },
+  {
+    "code": "not_found",
+    "detail": "The requested resource does not exist."
+  },
+  {
+    "code": "order_cancel_forbidden",
+    "detail": "The order cannot be cancelled in its current state."
+  },
+  {
+    "code": "order_fill_forbidden",
+    "detail": "The order cannot be marked as filled in its current state."
+  },
+  {
+    "code": "payment_completion_forbidden",
+    "detail": "The payment cannot be completed in its current state."
+  },
+  {
+    "code": "professional_trader_required",
+    "detail": "This operation requires a professional trader authorization."
+  },
+  {
+    "code": "quote_already_consumed",
+    "detail": "The referenced quote has already been used to place an order."
+  },
+  {
+    "code": "quote_invalid",
+    "detail": "The referenced quote cannot be used. Please request a new one and retry."
+  },
+  {
+    "code": "quote_not_supported",
+    "detail": "Quotes are not supported for this instrument type."
+  },
+  {
+    "code": "refund_exceeds_refundable_amount",
+    "detail": "The requested refund amount exceeds the refundable amount."
+  },
+  {
+    "code": "sell_order_forbidden",
+    "detail": "Sell orders are not enabled for this account."
+  },
+  {
+    "code": "server_error",
+    "detail": "An unexpected internal error occurred."
+  },
+  {
+    "code": "signed_upload_expired",
+    "detail": "The signed upload has expired."
+  },
+  {
+    "code": "statement_period_invalid",
+    "detail": "The requested statement period is not valid for this account."
+  },
+  {
+    "code": "webhook_not_active",
+    "detail": "The webhook is not active."
+  },
+  {
+    "code": "withdrawal_forbidden",
+    "detail": "Withdrawals are not enabled for this account."
+  }
+];

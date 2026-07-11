@@ -33,7 +33,10 @@ Preview at `http://localhost:3000`. Changes to `.mdx` files and `docs.json` are 
 ## Project structure
 
 ```
-docs.json                       # Site config, navigation, OpenAPI spec
+docs.json                       # Site config and navigation
+openapi.json                    # Generated production OpenAPI spec
+metadata/docs.json              # Generated production docs metadata
+snippets/autogen/               # Error-code and webhook-event data generated from metadata
 docs/                           # Guides and how-to content ("Documentation" tab)
   introduction.mdx
   webhooks/
@@ -140,3 +143,30 @@ We model our documentation after [Stripe's API docs](https://docs.stripe.com/api
 ## Deployment
 
 Pushing to the default branch automatically deploys via the [Mintlify GitHub app](https://dashboard.mintlify.com/settings/organization/github-app).
+
+### Automatic docs updates
+
+The `update-docs` workflow listens for a `production-deployed` repository
+dispatch with this payload:
+
+```json
+{
+  "event_type": "production-deployed",
+  "client_payload": {
+    "backend_prev_revision": "<previous 8-character backend revision>",
+    "backend_current_revision": "<deployed 8-character backend revision>"
+  }
+}
+```
+
+Set the `CURSOR_AUTOMATION_WEBHOOK_URL` repository variable and the
+`CURSOR_AUTOMATION_KEY` repository secret before running the workflow. The
+workflow verifies production, commits the generated OpenAPI and metadata files
+to an `automation/api-docs-*` branch, opens a pull request, then sends that
+branch and the backend revision range to the Cursor automation.
+
+The workflow skips the branch and Cursor automation when `openapi.json`,
+`metadata/docs.json`, and the generated snippets are unchanged. To run the
+agent for a behavioral change that does not affect those files, set
+`client_payload.force_docs_update` to `true` or run the workflow manually with
+**Run the docs agent even when generated artifacts are unchanged** selected.
