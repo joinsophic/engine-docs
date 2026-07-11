@@ -3,10 +3,6 @@ title: Overview
 description: "Receive real-time event notifications"
 ---
 
-import { Table } from "/snippets/table.jsx";
-import { webhookEvents } from "/snippets/autogen/webhook-events.jsx";
-import { webhookEventsTableColumns } from "/snippets/variables.jsx";
-
 Webhooks let you receive real-time HTTP notifications when events happen in your account. Instead of polling the API for changes, you register a URL and we'll send a `POST` request to it whenever a relevant event is triggered.
 
 ## Setting up a webhook
@@ -25,13 +21,7 @@ curl -X POST https://api.engine.usesophic.com/webhooks \
 
 ## Webhook events
 
-We deliver the following events to every active webhook:
-
-<Table
-  columns={webhookEventsTableColumns}
-  data={webhookEvents}
-  rowKey="name"
-/>
+We deliver every [event type](/docs/webhooks/events) to each active webhook in your account.
 
 ## Webhook headers
 
@@ -58,12 +48,12 @@ When an event occurs, we send a `POST` request to your registered URL. The webho
     "id": "ord_xyz789",
     "resource_type": "order"
   },
-  "data": {
-    // ... event-specific data
-  },
+  "data": {},
   "created_at": "2026-01-15T10:30:00Z"
 }
 ```
+
+Events do not carry resource data in the payload. The `data` field is always empty. Use `resource.id` to fetch the resource and get its latest state. See [Events](/docs/webhooks/events) for the full list of event types.
 
 Your endpoint should return a `2xx` status code within **15 seconds** to acknowledge receipt. Any other status code, timeout, or connection error is treated as a failed delivery and will be [retried](/docs/webhooks/deliveries#retry-schedule). The maximum time we'll wait for a response is 25 seconds (5s connect + 15s read + 5s write).
 

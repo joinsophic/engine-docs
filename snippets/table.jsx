@@ -1,5 +1,5 @@
-export const Table = ({ columns, data, rowKey, title }) => {
-  const keyField = rowKey || columns[0]?.key;
+export const Table = ({ columns = [], data = [], idKey, title }) => {
+  const keyField = idKey || columns[0]?.key;
 
   const getColWidth = (col, index) => {
     if (col.width) return col.width;

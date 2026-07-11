@@ -1,0 +1,33 @@
+---
+title: Events
+description: "Webhook event types we deliver to your endpoint"
+---
+
+import { Table } from "/snippets/table.jsx";
+import { webhookEvents } from "/snippets/autogen/webhook-events.jsx";
+import { webhookEventsTableColumns } from "/snippets/variables.jsx";
+
+We send a webhook for each event listed below. Every active webhook in your account receives every event; we don't support per-event subscriptions yet.
+
+## Event payloads
+
+Event payloads follow the [Event](/api-reference/list-events) resource schema. The `name` field matches the event type in the table, and `resource` identifies the resource that changed.
+
+As of now, events do not carry any data in the `data` field. It is always an empty object. To get the latest state, fetch the resource using `resource.id` and `resource.resource_type` (for example, call [Retrieve order](/api-reference/retrieve-an-order) when `resource_type` is `order`).
+
+```json
+{
+  "id": "evt_abc123",
+  "name": "order.filled",
+  "resource": {
+    "id": "ord_xyz789",
+    "resource_type": "order"
+  },
+  "data": {},
+  "created_at": "2026-01-15T10:30:00Z"
+}
+```
+
+## Event types
+
+<Table columns={webhookEventsTableColumns} data={webhookEvents} idKey="name" />

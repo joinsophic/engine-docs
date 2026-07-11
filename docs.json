@@ -69,6 +69,7 @@
 							"docs/webhooks/overview",
 							"docs/webhooks/verifying-signatures",
 							"docs/webhooks/deliveries",
+							"docs/webhooks/events",
 							"docs/webhooks/best-practices"
 						]
 					}
