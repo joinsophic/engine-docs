@@ -3,6 +3,10 @@ title: Overview
 description: "Receive real-time event notifications"
 ---
 
+import { Table } from "/snippets/table.jsx";
+import { webhookEvents } from "/snippets/autogen/webhook-events.jsx";
+import { webhookEventsTableColumns } from "/snippets/variables.jsx";
+
 Webhooks let you receive real-time HTTP notifications when events happen in your account. Instead of polling the API for changes, you register a URL and we'll send a `POST` request to it whenever a relevant event is triggered.
 
 ## Setting up a webhook
@@ -18,6 +22,16 @@ curl -X POST https://api.engine.usesophic.com/webhooks \
     "url": "https://your-app.com/webhooks/sophic"
   }'
 ```
+
+## Webhook events
+
+We deliver the following events to every active webhook:
+
+<Table
+  columns={webhookEventsTableColumns}
+  data={webhookEvents}
+  rowKey="name"
+/>
 
 ## Webhook headers
 

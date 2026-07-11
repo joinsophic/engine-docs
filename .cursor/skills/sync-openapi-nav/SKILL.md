@@ -15,7 +15,8 @@ Keep the `docs.json` navigation in sync with the OpenAPI specification.
 
 ## Instructions
 
-1. **Fetch the OpenAPI spec.** The URL is in `docs.json` at `api.openapi`. Fetch it and list all available endpoints.
+1. **Read the OpenAPI spec.** The committed file is configured in `docs.json` at
+   `api.openapi`. Read it and list all available endpoints.
 
 2. **Compare with docs.json.** Check the `API Reference` tab's groups and pages. Each documented endpoint uses the format `"METHOD /path"`.
 

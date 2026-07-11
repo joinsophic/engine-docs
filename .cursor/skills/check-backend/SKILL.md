@@ -16,7 +16,15 @@ When writing or editing documentation about specific API behavior, verify the va
 
 ## Instructions
 
-1. The backend codebase is at `../backend` (sibling directory to this repo).
+1. Resolve the backend checkout:
+   - Use `../backend` when the sibling repository exists locally.
+   - In a cloud agent, clone `joinsophic/backend` into a temporary directory using the
+     authenticated GitHub integration.
+   - When the automation payload supplies `backend_prev_revision` and
+     `backend_current_revision`, validate both as 8-character Git revisions, resolve them
+     to full commits in the backend checkout, and inspect exactly
+     `backend_prev_revision..backend_current_revision`. Do not infer the deployed range
+     from a local branch.
 2. Search for the relevant domain logic. Common locations:
    - **Models:** `sophic/domain/*/models/`
    - **Actions/services:** `sophic/domain/*/actions.py`
