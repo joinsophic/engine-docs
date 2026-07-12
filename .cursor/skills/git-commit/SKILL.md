@@ -12,7 +12,7 @@ This skill is adapted from the sibling backend repository's `git-commit` skill.
 1. Run `pnpm build` before committing documentation or configuration changes.
 2. Review the complete diff and confirm generated files agree with their sources:
    - `openapi.json` comes from production `/openapi.json`.
-   - `metadata/docs.json` comes from production `/.meta/docs` with `revision` removed.
+   - `metadata/docs.json` comes from production `/.meta/docs`.
    - `snippets/autogen/error-codes.jsx` and
      `snippets/autogen/webhook-events.jsx` are generated from `metadata/docs.json`.
 3. Check that the diff contains no credentials, webhook URLs, access tokens, or environment files.

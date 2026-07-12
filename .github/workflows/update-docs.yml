@@ -5,12 +5,8 @@ on:
     types: [production-deployed]
   workflow_dispatch:
     inputs:
-      backend_prev_revision:
-        description: Previous production backend revision
-        required: true
-        type: string
-      backend_current_revision:
-        description: Current production backend revision
+      render_deploy_id:
+        description: Successful Engine API Render deployment ID
         required: true
         type: string
       force_docs_update:
@@ -24,7 +20,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: production-api-docs-${{ github.event.client_payload.backend_current_revision || inputs.backend_current_revision }}
+  group: production-api-docs-${{ github.event.client_payload.render_deploy_id || inputs.render_deploy_id }}
   cancel-in-progress: false
 
 jobs:
@@ -34,8 +30,9 @@ jobs:
     env:
       CURSOR_AUTOMATION_WEBHOOK_URL: ${{ vars.CURSOR_AUTOMATION_WEBHOOK_URL }}
       CURSOR_AUTOMATION_KEY: ${{ secrets.CURSOR_AUTOMATION_KEY }}
-      BACKEND_PREV_REVISION: ${{ github.event.client_payload.backend_prev_revision || inputs.backend_prev_revision }}
-      BACKEND_CURRENT_REVISION: ${{ github.event.client_payload.backend_current_revision || inputs.backend_current_revision }}
+      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+      RENDER_SERVICE_ID: ${{ vars.ENGINE_API_RENDER_SERVICE_ID }}
+      RENDER_DEPLOY_ID: ${{ github.event.client_payload.render_deploy_id || inputs.render_deploy_id }}
       FORCE_DOCS_UPDATE: ${{ github.event.client_payload.force_docs_update || inputs.force_docs_update || false }}
 
     steps:
@@ -47,12 +44,16 @@ jobs:
       - name: Validate deployment payload
         shell: bash
         run: |
-          if [[ ! "$BACKEND_PREV_REVISION" =~ ^[0-9a-fA-F]{8}$ ]]; then
-            echo "::error::backend_prev_revision must be an 8-character Git revision"
+          if [[ ! "$RENDER_DEPLOY_ID" =~ ^dep-[a-z0-9]+$ ]]; then
+            echo "::error::render_deploy_id must be a Render deployment ID"
             exit 1
           fi
-          if [[ ! "$BACKEND_CURRENT_REVISION" =~ ^[0-9a-fA-F]{8}$ ]]; then
-            echo "::error::backend_current_revision must be an 8-character Git revision"
+          if [[ ! "$RENDER_SERVICE_ID" =~ ^srv-[a-z0-9]+$ ]]; then
+            echo "::error::Set ENGINE_API_RENDER_SERVICE_ID to the Engine API Render service ID"
+            exit 1
+          fi
+          if [[ -z "$RENDER_API_KEY" ]]; then
+            echo "::error::Set the RENDER_API_KEY repository secret"
             exit 1
           fi
           if [[ -z "$CURSOR_AUTOMATION_WEBHOOK_URL" ]]; then
@@ -64,15 +65,83 @@ jobs:
             exit 1
           fi
 
+      - name: Resolve backend revision range from Render
+        shell: bash
+        run: |
+          render_api="https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys"
+          current_deploy="$(curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            --header "Accept: application/json" \
+            --header "Authorization: Bearer $RENDER_API_KEY" \
+            "$render_api/$RENDER_DEPLOY_ID")"
+
+          if [[ "$(jq -r '.status' <<< "$current_deploy")" != "live" ]]; then
+            echo "::error::Render deployment $RENDER_DEPLOY_ID is not live"
+            exit 1
+          fi
+
+          extract_revision() {
+            jq -r '
+              (.commit.id? // "") as $commit
+              | (.image.ref? // "") as $image
+              | if ($commit | test("^[0-9a-fA-F]{8,40}$")) then
+                  $commit
+                elif ($image | test(":main-[0-9a-fA-F]{8}(@|$)")) then
+                  ($image | capture(":main-(?<sha>[0-9a-fA-F]{8})(?:@|$)").sha)
+                else
+                  empty
+                end
+            ' | tr '[:upper:]' '[:lower:]'
+          }
+
+          current_revision="$(extract_revision <<< "$current_deploy")"
+          if [[ -z "$current_revision" ]]; then
+            echo "::error::The Render deployment does not identify a backend Git revision"
+            exit 1
+          fi
+
+          current_created_at="$(jq -r '.createdAt' <<< "$current_deploy")"
+          deploy_history="$(curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            --header "Accept: application/json" \
+            --header "Authorization: Bearer $RENDER_API_KEY" \
+            "$render_api?limit=100")"
+
+          previous_revision=""
+          while IFS= read -r deploy; do
+            candidate_revision="$(extract_revision <<< "$deploy")"
+            if [[ -n "$candidate_revision" && "$candidate_revision" != "$current_revision" ]]; then
+              previous_revision="$candidate_revision"
+              break
+            fi
+          done < <(
+            jq -c \
+              --arg current_created_at "$current_created_at" \
+              '.[] | .deploy
+                | select(.createdAt < $current_created_at)
+                | select(.status == "live" or .status == "deactivated")' \
+              <<< "$deploy_history"
+          )
+
+          if [[ -z "$previous_revision" ]]; then
+            echo "::error::Could not find the preceding successful Render deployment"
+            exit 1
+          fi
+
+          echo "BACKEND_PREV_REVISION=${previous_revision:0:8}" >> "$GITHUB_ENV"
+          echo "BACKEND_CURRENT_REVISION=${current_revision:0:8}" >> "$GITHUB_ENV"
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
 
       - name: Download verified production artifacts
-        run: |
-          node scripts/sync-api-artifacts.mjs \
-            --expected-revision "$(printf '%s' "$BACKEND_CURRENT_REVISION" | tr '[:upper:]' '[:lower:]')"
+        run: node scripts/sync-api-artifacts.mjs
 
       - name: Check whether documentation work is needed
         id: gate
@@ -128,9 +197,7 @@ jobs:
 
       - name: Regenerate artifacts on the deployment branch
         if: steps.gate.outputs.should_run == 'true'
-        run: |
-          node scripts/sync-api-artifacts.mjs \
-            --expected-revision "$(printf '%s' "$BACKEND_CURRENT_REVISION" | tr '[:upper:]' '[:lower:]')"
+        run: node scripts/sync-api-artifacts.mjs
 
       - name: Commit generated artifacts
         if: steps.gate.outputs.should_run == 'true'
@@ -174,7 +241,7 @@ jobs:
               --base main \
               --head "$DOCS_BRANCH" \
               --title "[docs] Update production API documentation" \
-              --body "Synchronizes the committed OpenAPI document and API metadata with backend revision \`$BACKEND_CURRENT_REVISION\`.")"
+              --body "Synchronizes the committed API artifacts for Render deployment \`$RENDER_DEPLOY_ID\` (backend revision \`$BACKEND_CURRENT_REVISION\`).")"
           fi
 
           echo "url=$pull_request_url" >> "$GITHUB_OUTPUT"
@@ -188,12 +255,16 @@ jobs:
           jq -n \
             --arg backend_prev_revision "$(printf '%s' "$BACKEND_PREV_REVISION" | tr '[:upper:]' '[:lower:]')" \
             --arg backend_current_revision "$(printf '%s' "$BACKEND_CURRENT_REVISION" | tr '[:upper:]' '[:lower:]')" \
+            --arg backend_compare_url "https://github.com/joinsophic/backend/compare/$BACKEND_PREV_REVISION...$BACKEND_CURRENT_REVISION" \
+            --arg render_deploy_id "$RENDER_DEPLOY_ID" \
             --arg branch "$DOCS_BRANCH" \
             --arg repository "$GITHUB_REPOSITORY" \
             --arg pull_request_url "${{ steps.pull_request.outputs.url }}" \
             '{
               backend_prev_revision: $backend_prev_revision,
               backend_current_revision: $backend_current_revision,
+              backend_compare_url: $backend_compare_url,
+              render_deploy_id: $render_deploy_id,
               branch: $branch,
               repository: $repository,
               pull_request_url: $pull_request_url

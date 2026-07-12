@@ -1,51 +1,35 @@
 ---
 name: sync-openapi-nav
-description: Ensure new API endpoints from the OpenAPI spec are reflected in docs.json navigation. Use when endpoints are added or the user mentions a new API route.
+description: Verify API Reference navigation is driven by openapi.json. Use when endpoints are added or the user mentions a new API route.
 ---
 
 # Sync OpenAPI Navigation
 
-Keep the `docs.json` navigation in sync with the OpenAPI specification.
+The API Reference tab auto-generates endpoint pages from `openapi.json`. You do not need to add individual `"METHOD /path"` entries to `docs.json`.
 
 ## When to Use
 
-- When a new API endpoint has been added to the OpenAPI spec.
+- When a new API endpoint has been added to the backend.
 - When the user mentions a new endpoint or asks to document one.
-- When reviewing docs.json for completeness.
+- When reviewing whether docs navigation is in sync with the API.
 
 ## Instructions
 
-1. **Read the OpenAPI spec.** The committed file is configured in `docs.json` at
-   `api.openapi`. Read it and list all available endpoints.
+1. **Confirm the endpoint is in the OpenAPI spec.** The committed file is configured in `docs.json` at `api.openapi`. Read it and verify the endpoint exists.
 
-2. **Compare with docs.json.** Check the `API Reference` tab's groups and pages. Each documented endpoint uses the format `"METHOD /path"`.
-
-3. **Identify missing endpoints.** Any endpoint in the spec that isn't listed in `docs.json` needs to be added.
-
-4. **Add to the correct group.** Place the endpoint in the group that matches its resource using the format `"METHOD /path"`.
-
-5. **Create a new group if needed:**
+2. **Do not add endpoint entries to `docs.json`.** Mintlify generates pages for all endpoints from the spec via the Endpoints group in the API Reference tab:
 
    ```json
    {
-     "group": "New Resource",
-     "pages": [
-       "POST /new-resource",
-       "GET /new-resource/{id}",
-       "GET /new-resource"
-     ]
+     "group": "Endpoints",
+     "openapi": "openapi.json"
    }
    ```
 
-6. **Consider a topic page.** If the new endpoint introduces a new concept, suggest creating a companion `.mdx` page in `documentation/` to explain it.
+   The `group` field is required. A bare `{ "openapi": "openapi.json" }` entry is ignored and leaves the API Reference tab empty.
 
-## Endpoint ordering convention
+3. **Keep topic pages separate.** Static guides like `api-reference/auth.mdx` live in the Topics group. Only add new `.mdx` files there when you need conceptual documentation beyond what the OpenAPI spec provides.
 
-Within each group, order endpoints as:
+4. **Update cross-references in prose docs.** When a new endpoint ships, add links from relevant guide pages (e.g. `docs/webhooks/overview.mdx`) using Mintlify's auto-generated slug for that endpoint.
 
-1. `POST` (create)
-2. `GET /{id}` (retrieve single)
-3. `GET /` (list)
-4. `PUT` / `PATCH` (update)
-5. `DELETE` (delete)
-6. Action endpoints (e.g. `POST /.../test`, `POST /.../cancel`)
+5. **Consider OpenAPI tags for grouping.** If endpoints should appear in named sidebar groups, add `tags` to operations in the backend OpenAPI spec rather than hardcoding navigation in `docs.json`.

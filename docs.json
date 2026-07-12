@@ -78,7 +78,6 @@
 			{
 				"tab": "API Reference",
 				"icon": "square-terminal",
-				"openapi": "openapi.json",
 				"groups": [
 					{
 						"group": "Topics",
@@ -91,111 +90,8 @@
 						]
 					},
 					{
-						"group": "Authentication",
-						"pages": ["POST /auth/token", "GET /me"]
-					},
-					{
-						"group": "Catalog",
-						"pages": [
-							"GET /instruments/{id_or_symbol}",
-							"GET /instruments",
-							"GET /prices",
-							"GET /bills/otr"
-						]
-					},
-					{
-						"group": "Persons",
-						"pages": [
-							"POST /persons",
-							"GET /persons/{id}",
-							"GET /persons/{id}/authorities",
-							"POST /persons/{person_id}/claims",
-							"GET /persons/{person_id}/claims",
-							"GET /persons/{person_id}/claims/{claim_id}"
-						]
-					},
-					{
-						"group": "Onboarding",
-						"pages": ["POST /onboarding-applications"]
-					},
-					{
-						"group": "Customers & Accounts",
-						"pages": [
-							"GET /customers/{id}",
-							"GET /accounts/{id_or_reference}",
-							"GET /accounts/{id}/transactions"
-						]
-					},
-					{
-						"group": "Holdings",
-						"pages": [
-							"GET /accounts/{account_id}/positions/{position_id}",
-							"GET /accounts/{account_id}/positions",
-							"GET /accounts/{account_id}/cash-balances",
-							"PUT /positions/{id}"
-						]
-					},
-					{
-						"group": "Payments",
-						"pages": [
-							"GET /accounts/{account_id}/funding-accounts",
-							"GET /accounts/{account_id}/deposits/{deposit_id}",
-							"POST /accounts/{account_id}/deposits",
-							"GET /accounts/{account_id}/withdrawals/{withdrawal_id}",
-							"POST /accounts/{account_id}/withdrawals"
-						]
-					},
-					{
-						"group": "Trading",
-						"pages": [
-							"GET /accounts/{account_id}/orders/{order_id}",
-							"GET /accounts/{account_id}/orders",
-							"GET /accounts/{account_id}/pending-orders",
-							"POST /accounts/{account_id}/orders"
-						]
-					},
-					{
-						"group": "Valuation",
-						"pages": [
-							"GET /accounts/{account_id}/valuation",
-							"GET /accounts/{account_id}/valuation-history"
-						]
-					},
-					{
-						"group": "Performance",
-						"pages": ["GET /accounts/{account_id}/earnings"]
-					},
-					{
-						"group": "Billing",
-						"pages": ["GET /fee-charges/{fee_charge_id}"]
-					},
-					{
-						"group": "Files",
-						"pages": ["POST /signed-uploads", "POST /files"]
-					},
-					{
-						"group": "Legal Documents",
-						"pages": [
-							"GET /legal-documents/{legal_document_id}",
-							"GET /legal-documents",
-							"GET /legal-documents/{legal_document_id}/versions",
-							"GET /legal-documents/{legal_document_id}/versions/{version_id}",
-							"GET /legal-documents/{legal_document_id}/latest/file",
-							"GET /legal-documents/{legal_document_id}/versions/{version_id}/file"
-						]
-					},
-					{
-						"group": "Events",
-						"pages": ["GET /events"]
-					},
-					{
-						"group": "Webhooks",
-						"pages": [
-							"POST /webhooks",
-							"GET /webhooks/{webhook_id}",
-							"GET /webhooks",
-							"PUT /webhooks/{webhook_id}"
-						]
+						"group": "Endpoints",
+						"openapi": "openapi.json"
 					}
 				]
 			},

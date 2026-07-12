@@ -8,7 +8,6 @@ import { pathToFileURL } from "node:url";
 
 const DEFAULT_METADATA_URL = "https://api.engine.usesophic.com/.meta/docs";
 const DEFAULT_OPENAPI_URL = "https://api.engine.usesophic.com/openapi.json";
-const REVISION_PATTERN = /^[0-9a-f]{8}$/;
 const SHA256_PATTERN = /^[0-9a-f]{64}$/;
 
 function parseArguments(argv) {
@@ -33,16 +32,12 @@ function parseArguments(argv) {
     const key = name
       .slice(2)
       .replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
-    if (!(key in options) && key !== "expectedRevision") {
+    if (!(key in options)) {
       throw new Error(`unknown argument: ${name}`);
     }
     options[key] = ["attempts", "interval"].includes(key) ? Number(value) : value;
   }
 
-  options.expectedRevision = options.expectedRevision?.toLowerCase();
-  if (!REVISION_PATTERN.test(options.expectedRevision ?? "")) {
-    throw new Error("--expected-revision must be an 8-character Git revision");
-  }
   if (!Number.isInteger(options.attempts) || options.attempts < 1) {
     throw new Error("--attempts must be a positive integer");
   }
@@ -118,14 +113,13 @@ function sortJson(value) {
   return value;
 }
 
-function validateMetadata(metadata, expectedRevision) {
+function validateMetadata(metadata) {
   if (metadata === null || Array.isArray(metadata) || typeof metadata !== "object") {
     throw new Error("metadata response must be a JSON object");
   }
 
   const required = [
     "schema_version",
-    "revision",
     "api_version",
     "webhook_events",
     "error_codes",
@@ -134,14 +128,6 @@ function validateMetadata(metadata, expectedRevision) {
   const missing = required.filter((key) => !(key in metadata));
   if (missing.length > 0) {
     throw new Error(`metadata response is missing: ${missing.join(", ")}`);
-  }
-  if (!REVISION_PATTERN.test(metadata.revision)) {
-    throw new Error("metadata revision must be a lowercase 8-character Git revision");
-  }
-  if (metadata.revision !== expectedRevision) {
-    throw new Error(
-      `production is serving revision ${metadata.revision}, expected ${expectedRevision}`,
-    );
   }
   if (!SHA256_PATTERN.test(metadata.openapi_sha256)) {
     throw new Error("openapi_sha256 must be a lowercase SHA-256 digest");
@@ -203,10 +189,7 @@ async function syncArtifacts(options) {
 
   for (let attempt = 1; attempt <= options.attempts; attempt += 1) {
     try {
-      metadata = validateMetadata(
-        await fetchJson(options.metadataUrl),
-        options.expectedRevision,
-      );
+      metadata = validateMetadata(await fetchJson(options.metadataUrl));
       openapi = await fetchJson(options.openapiUrl);
       const actualDigest = canonicalSha256(openapi);
       if (actualDigest !== metadata.openapi_sha256) {
@@ -233,18 +216,17 @@ async function syncArtifacts(options) {
     );
   }
 
-  const { revision: _revision, ...snapshot } = metadata;
   await writeJson(options.openapiOutput, openapi);
-  await writeJson(options.metadataOutput, snapshot);
+  await writeJson(options.metadataOutput, metadata);
   await writeGeneratedArray(
     options.errorCodesOutput,
     "errorCodes",
-    snapshot.error_codes,
+    metadata.error_codes,
   );
   await writeGeneratedArray(
     options.webhookEventsOutput,
     "webhookEvents",
-    snapshot.webhook_events,
+    metadata.webhook_events,
   );
 }
 

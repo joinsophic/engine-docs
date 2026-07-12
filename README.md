@@ -75,32 +75,25 @@ changelog.mdx                  # Changelog ("Changelog" tab)
 
 ### Adding a new API endpoint
 
-API endpoint pages are auto-generated from the OpenAPI spec. To add one to the sidebar:
+API endpoint pages are auto-generated from `openapi.json`. When the backend ships a new endpoint, sync the spec (see [Automatic docs updates](#automatic-docs-updates)) and the page appears in the API Reference tab automatically. No changes to `docs.json` are needed.
 
-1. Make sure the endpoint exists in the OpenAPI spec (`api.openapi` in `docs.json`).
-2. Add the endpoint to the relevant group in the `API Reference` tab using the format `"METHOD /path"`:
-   ```json
-   {
-     "group": "Webhooks",
-     "pages": [
-       "POST /webhooks",
-       "GET /webhooks/{webhook_id}"
-     ]
-   }
-   ```
+To control sidebar grouping, add `tags` to operations in the backend OpenAPI spec.
 
 ### Adding a new topic page alongside endpoints
 
-You can mix static `.mdx` pages with auto-generated endpoint pages in the same group:
+Static topic pages (auth, errors, versioning, etc.) live in the Topics group. Endpoint pages are generated from the OpenAPI spec in a separate group:
 
 ```json
 {
   "group": "Topics",
   "pages": [
     "api-reference/auth",
-    "api-reference/errors",
-    "POST /auth/token"
+    "api-reference/errors"
   ]
+},
+{
+  "group": "Endpoints",
+  "openapi": "openapi.json"
 }
 ```
 
@@ -153,17 +146,19 @@ dispatch with this payload:
 {
   "event_type": "production-deployed",
   "client_payload": {
-    "backend_prev_revision": "<previous 8-character backend revision>",
-    "backend_current_revision": "<deployed 8-character backend revision>"
+    "render_deploy_id": "dep-..."
   }
 }
 ```
 
-Set the `CURSOR_AUTOMATION_WEBHOOK_URL` repository variable and the
-`CURSOR_AUTOMATION_KEY` repository secret before running the workflow. The
-workflow verifies production, commits the generated OpenAPI and metadata files
-to an `automation/api-docs-*` branch, opens a pull request, then sends that
-branch and the backend revision range to the Cursor automation.
+Set the `ENGINE_API_RENDER_SERVICE_ID` and `CURSOR_AUTOMATION_WEBHOOK_URL`
+repository variables, plus the `RENDER_API_KEY` and `CURSOR_AUTOMATION_KEY`
+repository secrets, before running the workflow. The workflow resolves the
+current and previous backend revisions from Render deployment history. It then
+verifies production by checking that `/.meta/docs` and `/openapi.json` agree on
+`openapi_sha256`, commits the generated artifacts to an
+`automation/api-docs-*` branch, opens a pull request, and sends the derived
+revision range to the Cursor automation.
 
 The workflow skips the branch and Cursor automation when `openapi.json`,
 `metadata/docs.json`, and the generated snippets are unchanged. To run the
