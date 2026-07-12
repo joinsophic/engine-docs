@@ -721,71 +721,6 @@
         "title": "AuthorityType",
         "type": "string"
       },
-      "BankTransferBeneficiary": {
-        "properties": {
-          "address": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The legal owner's registered address.",
-            "title": "Address"
-          },
-          "bank_country": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The ISO 3166-1 alpha-2 country code of the beneficiary's bank (e.g. `DE`).",
-            "title": "Bank Country"
-          },
-          "bank_name": {
-            "description": "The name of the beneficiary's bank.",
-            "title": "Bank Name",
-            "type": "string"
-          },
-          "bic_swift": {
-            "description": "The BIC/SWIFT code of the beneficiary's bank.",
-            "title": "Bic Swift",
-            "type": "string"
-          },
-          "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
-            "description": "The currency the beneficiary account holds."
-          },
-          "iban": {
-            "description": "The IBAN to transfer funds to.",
-            "title": "Iban",
-            "type": "string"
-          },
-          "name": {
-            "description": "The legal owner of the beneficiary bank account.",
-            "title": "Name",
-            "type": "string"
-          }
-        },
-        "required": [
-          "name",
-          "bank_name",
-          "iban",
-          "bic_swift",
-          "currency"
-        ],
-        "title": "BankTransferBeneficiary",
-        "type": "object"
-      },
       "Bill": {
         "properties": {
           "about": {
@@ -1974,45 +1909,6 @@
         "title": "CashValuation",
         "type": "object"
       },
-      "ChangeChangelog": {
-        "properties": {
-          "change_type": {
-            "$ref": "#/components/schemas/ChangeType"
-          },
-          "description": {
-            "title": "Description",
-            "type": "string"
-          },
-          "name": {
-            "title": "Name",
-            "type": "string"
-          }
-        },
-        "required": [
-          "name",
-          "change_type",
-          "description"
-        ],
-        "title": "ChangeChangelog",
-        "type": "object"
-      },
-      "ChangeType": {
-        "enum": [
-          "removed_field",
-          "renamed_field",
-          "type_changed",
-          "removed_enum_value",
-          "status_code_changed",
-          "validation_added",
-          "parameter_required",
-          "operation_removed",
-          "auth_changed",
-          "behavior_changed"
-        ],
-        "properties": {},
-        "title": "ChangeType",
-        "type": "string"
-      },
       "ClaimAssetClass": {
         "enum": [
           "treasury_bills",
@@ -2207,137 +2103,6 @@
         ],
         "title": "ClientCredentialsForm",
         "type": "object"
-      },
-      "Consent": {
-        "properties": {
-          "attestation_type": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/AttestationType"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The attestation that was self-certified when `consent_type` is `attestation`."
-          },
-          "consent_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ConsentType"
-              }
-            ],
-            "description": "Type of the consent."
-          },
-          "consented_at": {
-            "description": "The timestamp at which the customer consented to the legal document (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format).",
-            "format": "date-time",
-            "title": "Consented At",
-            "type": "string"
-          },
-          "created_at": {
-            "description": "The timestamp (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format) of when the resource was created.",
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "customer": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "ID of the customer.",
-            "title": "Customer"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "legal_document_version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "ID of the legal document version.",
-            "title": "Legal Document Version"
-          },
-          "modified_at": {
-            "description": "The timestamp (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format) of when the resource was last modified.",
-            "format": "date-time",
-            "title": "Modified At",
-            "type": "string"
-          },
-          "person": {
-            "description": "ID of the person.",
-            "title": "Person",
-            "type": "string"
-          },
-          "target": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "ID of the target resource the attestation is about. Set only when `consent_type` is `attestation`.",
-            "title": "Target"
-          },
-          "target_type": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ConsentTargetType"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Resource type the attestation is recorded against. Set only when `consent_type` is `attestation`."
-          }
-        },
-        "required": [
-          "created_at",
-          "modified_at",
-          "id",
-          "legal_document_version",
-          "customer",
-          "person",
-          "consent_type",
-          "attestation_type",
-          "target_type",
-          "target",
-          "consented_at"
-        ],
-        "title": "Consent",
-        "type": "object"
-      },
-      "ConsentTargetType": {
-        "enum": [
-          "onboarding_application",
-          "pccpc_investment_pledge"
-        ],
-        "properties": {},
-        "title": "ConsentTargetType",
-        "type": "string"
-      },
-      "ConsentType": {
-        "enum": [
-          "legal_document",
-          "attestation"
-        ],
-        "properties": {},
-        "title": "ConsentType",
-        "type": "string"
       },
       "ContactDetailsClaimSpec": {
         "additionalProperties": false,
@@ -2607,65 +2372,6 @@
           "signed_upload"
         ],
         "title": "CreateFileFromSignedUploadRequest",
-        "type": "object"
-      },
-      "CreateFundingAccountRequest": {
-        "properties": {
-          "bank_code": {
-            "description": "SWIFT/BIC code.",
-            "title": "Bank Code",
-            "type": "string"
-          },
-          "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
-            "description": "The currency that this funding account is in."
-          },
-          "iban": {
-            "description": "The funding account IBAN.",
-            "title": "Iban",
-            "type": "string"
-          },
-          "is_verified": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Whether this funding account has been verified through documentation or other means.",
-            "title": "Is Verified"
-          },
-          "nickname": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "User-provided nickname for their own purposes.",
-            "title": "Nickname"
-          },
-          "owner_name": {
-            "description": "The legal name on the funding account. We can pre-fill this with the customer's legal name.",
-            "title": "Owner Name",
-            "type": "string"
-          }
-        },
-        "required": [
-          "owner_name",
-          "currency",
-          "iban",
-          "bank_code"
-        ],
-        "title": "CreateFundingAccountRequest",
         "type": "object"
       },
       "CreatePersonRequest": {
@@ -4115,26 +3821,6 @@
         "title": "Error",
         "type": "object"
       },
-      "ErrorCode": {
-        "properties": {
-          "code": {
-            "description": "Machine-readable error code.",
-            "title": "Code",
-            "type": "string"
-          },
-          "detail": {
-            "description": "Developer-facing description of the error.",
-            "title": "Detail",
-            "type": "string"
-          }
-        },
-        "required": [
-          "code",
-          "detail"
-        ],
-        "title": "ErrorCode",
-        "type": "object"
-      },
       "EurAmountBand": {
         "enum": [
           "lt_50k",
@@ -4229,114 +3915,6 @@
         "properties": {},
         "title": "EvidenceType",
         "type": "string"
-      },
-      "Exchange": {
-        "properties": {
-          "country": {
-            "description": "ISO 3166-1 alpha-2 country code.",
-            "title": "Country",
-            "type": "string"
-          },
-          "created_at": {
-            "description": "The timestamp (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format) of when the resource was created.",
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "modified_at": {
-            "description": "The timestamp (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format) of when the resource was last modified.",
-            "format": "date-time",
-            "title": "Modified At",
-            "type": "string"
-          },
-          "name": {
-            "description": "Short display name.",
-            "title": "Name",
-            "type": "string"
-          },
-          "timezone": {
-            "description": "IANA timezone for the exchange.",
-            "title": "Timezone",
-            "type": "string"
-          },
-          "title": {
-            "description": "Official exchange name.",
-            "title": "Title",
-            "type": "string"
-          },
-          "trading_hours": {
-            "description": "Ordered list of trading sessions within a trading day.",
-            "items": {
-              "$ref": "#/components/schemas/ExchangeTradingSession"
-            },
-            "title": "Trading Hours",
-            "type": "array"
-          }
-        },
-        "required": [
-          "created_at",
-          "modified_at",
-          "id",
-          "title",
-          "name",
-          "timezone",
-          "country",
-          "trading_hours"
-        ],
-        "title": "Exchange",
-        "type": "object"
-      },
-      "ExchangeSessionType": {
-        "enum": [
-          "pre",
-          "regular",
-          "post"
-        ],
-        "properties": {},
-        "title": "ExchangeSessionType",
-        "type": "string"
-      },
-      "ExchangeTradingSession": {
-        "properties": {
-          "close_time": {
-            "description": "Session close time (HH:MM:SS, exchange-local).",
-            "format": "time",
-            "title": "Close Time",
-            "type": "string"
-          },
-          "open_time": {
-            "description": "Session open time (HH:MM:SS, exchange-local).",
-            "format": "time",
-            "title": "Open Time",
-            "type": "string"
-          },
-          "session_name": {
-            "description": "Display label for this session (e.g. 'Pre market', 'After hours'). Free-form per exchange; use session_type for programmatic semantics.",
-            "title": "Session Name",
-            "type": "string"
-          },
-          "session_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ExchangeSessionType"
-              }
-            ],
-            "description": "Session category (pre, regular, or post)."
-          }
-        },
-        "required": [
-          "open_time",
-          "close_time",
-          "session_name",
-          "session_type"
-        ],
-        "title": "ExchangeTradingSession",
-        "type": "object"
       },
       "ExpectedActivityClaimSpec": {
         "additionalProperties": false,
@@ -4556,40 +4134,6 @@
           "status"
         ],
         "title": "ExpectedActivityPersonClaimSummary",
-        "type": "object"
-      },
-      "FallbackTradingWindow": {
-        "properties": {
-          "close_day": {
-            "description": "Day the window closes (0 = Monday ... 6 = Sunday, UTC).",
-            "title": "Close Day",
-            "type": "integer"
-          },
-          "close_time": {
-            "description": "Window close time (UTC).",
-            "format": "time",
-            "title": "Close Time",
-            "type": "string"
-          },
-          "open_day": {
-            "description": "Day the window opens (0 = Monday ... 6 = Sunday, UTC).",
-            "title": "Open Day",
-            "type": "integer"
-          },
-          "open_time": {
-            "description": "Window open time (UTC).",
-            "format": "time",
-            "title": "Open Time",
-            "type": "string"
-          }
-        },
-        "required": [
-          "open_day",
-          "open_time",
-          "close_day",
-          "close_time"
-        ],
-        "title": "FallbackTradingWindow",
         "type": "object"
       },
       "FatcaStatusClaimSpec": {
@@ -5322,722 +4866,6 @@
         "title": "FinancialProfilePersonClaimSummary",
         "type": "object"
       },
-      "FundAnnualTotalReturnHistoryEntry": {
-        "description": "Summary of one stored snapshot date.",
-        "properties": {
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "modified_at": {
-            "format": "date-time",
-            "title": "Modified At",
-            "type": "string"
-          },
-          "snapshot_date": {
-            "format": "date",
-            "title": "Snapshot Date",
-            "type": "string"
-          },
-          "source": {
-            "$ref": "#/components/schemas/FundDataSource"
-          }
-        },
-        "required": [
-          "id",
-          "snapshot_date",
-          "source",
-          "modified_at"
-        ],
-        "title": "FundAnnualTotalReturnHistoryEntry",
-        "type": "object"
-      },
-      "FundAnnualTotalReturnLine": {
-        "description": "One annual total-return line in a snapshot.",
-        "properties": {
-          "category_return": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Same-category average total return fraction (not percent).",
-            "title": "Category Return"
-          },
-          "share_class_return": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Fund total return fraction for the year (not percent).",
-            "title": "Share Class Return"
-          },
-          "year": {
-            "title": "Year",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "year"
-        ],
-        "title": "FundAnnualTotalReturnLine",
-        "type": "object"
-      },
-      "FundAnnualTotalReturnResponse": {
-        "description": "Annual total-return snapshot for a fund instrument.",
-        "properties": {
-          "annual_total_returns": {
-            "items": {
-              "$ref": "#/components/schemas/FundAnnualTotalReturnLine"
-            },
-            "title": "Annual Total Returns",
-            "type": "array"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "instrument_id": {
-            "title": "Instrument Id",
-            "type": "string"
-          },
-          "snapshot_date": {
-            "anyOf": [
-              {
-                "format": "date",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Snapshot Date"
-          },
-          "source": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/FundDataSource"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "instrument_id"
-        ],
-        "title": "FundAnnualTotalReturnResponse",
-        "type": "object"
-      },
-      "FundAssetAllocationHistoryEntry": {
-        "description": "Summary of one stored snapshot date.",
-        "properties": {
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "modified_at": {
-            "format": "date-time",
-            "title": "Modified At",
-            "type": "string"
-          },
-          "snapshot_date": {
-            "format": "date",
-            "title": "Snapshot Date",
-            "type": "string"
-          },
-          "source": {
-            "$ref": "#/components/schemas/FundDataSource"
-          }
-        },
-        "required": [
-          "id",
-          "snapshot_date",
-          "source",
-          "modified_at"
-        ],
-        "title": "FundAssetAllocationHistoryEntry",
-        "type": "object"
-      },
-      "FundAssetAllocationResponse": {
-        "description": "Asset allocation snapshot for a fund instrument.",
-        "properties": {
-          "bonds": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Fraction of NAV in bonds (not percent).",
-            "title": "Bonds"
-          },
-          "cash": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Fraction of NAV in cash (not percent).",
-            "title": "Cash"
-          },
-          "convertibles": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Fraction of NAV in convertibles (not percent).",
-            "title": "Convertibles"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "instrument_id": {
-            "title": "Instrument Id",
-            "type": "string"
-          },
-          "others": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Fraction of NAV in other assets (not percent).",
-            "title": "Others"
-          },
-          "preferred_stocks": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Fraction of NAV in preferred stocks (not percent).",
-            "title": "Preferred Stocks"
-          },
-          "snapshot_date": {
-            "anyOf": [
-              {
-                "format": "date",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Snapshot Date"
-          },
-          "source": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/FundDataSource"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "stocks": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Fraction of NAV in stocks (not percent).",
-            "title": "Stocks"
-          }
-        },
-        "required": [
-          "id",
-          "instrument_id"
-        ],
-        "title": "FundAssetAllocationResponse",
-        "type": "object"
-      },
-      "FundCountryExposureHistoryEntry": {
-        "description": "Summary of one stored snapshot date.",
-        "properties": {
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "modified_at": {
-            "format": "date-time",
-            "title": "Modified At",
-            "type": "string"
-          },
-          "snapshot_date": {
-            "format": "date",
-            "title": "Snapshot Date",
-            "type": "string"
-          },
-          "source": {
-            "$ref": "#/components/schemas/FundDataSource"
-          }
-        },
-        "required": [
-          "id",
-          "snapshot_date",
-          "source",
-          "modified_at"
-        ],
-        "title": "FundCountryExposureHistoryEntry",
-        "type": "object"
-      },
-      "FundCountryExposureLine": {
-        "description": "One country line in a snapshot.",
-        "properties": {
-          "country": {
-            "title": "Country",
-            "type": "string"
-          },
-          "weight": {
-            "description": "Fraction of NAV (not percent).",
-            "title": "Weight",
-            "type": "string"
-          }
-        },
-        "required": [
-          "country",
-          "weight"
-        ],
-        "title": "FundCountryExposureLine",
-        "type": "object"
-      },
-      "FundCountryExposureResponse": {
-        "description": "Country exposure snapshot for a fund instrument.",
-        "properties": {
-          "countries": {
-            "items": {
-              "$ref": "#/components/schemas/FundCountryExposureLine"
-            },
-            "title": "Countries",
-            "type": "array"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "instrument_id": {
-            "title": "Instrument Id",
-            "type": "string"
-          },
-          "snapshot_date": {
-            "anyOf": [
-              {
-                "format": "date",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Snapshot Date"
-          },
-          "source": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/FundDataSource"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "instrument_id"
-        ],
-        "title": "FundCountryExposureResponse",
-        "type": "object"
-      },
-      "FundDataSource": {
-        "const": "twelvedata",
-        "description": "Vendor supplying fund reference data snapshots.",
-        "properties": {},
-        "title": "FundDataSource",
-        "type": "string"
-      },
-      "FundHoldingHistoryEntry": {
-        "description": "Summary of one stored snapshot date.",
-        "properties": {
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "modified_at": {
-            "format": "date-time",
-            "title": "Modified At",
-            "type": "string"
-          },
-          "snapshot_date": {
-            "format": "date",
-            "title": "Snapshot Date",
-            "type": "string"
-          },
-          "source": {
-            "$ref": "#/components/schemas/FundDataSource"
-          }
-        },
-        "required": [
-          "id",
-          "snapshot_date",
-          "source",
-          "modified_at"
-        ],
-        "title": "FundHoldingHistoryEntry",
-        "type": "object"
-      },
-      "FundHoldingLine": {
-        "description": "One holding line in a snapshot.",
-        "properties": {
-          "exchange": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Exchange"
-          },
-          "mic_code": {
-            "description": "Listing MIC; empty when the vendor omits it.",
-            "title": "Mic Code",
-            "type": "string"
-          },
-          "name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Name"
-          },
-          "symbol": {
-            "title": "Symbol",
-            "type": "string"
-          },
-          "weight": {
-            "description": "Fraction of NAV (not percent).",
-            "title": "Weight",
-            "type": "string"
-          }
-        },
-        "required": [
-          "symbol",
-          "mic_code",
-          "weight"
-        ],
-        "title": "FundHoldingLine",
-        "type": "object"
-      },
-      "FundHoldingResponse": {
-        "description": "Top-holdings snapshot for a fund instrument.",
-        "properties": {
-          "holdings": {
-            "items": {
-              "$ref": "#/components/schemas/FundHoldingLine"
-            },
-            "title": "Holdings",
-            "type": "array"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "instrument_id": {
-            "title": "Instrument Id",
-            "type": "string"
-          },
-          "snapshot_date": {
-            "anyOf": [
-              {
-                "format": "date",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Snapshot Date"
-          },
-          "source": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/FundDataSource"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "instrument_id"
-        ],
-        "title": "FundHoldingResponse",
-        "type": "object"
-      },
-      "FundSectorExposureHistoryEntry": {
-        "description": "Summary of one stored snapshot date.",
-        "properties": {
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "modified_at": {
-            "format": "date-time",
-            "title": "Modified At",
-            "type": "string"
-          },
-          "snapshot_date": {
-            "format": "date",
-            "title": "Snapshot Date",
-            "type": "string"
-          },
-          "source": {
-            "$ref": "#/components/schemas/FundDataSource"
-          }
-        },
-        "required": [
-          "id",
-          "snapshot_date",
-          "source",
-          "modified_at"
-        ],
-        "title": "FundSectorExposureHistoryEntry",
-        "type": "object"
-      },
-      "FundSectorExposureLine": {
-        "description": "One sector line in a snapshot.",
-        "properties": {
-          "sector": {
-            "title": "Sector",
-            "type": "string"
-          },
-          "weight": {
-            "description": "Fraction of NAV (not percent).",
-            "title": "Weight",
-            "type": "string"
-          }
-        },
-        "required": [
-          "sector",
-          "weight"
-        ],
-        "title": "FundSectorExposureLine",
-        "type": "object"
-      },
-      "FundSectorExposureResponse": {
-        "description": "Sector exposure snapshot for a fund instrument.",
-        "properties": {
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "instrument_id": {
-            "title": "Instrument Id",
-            "type": "string"
-          },
-          "sectors": {
-            "items": {
-              "$ref": "#/components/schemas/FundSectorExposureLine"
-            },
-            "title": "Sectors",
-            "type": "array"
-          },
-          "snapshot_date": {
-            "anyOf": [
-              {
-                "format": "date",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Snapshot Date"
-          },
-          "source": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/FundDataSource"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "instrument_id"
-        ],
-        "title": "FundSectorExposureResponse",
-        "type": "object"
-      },
-      "FundTrailingReturnHistoryEntry": {
-        "description": "Summary of one stored snapshot date.",
-        "properties": {
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "modified_at": {
-            "format": "date-time",
-            "title": "Modified At",
-            "type": "string"
-          },
-          "snapshot_date": {
-            "format": "date",
-            "title": "Snapshot Date",
-            "type": "string"
-          },
-          "source": {
-            "$ref": "#/components/schemas/FundDataSource"
-          }
-        },
-        "required": [
-          "id",
-          "snapshot_date",
-          "source",
-          "modified_at"
-        ],
-        "title": "FundTrailingReturnHistoryEntry",
-        "type": "object"
-      },
-      "FundTrailingReturnLine": {
-        "description": "One trailing-return line in a snapshot.",
-        "properties": {
-          "category_return": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Same-category average return fraction (not percent).",
-            "title": "Category Return"
-          },
-          "period": {
-            "title": "Period",
-            "type": "string"
-          },
-          "share_class_return": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Fund return fraction over the period (not percent).",
-            "title": "Share Class Return"
-          }
-        },
-        "required": [
-          "period"
-        ],
-        "title": "FundTrailingReturnLine",
-        "type": "object"
-      },
-      "FundTrailingReturnResponse": {
-        "description": "Trailing-return snapshot for a fund instrument.",
-        "properties": {
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "instrument_id": {
-            "title": "Instrument Id",
-            "type": "string"
-          },
-          "snapshot_date": {
-            "anyOf": [
-              {
-                "format": "date",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Snapshot Date"
-          },
-          "source": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/FundDataSource"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "trailing_returns": {
-            "items": {
-              "$ref": "#/components/schemas/FundTrailingReturnLine"
-            },
-            "title": "Trailing Returns",
-            "type": "array"
-          }
-        },
-        "required": [
-          "id",
-          "instrument_id"
-        ],
-        "title": "FundTrailingReturnResponse",
-        "type": "object"
-      },
       "FundingAccount": {
         "properties": {
           "bank_code": {
@@ -6109,233 +4937,6 @@
           "currency"
         ],
         "title": "FundingAccount",
-        "type": "object"
-      },
-      "FxOrderQuote": {
-        "description": "FX-specific quote response. Mirrors the request shape (`from`/`to` legs)\nwith both amounts filled in. FX is fee-free, so `fees`/`net_cash_amount`\nare omitted. `rate` carries the binding 5dp conversion rate in the\ncustomer's `from→to` direction — see the field for precision caveats.",
-        "properties": {
-          "expires_at": {
-            "description": "Expiration timestamp (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format).",
-            "format": "date-time",
-            "title": "Expires At",
-            "type": "string"
-          },
-          "from": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/FxOrderQuoteLeg"
-              }
-            ],
-            "description": "The `from` leg of the conversion."
-          },
-          "id": {
-            "description": "The unique ID of the quote (prefix ``oqt_``).",
-            "title": "Id",
-            "type": "string"
-          },
-          "markup": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/FxOrderQuoteMarkup"
-              }
-            ],
-            "description": "The markup applied to the provider mid to produce `rate`, both in price units (`spread`) and as the exact money amount it cost on this quote (`amount`, in the computed leg's `currency`)."
-          },
-          "rate": {
-            "description": "The conversion rate locked by this quote, in `from→to` direction. Built from the canonical pair's provider mid at quote time, with `markup.spread` applied symmetrically (`mid − spread / 2` on sells, `mid + spread / 2` on buys), and rounded to 5 decimal places; this is the binding rate the order will execute against.",
-            "title": "Rate",
-            "type": "string"
-          },
-          "to": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/FxOrderQuoteLeg"
-              }
-            ],
-            "description": "The `to` leg of the conversion."
-          }
-        },
-        "required": [
-          "id",
-          "from",
-          "to",
-          "rate",
-          "markup",
-          "expires_at"
-        ],
-        "title": "FxOrderQuote",
-        "type": "object"
-      },
-      "FxOrderQuoteFromLeg": {
-        "properties": {
-          "amount": {
-            "anyOf": [
-              {
-                "anyOf": [
-                  {
-                    "type": "number"
-                  },
-                  {
-                    "type": "string"
-                  }
-                ],
-                "gt": 0
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The amount to convert, denominated in `from.currency`. Provide either this or `to.amount`.",
-            "title": "Amount"
-          },
-          "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
-            "description": "The currency being converted from."
-          }
-        },
-        "required": [
-          "currency"
-        ],
-        "title": "FxOrderQuoteFromLeg",
-        "type": "object"
-      },
-      "FxOrderQuoteLeg": {
-        "description": "One leg of an FX quote. Exactly one of `amount` / `quote_amount` is\npopulated: `amount` on the leg the caller supplied (echoing the request\npayload), `quote_amount` on the leg this quote computed.",
-        "properties": {
-          "amount": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Set on the leg the caller supplied. Echoes the request payload.",
-            "title": "Amount"
-          },
-          "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
-            "description": "Currency of this leg."
-          },
-          "quote_amount": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Set on the leg this quote computed.",
-            "title": "Quote Amount"
-          }
-        },
-        "required": [
-          "currency"
-        ],
-        "title": "FxOrderQuoteLeg",
-        "type": "object"
-      },
-      "FxOrderQuoteMarkup": {
-        "description": "The markup applied to the quote, in both of its expressions: `spread`\nin canonical-pair price units, `amount` as the exact money cost it\nrealised on this quote.",
-        "properties": {
-          "amount": {
-            "description": "Money amount the applied spread cost on this quote: the difference between the computed leg's amount at the provider mid and at the quoted `rate`.",
-            "title": "Amount",
-            "type": "string"
-          },
-          "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
-            "description": "Currency the spread cost is denominated in — the currency of the leg this quote computed (the one carrying `quote_amount`)."
-          },
-          "spread": {
-            "description": "Total bid-ask spread (in absolute price units of the canonical pair) applied to the provider mid to produce `rate`. Resolved from the account-level override when present, otherwise from the platform default.",
-            "title": "Spread",
-            "type": "string"
-          }
-        },
-        "required": [
-          "spread",
-          "amount",
-          "currency"
-        ],
-        "title": "FxOrderQuoteMarkup",
-        "type": "object"
-      },
-      "FxOrderQuoteRequest": {
-        "properties": {
-          "from": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/FxOrderQuoteFromLeg"
-              }
-            ],
-            "description": "The currency to convert from."
-          },
-          "to": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/FxOrderQuoteToLeg"
-              }
-            ],
-            "description": "The currency to convert to."
-          }
-        },
-        "required": [
-          "from",
-          "to"
-        ],
-        "title": "FxOrderQuoteRequest",
-        "type": "object"
-      },
-      "FxOrderQuoteToLeg": {
-        "properties": {
-          "amount": {
-            "anyOf": [
-              {
-                "anyOf": [
-                  {
-                    "type": "number"
-                  },
-                  {
-                    "type": "string"
-                  }
-                ],
-                "gt": 0
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The amount to convert, denominated in `to.currency`. Provide either this or `from.amount`.",
-            "title": "Amount"
-          },
-          "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
-            "description": "The currency being converted to."
-          }
-        },
-        "required": [
-          "currency"
-        ],
-        "title": "FxOrderQuoteToLeg",
         "type": "object"
       },
       "GenerateAccountStatementRequest": {
@@ -6795,212 +5396,6 @@
         "title": "IndividualCustomer",
         "type": "object"
       },
-      "InstrumentDocument": {
-        "properties": {
-          "created_at": {
-            "description": "The timestamp (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format) of when the resource was created.",
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "document_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/InstrumentDocumentType"
-              }
-            ],
-            "description": "Type of the instrument document."
-          },
-          "file": {
-            "description": "ID of the underlying `File`.",
-            "title": "File",
-            "type": "string"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "instrument": {
-            "description": "ID of the parent instrument.",
-            "title": "Instrument",
-            "type": "string"
-          },
-          "is_downloadable": {
-            "description": "Whether the instrument document is downloadable.",
-            "title": "Is Downloadable",
-            "type": "boolean"
-          },
-          "latest_version": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/InstrumentDocumentVersion"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Latest version of the instrument document."
-          },
-          "modified_at": {
-            "description": "The timestamp (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format) of when the resource was last modified.",
-            "format": "date-time",
-            "title": "Modified At",
-            "type": "string"
-          },
-          "title": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Title of the instrument document.",
-            "title": "Title"
-          }
-        },
-        "required": [
-          "created_at",
-          "modified_at",
-          "id",
-          "instrument",
-          "title",
-          "document_type",
-          "latest_version",
-          "file",
-          "is_downloadable"
-        ],
-        "title": "InstrumentDocument",
-        "type": "object"
-      },
-      "InstrumentDocumentType": {
-        "enum": [
-          "kid",
-          "prospectus",
-          "annual_report",
-          "semi_annual_report",
-          "factsheet",
-          "term_sheet",
-          "monthly_report"
-        ],
-        "properties": {},
-        "title": "InstrumentDocumentType",
-        "type": "string"
-      },
-      "InstrumentDocumentVersion": {
-        "properties": {
-          "created_at": {
-            "description": "The timestamp (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format) of when the resource was created.",
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "effective_at": {
-            "description": "The timestamp from which this version of the document is effective (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format).",
-            "format": "date-time",
-            "title": "Effective At",
-            "type": "string"
-          },
-          "file": {
-            "description": "ID of the underlying `File`.",
-            "title": "File",
-            "type": "string"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "instrument_document": {
-            "description": "ID of the parent instrument document.",
-            "title": "Instrument Document",
-            "type": "string"
-          },
-          "modified_at": {
-            "description": "The timestamp (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format) of when the resource was last modified.",
-            "format": "date-time",
-            "title": "Modified At",
-            "type": "string"
-          },
-          "version": {
-            "description": "Version label of the instrument document.",
-            "title": "Version",
-            "type": "string"
-          }
-        },
-        "required": [
-          "created_at",
-          "modified_at",
-          "id",
-          "instrument_document",
-          "version",
-          "effective_at",
-          "file"
-        ],
-        "title": "InstrumentDocumentVersion",
-        "type": "object"
-      },
-      "InstrumentDocumentVersionWithDownloadUrl": {
-        "properties": {
-          "created_at": {
-            "description": "The timestamp (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format) of when the resource was created.",
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "download_url": {
-            "description": "Signed download URL for the instrument document version.",
-            "title": "Download Url",
-            "type": "string"
-          },
-          "effective_at": {
-            "description": "The timestamp from which this version of the document is effective (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format).",
-            "format": "date-time",
-            "title": "Effective At",
-            "type": "string"
-          },
-          "file": {
-            "description": "ID of the underlying `File`.",
-            "title": "File",
-            "type": "string"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "instrument_document": {
-            "description": "ID of the parent instrument document.",
-            "title": "Instrument Document",
-            "type": "string"
-          },
-          "modified_at": {
-            "description": "The timestamp (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format) of when the resource was last modified.",
-            "format": "date-time",
-            "title": "Modified At",
-            "type": "string"
-          },
-          "version": {
-            "description": "Version label of the instrument document.",
-            "title": "Version",
-            "type": "string"
-          }
-        },
-        "required": [
-          "created_at",
-          "modified_at",
-          "id",
-          "instrument_document",
-          "version",
-          "effective_at",
-          "file",
-          "download_url"
-        ],
-        "title": "InstrumentDocumentVersionWithDownloadUrl",
-        "type": "object"
-      },
       "InstrumentRolloutStage": {
         "enum": [
           "ga",
@@ -7010,76 +5405,6 @@
         "properties": {},
         "title": "InstrumentRolloutStage",
         "type": "string"
-      },
-      "InstrumentTradingSession": {
-        "properties": {
-          "closes_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Close of the current session (UTC). Null when closed.",
-            "title": "Closes At"
-          },
-          "evaluated_at": {
-            "description": "Server time when the session status was computed (UTC).",
-            "format": "date-time",
-            "title": "Evaluated At",
-            "type": "string"
-          },
-          "instrument_id": {
-            "title": "Instrument Id",
-            "type": "string"
-          },
-          "instrument_type": {
-            "$ref": "#/components/schemas/InstrumentType"
-          },
-          "name": {
-            "title": "Name",
-            "type": "string"
-          },
-          "next_open_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Next regular-session open (UTC). Null while open or undefined.",
-            "title": "Next Open At"
-          },
-          "schedule": {
-            "$ref": "#/components/schemas/TradingSchedule"
-          },
-          "state": {
-            "$ref": "#/components/schemas/TradingSessionState"
-          },
-          "symbol": {
-            "title": "Symbol",
-            "type": "string"
-          }
-        },
-        "required": [
-          "instrument_id",
-          "symbol",
-          "name",
-          "instrument_type",
-          "evaluated_at",
-          "state",
-          "next_open_at",
-          "closes_at",
-          "schedule"
-        ],
-        "title": "InstrumentTradingSession",
-        "type": "object"
       },
       "InstrumentTradingStatus": {
         "enum": [
@@ -10031,45 +8356,6 @@
         "title": "OrderType",
         "type": "string"
       },
-      "PaymentMethod": {
-        "properties": {
-          "beneficiary": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/BankTransferBeneficiary"
-              }
-            ],
-            "description": "The bank account that receives the inbound transfer."
-          },
-          "method_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PaymentMethodType"
-              }
-            ],
-            "description": "The type of payment method."
-          },
-          "reference": {
-            "description": "The reference the customer must quote on the transfer so the funds are attributed to their account.",
-            "title": "Reference",
-            "type": "string"
-          }
-        },
-        "required": [
-          "method_type",
-          "reference",
-          "beneficiary"
-        ],
-        "title": "PaymentMethod",
-        "type": "object"
-      },
-      "PaymentMethodType": {
-        "const": "bank_transfer",
-        "description": "Enumerates the ways a customer can fund their account.",
-        "properties": {},
-        "title": "PaymentMethodType",
-        "type": "string"
-      },
       "PepStatusClaimSpec": {
         "additionalProperties": false,
         "description": "Spec for politically exposed person (PEP) declaration claim data.",
@@ -10711,78 +8997,6 @@
           "side"
         ],
         "title": "PlaceOrderRequest",
-        "type": "object"
-      },
-      "PortfolioReturns": {
-        "properties": {
-          "flags": {
-            "description": "Edge-case signals from the computation. Empty when the result is clean. Each flag explains a clamping, missing-data, or uncomputable-rate condition the caller may want to surface.",
-            "items": {
-              "$ref": "#/components/schemas/ReturnsFlag"
-            },
-            "title": "Flags",
-            "type": "array"
-          },
-          "mwrr": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Money-weighted rate of return (XIRR over signed cashflows plus opening and closing valuations) as a cumulative period decimal (e.g. `0.0925` = 9,25%). `null` when uncomputable; see `flags`.",
-            "title": "Mwrr"
-          },
-          "period": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Period"
-              }
-            ],
-            "description": "The requested period the returns were computed over."
-          },
-          "period_end": {
-            "description": "Resolved end of the period (the `asof` time of the computation).",
-            "format": "date-time",
-            "title": "Period End",
-            "type": "string"
-          },
-          "period_start": {
-            "description": "Resolved start of the period, inclusive. Clamped to the scope's inception (account opening / position opening) when the requested period extends earlier; in that case `inception_after_period_start` is present in `flags`.",
-            "format": "date-time",
-            "title": "Period Start",
-            "type": "string"
-          },
-          "portfolio": {
-            "description": "The portfolio the returns were computed for.",
-            "title": "Portfolio",
-            "type": "string"
-          },
-          "twrr": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Time-weighted rate of return (daily-chained, cashflow-neutralised) as a cumulative period decimal (e.g. `0.0925` = 9,25%). `null` when uncomputable; see `flags`.",
-            "title": "Twrr"
-          }
-        },
-        "required": [
-          "period",
-          "period_start",
-          "period_end",
-          "mwrr",
-          "twrr",
-          "flags",
-          "portfolio"
-        ],
-        "title": "PortfolioReturns",
         "type": "object"
       },
       "Position": {
@@ -12648,114 +10862,6 @@
         "title": "ReturnsFlag",
         "type": "string"
       },
-      "Series": {
-        "description": "A chart series: a metric sampled over a period.\n\nThe leading series is always `timestamp` (ISO 8601); the rest are\nmetric-specific and named in `series`, with each point aligned to them.",
-        "properties": {
-          "asof": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Validity watermark: the timestamp of the freshest data behind the series (the last intraday point, or the latest snapshot tick). Null when the series is empty. Key client caches on it.",
-            "title": "Asof"
-          },
-          "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
-            "description": "The currency every numeric value is expressed in."
-          },
-          "metric": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/SeriesMetric"
-              }
-            ],
-            "description": "The quantity plotted (valuation or earnings)."
-          },
-          "points": {
-            "description": "Points ascending by `timestamp`, each aligned to `series`.",
-            "examples": [
-              [
-                [
-                  "2025-06-25T20:00:00Z",
-                  "12050.22",
-                  "300.00",
-                  "12350.22",
-                  "10000.00"
-                ]
-              ]
-            ],
-            "items": {
-              "items": {
-                "anyOf": [
-                  {
-                    "format": "date-time",
-                    "type": "string"
-                  },
-                  {
-                    "type": "string"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            "title": "Points",
-            "type": "array"
-          },
-          "resolution": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/SeriesResolution"
-              }
-            ],
-            "description": "Spacing between points. `1d` for the snapshot-backed and earnings series; the intraday bucket width otherwise."
-          },
-          "series": {
-            "description": "Series names, `timestamp` first then one per value series.",
-            "examples": [
-              [
-                "timestamp",
-                "position_value",
-                "cash_value",
-                "total_value",
-                "contributions"
-              ]
-            ],
-            "items": {
-              "type": "string"
-            },
-            "title": "Series",
-            "type": "array"
-          }
-        },
-        "required": [
-          "metric",
-          "resolution",
-          "currency",
-          "asof",
-          "series",
-          "points"
-        ],
-        "title": "Series",
-        "type": "object"
-      },
-      "SeriesMetric": {
-        "enum": [
-          "valuation",
-          "earnings"
-        ],
-        "properties": {},
-        "title": "SeriesMetric",
-        "type": "string"
-      },
       "SeriesPoint": {
         "maxItems": 2,
         "minItems": 2,
@@ -12771,19 +10877,6 @@
         "properties": {},
         "title": "SeriesPoint",
         "type": "array"
-      },
-      "SeriesResolution": {
-        "enum": [
-          "1m",
-          "5m",
-          "15m",
-          "30m",
-          "1h",
-          "1d"
-        ],
-        "properties": {},
-        "title": "SeriesResolution",
-        "type": "string"
       },
       "Service": {
         "properties": {
@@ -13117,44 +11210,6 @@
         "title": "TaxResidencyEntry",
         "type": "object"
       },
-      "Tenant": {
-        "properties": {
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "name": {
-            "description": "The name of the tenant.",
-            "title": "Name",
-            "type": "string"
-          },
-          "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/TenantStatus"
-              }
-            ],
-            "description": "The status of the tenant."
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "status"
-        ],
-        "title": "Tenant",
-        "type": "object"
-      },
-      "TenantStatus": {
-        "enum": [
-          "active",
-          "suspended"
-        ],
-        "properties": {},
-        "title": "TenantStatus",
-        "type": "string"
-      },
       "TinExemptionReason": {
         "enum": [
           "not_issued",
@@ -13163,68 +11218,6 @@
         ],
         "properties": {},
         "title": "TinExemptionReason",
-        "type": "string"
-      },
-      "TradingSchedule": {
-        "properties": {
-          "sessions": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/ExchangeTradingSession"
-                },
-                "type": "array"
-              },
-              {
-                "items": {
-                  "$ref": "#/components/schemas/FallbackTradingWindow"
-                },
-                "type": "array"
-              }
-            ],
-            "description": "Exchange-local daily sessions when source=exchange, or weekly UTC windows when source=fallback.",
-            "title": "Sessions"
-          },
-          "source": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/TradingScheduleSource"
-              }
-            ],
-            "description": "Whether sessions come from the listing exchange or fallback hours."
-          },
-          "timezone": {
-            "description": "IANA timezone for exchange sessions, or UTC for fallback windows.",
-            "title": "Timezone",
-            "type": "string"
-          }
-        },
-        "required": [
-          "source",
-          "timezone",
-          "sessions"
-        ],
-        "title": "TradingSchedule",
-        "type": "object"
-      },
-      "TradingScheduleSource": {
-        "enum": [
-          "exchange",
-          "fallback"
-        ],
-        "properties": {},
-        "title": "TradingScheduleSource",
-        "type": "string"
-      },
-      "TradingSessionState": {
-        "enum": [
-          "open",
-          "pre",
-          "post",
-          "closed"
-        ],
-        "properties": {},
-        "title": "TradingSessionState",
         "type": "string"
       },
       "Transaction": {
@@ -13647,45 +11640,6 @@
           "series"
         ],
         "title": "ValuationHistory",
-        "type": "object"
-      },
-      "VersionChangelog": {
-        "properties": {
-          "changes": {
-            "items": {
-              "$ref": "#/components/schemas/ChangeChangelog"
-            },
-            "title": "Changes",
-            "type": "array"
-          },
-          "notes": {
-            "title": "Notes",
-            "type": "string"
-          },
-          "sunset_at": {
-            "anyOf": [
-              {
-                "format": "date",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Sunset At"
-          },
-          "version": {
-            "format": "date",
-            "title": "Version",
-            "type": "string"
-          }
-        },
-        "required": [
-          "version",
-          "notes",
-          "changes"
-        ],
-        "title": "VersionChangelog",
         "type": "object"
       },
       "Webhook": {
@@ -14200,72 +12154,6 @@
   },
   "openapi": "3.1.0",
   "paths": {
-    "/_/changelog": {
-      "get": {
-        "description": "Returns the API's published versions, newest first, along with the changes introduced in each version.",
-        "operationId": "list_changelog___changelog_get",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/VersionChangelog"
-                  },
-                  "title": "Response List Changelog   Changelog Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "summary": "List API versions and changes"
-      }
-    },
-    "/_/error-codes": {
-      "get": {
-        "description": "Returns the list of error codes this API may return.",
-        "operationId": "list_error_codes___error_codes_get",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/ErrorCode"
-                  },
-                  "title": "Response List Error Codes   Error Codes Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "summary": "List error codes"
-      }
-    },
     "/accounts/{account_id}/cash-balances": {
       "get": {
         "description": "Retrieve an account's cash balances (one for each supported currency).",
@@ -14312,7 +12200,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List cash balances"
+        "summary": "List cash balances",
+        "tags": [
+          "holdings"
+        ]
       }
     },
     "/accounts/{account_id}/deposits": {
@@ -14367,7 +12258,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create a deposit"
+        "summary": "Create a deposit",
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/accounts/{account_id}/deposits/{deposit_id}": {
@@ -14421,7 +12315,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve a deposit"
+        "summary": "Retrieve a deposit",
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/accounts/{account_id}/documents": {
@@ -14489,7 +12386,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List account documents"
+        "summary": "List account documents",
+        "tags": [
+          "accounts"
+        ]
       }
     },
     "/accounts/{account_id}/earnings": {
@@ -14588,7 +12488,7 @@
         ],
         "summary": "Retrieve earnings (P&L)",
         "tags": [
-          "Performance"
+          "performance"
         ]
       }
     },
@@ -14638,60 +12538,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List funding accounts"
-      },
-      "post": {
-        "description": "Add a funding account on the account.",
-        "operationId": "create_funding_account_accounts__account_id__funding_accounts_post",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "account_id",
-            "required": true,
-            "schema": {
-              "title": "Account Id",
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateFundingAccountRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundingAccount"
-                }
-              }
-            },
-            "description": "Created"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Create Funding Account"
+        "summary": "List funding accounts",
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/accounts/{account_id}/order-quotes": {
@@ -14746,62 +12596,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get an order quote"
-      }
-    },
-    "/accounts/{account_id}/order-quotes/fx": {
-      "post": {
-        "description": "Issues a binding FX order quote in currency-conversion terms. Provide the `from` and `to` currencies, with `amount` on exactly one leg. The response mirrors the request shape with both legs' amounts filled in; the leg the caller supplied echoes as `amount`, the leg this quote computed surfaces as `quote_amount`. The returned quote is binding — it carries an `id` redeemable at order/exchange placement until `expires_at`.",
-        "operationId": "create_fx_order_quote_accounts__account_id__order_quotes_fx_post",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "account_id",
-            "required": true,
-            "schema": {
-              "title": "Account Id",
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FxOrderQuoteRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FxOrderQuote"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Get an FX order quote"
+        "summary": "Get an order quote",
+        "tags": [
+          "trading"
+        ]
       }
     },
     "/accounts/{account_id}/orders": {
@@ -14850,7 +12648,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List orders"
+        "summary": "List orders",
+        "tags": [
+          "trading"
+        ]
       },
       "post": {
         "description": "Places a buy-side or sell-side order. Buys accept either a cash amount (cash mode) or a unit quantity backed by a persisted quote (quantity mode). Sells require quantity.",
@@ -14903,7 +12704,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Place an order"
+        "summary": "Place an order",
+        "tags": [
+          "trading"
+        ]
       }
     },
     "/accounts/{account_id}/orders/{order_id}": {
@@ -14957,159 +12761,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve an order"
-      }
-    },
-    "/accounts/{account_id}/orders/{order_id}/cancel": {
-      "post": {
-        "description": "Cancels one of the account's own limit orders. Only limit orders in a cancellable phase can be cancelled. If the order is already live at the venue the cancel is sent to the venue and the order is returned in the `cancelling` state pending confirmation.",
-        "operationId": "cancel_order_accounts__account_id__orders__order_id__cancel_post",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "account_id",
-            "required": true,
-            "schema": {
-              "title": "Account Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "path",
-            "name": "order_id",
-            "required": true,
-            "schema": {
-              "title": "Order Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Order"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Cancel an order"
-      }
-    },
-    "/accounts/{account_id}/ownerships": {
-      "get": {
-        "description": "Retrieve the account's ownerships. Accounts can have multiple ownerships if they are designated as joint accounts.",
-        "operationId": "list_account_ownerships_accounts__account_id__ownerships_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "account_id",
-            "required": true,
-            "schema": {
-              "title": "Account Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/AccountOwnership"
-                  },
-                  "title": "Response List Account Ownerships Accounts  Account Id  Ownerships Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "List account ownerships"
-      }
-    },
-    "/accounts/{account_id}/payment-methods": {
-      "get": {
-        "description": "Retrieve the payment methods available for funding the parent account.",
-        "operationId": "list_payment_methods_accounts__account_id__payment_methods_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "account_id",
-            "required": true,
-            "schema": {
-              "title": "Account Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/PaymentMethod"
-                  },
-                  "title": "Response List Payment Methods Accounts  Account Id  Payment Methods Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "List payment methods"
+        "summary": "Retrieve an order",
+        "tags": [
+          "trading"
+        ]
       }
     },
     "/accounts/{account_id}/pending-orders": {
@@ -15158,7 +12813,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List pending orders"
+        "summary": "List pending orders",
+        "tags": [
+          "trading"
+        ]
       }
     },
     "/accounts/{account_id}/positions": {
@@ -15219,7 +12877,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List positions"
+        "summary": "List positions",
+        "tags": [
+          "holdings"
+        ]
       }
     },
     "/accounts/{account_id}/positions/{position_id}": {
@@ -15273,7 +12934,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve a position"
+        "summary": "Retrieve a position",
+        "tags": [
+          "holdings"
+        ]
       }
     },
     "/accounts/{account_id}/returns": {
@@ -15335,7 +12999,7 @@
         ],
         "summary": "Retrieve Account Returns (MWRR / TWRR)",
         "tags": [
-          "Performance"
+          "performance"
         ]
       }
     },
@@ -15391,7 +13055,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create an account statement"
+        "summary": "Create an account statement",
+        "tags": [
+          "accounts"
+        ]
       }
     },
     "/accounts/{account_id}/valuation": {
@@ -15438,7 +13105,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve current valuation"
+        "summary": "Retrieve current valuation",
+        "tags": [
+          "valuation"
+        ]
       }
     },
     "/accounts/{account_id}/valuation-history": {
@@ -15516,7 +13186,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve valuation history"
+        "summary": "Retrieve valuation history",
+        "tags": [
+          "valuation"
+        ]
       }
     },
     "/accounts/{account_id}/withdrawals": {
@@ -15571,7 +13244,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create a withdrawal"
+        "summary": "Create a withdrawal",
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/accounts/{account_id}/withdrawals/{withdrawal_id}": {
@@ -15625,7 +13301,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve a withdrawal"
+        "summary": "Retrieve a withdrawal",
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/accounts/{id_or_reference}": {
@@ -15670,128 +13349,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve an account"
-      }
-    },
-    "/accounts/{id}/series/{metric}": {
-      "get": {
-        "description": "Retrieve a metric sampled over a period for an account, suitable for charting. Pass a predefined `period` (the chart chips, e.g. 1D / 1W) or an explicit `period_start` / `period_end` window. For valuation, daily-resolution requests read the end-of-day snapshots and finer resolutions are computed intraday. Earnings is always daily.",
-        "operationId": "get_series_accounts__id__series__metric__get",
-        "parameters": [
-          {
-            "description": "The account ID.",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "description": "The account ID.",
-              "title": "Id",
-              "type": "string"
-            }
-          },
-          {
-            "description": "The quantity to chart: valuation or earnings.",
-            "in": "path",
-            "name": "metric",
-            "required": true,
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/SeriesMetric"
-                }
-              ],
-              "description": "The quantity to chart: valuation or earnings.",
-              "title": "Metric"
-            }
-          },
-          {
-            "description": "Predefined period to chart. Resolves to a start and end. Provide this or `period_start`.",
-            "in": "query",
-            "name": "period",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/Period",
-              "description": "Predefined period to chart. Resolves to a start and end. Provide this or `period_start`.",
-              "examples": [
-                "period=1w"
-              ],
-              "title": "Period",
-              "x-remove-null-from-type-union": true
-            }
-          },
-          {
-            "description": "Start of the period, inclusive (ISO 8601 datetime). Required when `period` is not given.",
-            "in": "query",
-            "name": "period_start",
-            "required": false,
-            "schema": {
-              "description": "Start of the period, inclusive (ISO 8601 datetime). Required when `period` is not given.",
-              "examples": [
-                "period_start=2025-11-12T08:00:00Z"
-              ],
-              "format": "date-time",
-              "title": "Period Start",
-              "type": "string",
-              "x-remove-null-from-type-union": true
-            }
-          },
-          {
-            "description": "End of the period, inclusive (ISO 8601 datetime). Defaults to now.",
-            "in": "query",
-            "name": "period_end",
-            "required": false,
-            "schema": {
-              "description": "End of the period, inclusive (ISO 8601 datetime). Defaults to now.",
-              "examples": [
-                "period_end=2025-11-12T20:00:00Z"
-              ],
-              "format": "date-time",
-              "title": "Period End",
-              "type": "string",
-              "x-remove-null-from-type-union": true
-            }
-          },
-          {
-            "description": "Bucket width hint for the intraday valuation path. Ignored by the snapshot-backed and earnings paths, which are always daily.",
-            "in": "query",
-            "name": "resolution",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/SeriesResolution",
-              "description": "Bucket width hint for the intraday valuation path. Ignored by the snapshot-backed and earnings paths, which are always daily.",
-              "title": "Resolution",
-              "x-remove-null-from-type-union": true
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Series"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Retrieve an account's chart series"
+        "summary": "Retrieve an account",
+        "tags": [
+          "accounts"
+        ]
       }
     },
     "/accounts/{id}/transactions": {
@@ -15876,7 +13437,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List account transactions"
+        "summary": "List account transactions",
+        "tags": [
+          "activity"
+        ]
       }
     },
     "/auth/token": {
@@ -15915,7 +13479,10 @@
             "description": "Bad Request"
           }
         },
-        "summary": "Issue an OAuth token"
+        "summary": "Issue an OAuth token",
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/bills/otr": {
@@ -15995,130 +13562,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List on-the-run bills"
-      }
-    },
-    "/consents": {
-      "get": {
-        "description": "Retrieve consents, optionally filtered by person, customer, and type.",
-        "operationId": "list_consents_consents_get",
-        "parameters": [
-          {
-            "description": "Filter by person ID.",
-            "in": "query",
-            "name": "person",
-            "required": false,
-            "schema": {
-              "description": "Filter by person ID.",
-              "title": "Person",
-              "type": "string",
-              "x-remove-null-from-type-union": true
-            }
-          },
-          {
-            "description": "Filter by customer ID.",
-            "in": "query",
-            "name": "customer",
-            "required": false,
-            "schema": {
-              "description": "Filter by customer ID.",
-              "title": "Customer",
-              "type": "string",
-              "x-remove-null-from-type-union": true
-            }
-          },
-          {
-            "description": "Filter by consent kind: legal_document or attestation.",
-            "in": "query",
-            "name": "type",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/ConsentType",
-              "description": "Filter by consent kind: legal_document or attestation.",
-              "title": "Type",
-              "x-remove-null-from-type-union": true
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/Consent"
-                  },
-                  "title": "Response List Consents Consents Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "List consents"
-      }
-    },
-    "/consents/{consent_id}": {
-      "get": {
-        "description": "Retrieves a consent by ID.",
-        "operationId": "get_consent_consents__consent_id__get",
-        "parameters": [
-          {
-            "description": "The ID of the consent.",
-            "in": "path",
-            "name": "consent_id",
-            "required": true,
-            "schema": {
-              "description": "The ID of the consent.",
-              "title": "Consent Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Consent"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Retrieve a consent"
+        "summary": "List on-the-run bills",
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/customers/{id}": {
@@ -16184,7 +13631,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve a customer"
+        "summary": "Retrieve a customer",
+        "tags": [
+          "customers"
+        ]
       }
     },
     "/customers/{id}/account-ownerships": {
@@ -16233,70 +13683,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List Customer Account Ownerships"
-      }
-    },
-    "/customers/{id}/authorities": {
-      "get": {
-        "description": "List all authorities for a customer by ID, optionally including revoked authorities.",
-        "operationId": "list_customer_authorities_customers__id__authorities_get",
-        "parameters": [
-          {
-            "description": "The ID of the customer.",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "description": "The ID of the customer.",
-              "title": "Id",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Whether to include revoked authorities.",
-            "in": "query",
-            "name": "include_revoked",
-            "required": false,
-            "schema": {
-              "default": false,
-              "description": "Whether to include revoked authorities.",
-              "title": "Include Revoked",
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/CustomerAuthority"
-                  },
-                  "title": "Response List Customer Authorities Customers  Id  Authorities Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "List authorities for a customer"
+        "summary": "List Customer Account Ownerships",
+        "tags": [
+          "customers"
+        ]
       }
     },
     "/documents/{document_id}/file": {
@@ -16349,7 +13739,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Download Document File"
+        "summary": "Download Document File",
+        "tags": [
+          "accounts"
+        ]
       }
     },
     "/events": {
@@ -16465,7 +13858,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List events"
+        "summary": "List events",
+        "tags": [
+          "events"
+        ]
       }
     },
     "/events/{event_id}": {
@@ -16510,92 +13906,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve event"
-      }
-    },
-    "/exchanges": {
-      "get": {
-        "description": "Retrieve all exchanges.",
-        "operationId": "list_exchanges_exchanges_get",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/Exchange"
-                  },
-                  "title": "Response List Exchanges Exchanges Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "List exchanges"
-      }
-    },
-    "/exchanges/{id}": {
-      "get": {
-        "description": "Retrieve an exchange by ISO 10383 MIC code.",
-        "operationId": "get_exchange_exchanges__id__get",
-        "parameters": [
-          {
-            "description": "The exchange MIC code (e.g. `XETR`).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "description": "The exchange MIC code (e.g. `XETR`).",
-              "title": "Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Exchange"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Retrieve an exchange"
+        "summary": "Retrieve event",
+        "tags": [
+          "events"
+        ]
       }
     },
     "/fee-charges/{fee_charge_id}": {
@@ -16640,7 +13954,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve a fee charge"
+        "summary": "Retrieve a fee charge",
+        "tags": [
+          "billing"
+        ]
       }
     },
     "/files": {
@@ -16684,425 +14001,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create a file"
-      }
-    },
-    "/instrument-documents": {
-      "get": {
-        "description": "Retrieve all available instrument documents, optionally filtered by instrument and/or document type.",
-        "operationId": "list_instrument_documents_instrument_documents_get",
-        "parameters": [
-          {
-            "description": "Return instrument documents for the given instrument.",
-            "in": "query",
-            "name": "instrument",
-            "required": false,
-            "schema": {
-              "description": "Return instrument documents for the given instrument.",
-              "title": "Instrument",
-              "type": "string",
-              "x-remove-null-from-type-union": true
-            }
-          },
-          {
-            "description": "Return instrument documents of the given type.",
-            "in": "query",
-            "name": "document_type",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/InstrumentDocumentType",
-              "description": "Return instrument documents of the given type.",
-              "title": "Document Type",
-              "x-remove-null-from-type-union": true
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/InstrumentDocument"
-                  },
-                  "title": "Response List Instrument Documents Instrument Documents Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "List instrument documents"
-      }
-    },
-    "/instrument-documents/{instrument_document_id}": {
-      "get": {
-        "description": "Retrieve an instrument document by ID.",
-        "operationId": "get_instrument_document_instrument_documents__instrument_document_id__get",
-        "parameters": [
-          {
-            "description": "The ID of the instrument document to retrieve.",
-            "in": "path",
-            "name": "instrument_document_id",
-            "required": true,
-            "schema": {
-              "description": "The ID of the instrument document to retrieve.",
-              "title": "Instrument Document Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InstrumentDocument"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Retrieve an instrument document"
-      }
-    },
-    "/instrument-documents/{instrument_document_id}/latest": {
-      "get": {
-        "description": "Retrieves the latest version of an instrument document alongside its download URL.",
-        "operationId": "get_latest_instrument_document_instrument_documents__instrument_document_id__latest_get",
-        "parameters": [
-          {
-            "description": "The ID of the instrument document.",
-            "in": "path",
-            "name": "instrument_document_id",
-            "required": true,
-            "schema": {
-              "description": "The ID of the instrument document.",
-              "title": "Instrument Document Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "inline",
-            "required": false,
-            "schema": {
-              "default": false,
-              "title": "Inline",
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InstrumentDocumentVersionWithDownloadUrl"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Retrieve the latest version of an instrument document"
-      }
-    },
-    "/instrument-documents/{instrument_document_id}/latest/file": {
-      "get": {
-        "description": "Downloads the file for the latest version of an instrument document (by effective date). This endpoint redirects to a signed download URL. Clients that cannot follow a redirect can make the request with ?redirect=false and manually open the URL in `download_url` to trigger the download. To open the file inline, add ?inline=true.",
-        "operationId": "download_latest_instrument_document_instrument_documents__instrument_document_id__latest_file_get",
-        "parameters": [
-          {
-            "description": "The ID of the instrument document.",
-            "in": "path",
-            "name": "instrument_document_id",
-            "required": true,
-            "schema": {
-              "description": "The ID of the instrument document.",
-              "title": "Instrument Document Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "redirect",
-            "required": false,
-            "schema": {
-              "default": true,
-              "title": "Redirect",
-              "type": "boolean"
-            }
-          },
-          {
-            "in": "query",
-            "name": "inline",
-            "required": false,
-            "schema": {
-              "default": false,
-              "title": "Inline",
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Download the latest version of an instrument document"
-      }
-    },
-    "/instrument-documents/{instrument_document_id}/versions": {
-      "get": {
-        "description": "Returns all versions of the given instrument document, ordered by effective date descending (most recent first).",
-        "operationId": "list_instrument_document_versions_instrument_documents__instrument_document_id__versions_get",
-        "parameters": [
-          {
-            "description": "The ID of the instrument document.",
-            "in": "path",
-            "name": "instrument_document_id",
-            "required": true,
-            "schema": {
-              "description": "The ID of the instrument document.",
-              "title": "Instrument Document Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/InstrumentDocumentVersion"
-                  },
-                  "title": "Response List Instrument Document Versions Instrument Documents  Instrument Document Id  Versions Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "List versions of an instrument document"
-      }
-    },
-    "/instrument-documents/{instrument_document_id}/versions/{version_id}": {
-      "get": {
-        "description": "Retrieve a specific version of an instrument document.",
-        "operationId": "get_instrument_document_version_instrument_documents__instrument_document_id__versions__version_id__get",
-        "parameters": [
-          {
-            "description": "The ID of the instrument document.",
-            "in": "path",
-            "name": "instrument_document_id",
-            "required": true,
-            "schema": {
-              "description": "The ID of the instrument document.",
-              "title": "Instrument Document Id",
-              "type": "string"
-            }
-          },
-          {
-            "description": "The ID of the version to retrieve.",
-            "in": "path",
-            "name": "version_id",
-            "required": true,
-            "schema": {
-              "description": "The ID of the version to retrieve.",
-              "title": "Version Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InstrumentDocumentVersion"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Retrieve an instrument document version"
-      }
-    },
-    "/instrument-documents/{instrument_document_id}/versions/{version_id}/file": {
-      "get": {
-        "description": "Downloads the file for a specific version of an instrument document. This endpoint redirects to a signed download URL. Clients that cannot follow a redirect can make the request with ?redirect=false and manually open the URL in `download_url` to trigger the download. To open the file inline, add ?inline=true.",
-        "operationId": "download_instrument_document_version_instrument_documents__instrument_document_id__versions__version_id__file_get",
-        "parameters": [
-          {
-            "description": "The ID of the instrument document.",
-            "in": "path",
-            "name": "instrument_document_id",
-            "required": true,
-            "schema": {
-              "description": "The ID of the instrument document.",
-              "title": "Instrument Document Id",
-              "type": "string"
-            }
-          },
-          {
-            "description": "The ID of the version to download.",
-            "in": "path",
-            "name": "version_id",
-            "required": true,
-            "schema": {
-              "description": "The ID of the version to download.",
-              "title": "Version Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "redirect",
-            "required": false,
-            "schema": {
-              "default": true,
-              "title": "Redirect",
-              "type": "boolean"
-            }
-          },
-          {
-            "in": "query",
-            "name": "inline",
-            "required": false,
-            "schema": {
-              "default": false,
-              "title": "Inline",
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Download an instrument document version"
+        "summary": "Create a file",
+        "tags": [
+          "files"
+        ]
       }
     },
     "/instruments": {
@@ -17202,7 +14104,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List instruments"
+        "summary": "List instruments",
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/instruments/{id_or_symbol}": {
@@ -17280,781 +14185,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve an instrument"
-      }
-    },
-    "/instruments/{id_or_symbol}/trading-session": {
-      "get": {
-        "description": "Returns the instrument's current trading session status and resolved trading schedule. Visibility matches GET /instruments/{id_or_symbol}.",
-        "operationId": "get_instrument_trading_session_instruments__id_or_symbol__trading_session_get",
-        "parameters": [
-          {
-            "description": "The ID or symbol of the instrument to retrieve.",
-            "in": "path",
-            "name": "id_or_symbol",
-            "required": true,
-            "schema": {
-              "description": "The ID or symbol of the instrument to retrieve.",
-              "title": "Id Or Symbol",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InstrumentTradingSession"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Get instrument trading session"
-      }
-    },
-    "/instruments/{instrument_id}/composition/asset-allocation": {
-      "get": {
-        "description": "Returns asset-class allocation for a fund instrument. Pass `snapshot_date` to retrieve the latest snapshot on or before that date.",
-        "operationId": "get_fund_asset_allocation_instruments__instrument_id__composition_asset_allocation_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instrument_id",
-            "required": true,
-            "schema": {
-              "title": "Instrument Id",
-              "type": "string"
-            }
-          },
-          {
-            "description": "As-of date (ISO). Latest snapshot on or before this date.",
-            "in": "query",
-            "name": "snapshot_date",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "format": "date",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "As-of date (ISO). Latest snapshot on or before this date.",
-              "title": "Snapshot Date"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundAssetAllocationResponse"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Get fund asset allocation"
-      }
-    },
-    "/instruments/{instrument_id}/composition/asset-allocation/history": {
-      "get": {
-        "description": "Returns distinct snapshot dates for fund asset allocation.",
-        "operationId": "list_fund_asset_allocation_history_instruments__instrument_id__composition_asset_allocation_history_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instrument_id",
-            "required": true,
-            "schema": {
-              "title": "Instrument Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/FundAssetAllocationHistoryEntry"
-                  },
-                  "title": "Response List Fund Asset Allocation History Instruments  Instrument Id  Composition Asset Allocation History Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "List fund asset allocation snapshots"
-      }
-    },
-    "/instruments/{instrument_id}/composition/country-exposure": {
-      "get": {
-        "description": "Returns country allocation for a fund instrument. Pass `snapshot_date` to retrieve the latest snapshot on or before that date.",
-        "operationId": "get_fund_country_exposure_instruments__instrument_id__composition_country_exposure_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instrument_id",
-            "required": true,
-            "schema": {
-              "title": "Instrument Id",
-              "type": "string"
-            }
-          },
-          {
-            "description": "As-of date (ISO). Latest snapshot on or before this date.",
-            "in": "query",
-            "name": "snapshot_date",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "format": "date",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "As-of date (ISO). Latest snapshot on or before this date.",
-              "title": "Snapshot Date"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundCountryExposureResponse"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Get fund country exposure"
-      }
-    },
-    "/instruments/{instrument_id}/composition/country-exposure/history": {
-      "get": {
-        "description": "Returns distinct snapshot dates for fund country exposure.",
-        "operationId": "list_fund_country_exposure_history_instruments__instrument_id__composition_country_exposure_history_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instrument_id",
-            "required": true,
-            "schema": {
-              "title": "Instrument Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/FundCountryExposureHistoryEntry"
-                  },
-                  "title": "Response List Fund Country Exposure History Instruments  Instrument Id  Composition Country Exposure History Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "List fund country exposure snapshots"
-      }
-    },
-    "/instruments/{instrument_id}/composition/holdings": {
-      "get": {
-        "description": "Returns top holdings for a fund instrument. Pass `snapshot_date` to retrieve the latest snapshot on or before that date.",
-        "operationId": "get_fund_holdings_instruments__instrument_id__composition_holdings_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instrument_id",
-            "required": true,
-            "schema": {
-              "title": "Instrument Id",
-              "type": "string"
-            }
-          },
-          {
-            "description": "As-of date (ISO). Latest snapshot on or before this date.",
-            "in": "query",
-            "name": "snapshot_date",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "format": "date",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "As-of date (ISO). Latest snapshot on or before this date.",
-              "title": "Snapshot Date"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundHoldingResponse"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Get fund top holdings"
-      }
-    },
-    "/instruments/{instrument_id}/composition/holdings/history": {
-      "get": {
-        "description": "Returns distinct snapshot dates for fund top holdings.",
-        "operationId": "list_fund_holdings_history_instruments__instrument_id__composition_holdings_history_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instrument_id",
-            "required": true,
-            "schema": {
-              "title": "Instrument Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/FundHoldingHistoryEntry"
-                  },
-                  "title": "Response List Fund Holdings History Instruments  Instrument Id  Composition Holdings History Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "List fund top-holdings snapshots"
-      }
-    },
-    "/instruments/{instrument_id}/composition/sector-exposure": {
-      "get": {
-        "description": "Returns sector allocation for a fund instrument. Pass `snapshot_date` to retrieve the latest snapshot on or before that date.",
-        "operationId": "get_fund_sector_exposure_instruments__instrument_id__composition_sector_exposure_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instrument_id",
-            "required": true,
-            "schema": {
-              "title": "Instrument Id",
-              "type": "string"
-            }
-          },
-          {
-            "description": "As-of date (ISO). Latest snapshot on or before this date.",
-            "in": "query",
-            "name": "snapshot_date",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "format": "date",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "As-of date (ISO). Latest snapshot on or before this date.",
-              "title": "Snapshot Date"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundSectorExposureResponse"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Get fund sector exposure"
-      }
-    },
-    "/instruments/{instrument_id}/composition/sector-exposure/history": {
-      "get": {
-        "description": "Returns distinct snapshot dates for fund sector exposure.",
-        "operationId": "list_fund_sector_exposure_history_instruments__instrument_id__composition_sector_exposure_history_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instrument_id",
-            "required": true,
-            "schema": {
-              "title": "Instrument Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/FundSectorExposureHistoryEntry"
-                  },
-                  "title": "Response List Fund Sector Exposure History Instruments  Instrument Id  Composition Sector Exposure History Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "List fund sector exposure snapshots"
-      }
-    },
-    "/instruments/{instrument_id}/documents": {
-      "get": {
-        "description": "Retrieve all documents associated with an instrument.",
-        "operationId": "list_instrument_documents_for_instrument_instruments__instrument_id__documents_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instrument_id",
-            "required": true,
-            "schema": {
-              "title": "Instrument Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/InstrumentDocument"
-                  },
-                  "title": "Response List Instrument Documents For Instrument Instruments  Instrument Id  Documents Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "List instrument documents"
-      }
-    },
-    "/instruments/{instrument_id}/performance/annual-total-returns": {
-      "get": {
-        "description": "Returns annual total returns for a fund instrument. Pass `snapshot_date` to retrieve the latest snapshot on or before that date.",
-        "operationId": "get_fund_annual_total_returns_instruments__instrument_id__performance_annual_total_returns_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instrument_id",
-            "required": true,
-            "schema": {
-              "title": "Instrument Id",
-              "type": "string"
-            }
-          },
-          {
-            "description": "As-of date (ISO). Latest snapshot on or before this date.",
-            "in": "query",
-            "name": "snapshot_date",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "format": "date",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "As-of date (ISO). Latest snapshot on or before this date.",
-              "title": "Snapshot Date"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundAnnualTotalReturnResponse"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Get fund annual total returns"
-      }
-    },
-    "/instruments/{instrument_id}/performance/annual-total-returns/history": {
-      "get": {
-        "description": "Returns distinct snapshot dates for fund annual total returns.",
-        "operationId": "list_fund_annual_total_returns_history_instruments__instrument_id__performance_annual_total_returns_history_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instrument_id",
-            "required": true,
-            "schema": {
-              "title": "Instrument Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/FundAnnualTotalReturnHistoryEntry"
-                  },
-                  "title": "Response List Fund Annual Total Returns History Instruments  Instrument Id  Performance Annual Total Returns History Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "List fund annual total-return snapshots"
-      }
-    },
-    "/instruments/{instrument_id}/performance/trailing-returns": {
-      "get": {
-        "description": "Returns trailing returns for a fund instrument. Pass `snapshot_date` to retrieve the latest snapshot on or before that date.",
-        "operationId": "get_fund_trailing_returns_instruments__instrument_id__performance_trailing_returns_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instrument_id",
-            "required": true,
-            "schema": {
-              "title": "Instrument Id",
-              "type": "string"
-            }
-          },
-          {
-            "description": "As-of date (ISO). Latest snapshot on or before this date.",
-            "in": "query",
-            "name": "snapshot_date",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "format": "date",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "As-of date (ISO). Latest snapshot on or before this date.",
-              "title": "Snapshot Date"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundTrailingReturnResponse"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Get fund trailing returns"
-      }
-    },
-    "/instruments/{instrument_id}/performance/trailing-returns/history": {
-      "get": {
-        "description": "Returns distinct snapshot dates for fund trailing returns.",
-        "operationId": "list_fund_trailing_returns_history_instruments__instrument_id__performance_trailing_returns_history_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "instrument_id",
-            "required": true,
-            "schema": {
-              "title": "Instrument Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/FundTrailingReturnHistoryEntry"
-                  },
-                  "title": "Response List Fund Trailing Returns History Instruments  Instrument Id  Performance Trailing Returns History Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "List fund trailing-return snapshots"
+        "summary": "Retrieve an instrument",
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/legal-documents": {
@@ -18106,7 +14240,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List legal documents"
+        "summary": "List legal documents",
+        "tags": [
+          "legal-documents"
+        ]
       }
     },
     "/legal-documents/{legal_document_id}": {
@@ -18153,7 +14290,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve a legal document"
+        "summary": "Retrieve a legal document",
+        "tags": [
+          "legal-documents"
+        ]
       }
     },
     "/legal-documents/{legal_document_id}/latest": {
@@ -18210,7 +14350,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve the latest version of a legal document"
+        "summary": "Retrieve the latest version of a legal document",
+        "tags": [
+          "legal-documents"
+        ]
       }
     },
     "/legal-documents/{legal_document_id}/latest/file": {
@@ -18275,7 +14418,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Download the latest version of a legal document"
+        "summary": "Download the latest version of a legal document",
+        "tags": [
+          "legal-documents"
+        ]
       }
     },
     "/legal-documents/{legal_document_id}/versions": {
@@ -18326,7 +14472,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List versions of a legal document"
+        "summary": "List versions of a legal document",
+        "tags": [
+          "legal-documents"
+        ]
       }
     },
     "/legal-documents/{legal_document_id}/versions/{version_id}": {
@@ -18384,7 +14533,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve a legal document version"
+        "summary": "Retrieve a legal document version",
+        "tags": [
+          "legal-documents"
+        ]
       }
     },
     "/legal-documents/{legal_document_id}/versions/{version_id}/file": {
@@ -18460,7 +14612,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Download a legal document version"
+        "summary": "Download a legal document version",
+        "tags": [
+          "legal-documents"
+        ]
       }
     },
     "/me": {
@@ -18502,7 +14657,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Me"
+        "summary": "Me",
+        "tags": [
+          "identity"
+        ]
       }
     },
     "/onboarding-applications": {
@@ -18546,7 +14704,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Submit an onboarding application"
+        "summary": "Submit an onboarding application",
+        "tags": [
+          "onboarding"
+        ]
       }
     },
     "/onboarding-applications/{id}": {
@@ -18593,7 +14754,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve an onboarding application"
+        "summary": "Retrieve an onboarding application",
+        "tags": [
+          "onboarding"
+        ]
       }
     },
     "/persons": {
@@ -18637,7 +14801,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create a person"
+        "summary": "Create a person",
+        "tags": [
+          "customers"
+        ]
       }
     },
     "/persons/{id}": {
@@ -18699,7 +14866,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve a person"
+        "summary": "Retrieve a person",
+        "tags": [
+          "customers"
+        ]
       }
     },
     "/persons/{id}/authorities": {
@@ -18762,7 +14932,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List authorities for a person"
+        "summary": "List authorities for a person",
+        "tags": [
+          "customers"
+        ]
       }
     },
     "/persons/{person_id}/claims": {
@@ -18939,7 +15112,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List claims for a person"
+        "summary": "List claims for a person",
+        "tags": [
+          "customers"
+        ]
       },
       "post": {
         "description": "Submit a claim of any type for a person. The claim is created with pending status and will need verification.",
@@ -19130,7 +15306,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create a claim for a person"
+        "summary": "Create a claim for a person",
+        "tags": [
+          "customers"
+        ]
       }
     },
     "/persons/{person_id}/claims/{claim_id}": {
@@ -19267,190 +15446,9 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve a person claim"
-      }
-    },
-    "/portfolios/{id}/series/{metric}": {
-      "get": {
-        "description": "Retrieve a metric sampled over a period for a portfolio, suitable for charting. Pass a predefined `period` (the chart chips, e.g. 1D / 1W) or an explicit `period_start` / `period_end` window. Daily-resolution valuation reads the end-of-day snapshots and finer resolutions are computed intraday. Only valuation is available for portfolios; earnings returns 400.",
-        "operationId": "get_portfolio_series_portfolios__id__series__metric__get",
-        "parameters": [
-          {
-            "description": "The portfolio ID.",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "description": "The portfolio ID.",
-              "title": "Id",
-              "type": "string"
-            }
-          },
-          {
-            "description": "The quantity to chart. Portfolios support valuation only.",
-            "in": "path",
-            "name": "metric",
-            "required": true,
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/SeriesMetric"
-                }
-              ],
-              "description": "The quantity to chart. Portfolios support valuation only.",
-              "title": "Metric"
-            }
-          },
-          {
-            "description": "Predefined period to chart. Resolves to a start and end. Provide this or `period_start`.",
-            "in": "query",
-            "name": "period",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/Period",
-              "description": "Predefined period to chart. Resolves to a start and end. Provide this or `period_start`.",
-              "examples": [
-                "period=1w"
-              ],
-              "title": "Period",
-              "x-remove-null-from-type-union": true
-            }
-          },
-          {
-            "description": "Start of the period, inclusive (ISO 8601 datetime). Required when `period` is not given.",
-            "in": "query",
-            "name": "period_start",
-            "required": false,
-            "schema": {
-              "description": "Start of the period, inclusive (ISO 8601 datetime). Required when `period` is not given.",
-              "examples": [
-                "period_start=2025-11-12T08:00:00Z"
-              ],
-              "format": "date-time",
-              "title": "Period Start",
-              "type": "string",
-              "x-remove-null-from-type-union": true
-            }
-          },
-          {
-            "description": "End of the period, inclusive (ISO 8601 datetime). Defaults to now.",
-            "in": "query",
-            "name": "period_end",
-            "required": false,
-            "schema": {
-              "description": "End of the period, inclusive (ISO 8601 datetime). Defaults to now.",
-              "examples": [
-                "period_end=2025-11-12T20:00:00Z"
-              ],
-              "format": "date-time",
-              "title": "Period End",
-              "type": "string",
-              "x-remove-null-from-type-union": true
-            }
-          },
-          {
-            "description": "Bucket width hint for the intraday valuation path. Ignored by the snapshot-backed path, which is always daily.",
-            "in": "query",
-            "name": "resolution",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/SeriesResolution",
-              "description": "Bucket width hint for the intraday valuation path. Ignored by the snapshot-backed path, which is always daily.",
-              "title": "Resolution",
-              "x-remove-null-from-type-union": true
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Series"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Retrieve a portfolio's chart series"
-      }
-    },
-    "/portfolios/{portfolio_id}/returns": {
-      "get": {
-        "description": "Retrieve the portfolio's MWRR and TWRR for the requested period.",
-        "operationId": "get_portfolio_returns_portfolios__portfolio_id__returns_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "portfolio_id",
-            "required": true,
-            "schema": {
-              "title": "Portfolio Id",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Predefined period over which returns are computed.",
-            "in": "query",
-            "name": "period",
-            "required": true,
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/Period"
-                }
-              ],
-              "description": "Predefined period over which returns are computed.",
-              "title": "Period"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PortfolioReturns"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Retrieve Portfolio Returns (MWRR / TWRR)",
+        "summary": "Retrieve a person claim",
         "tags": [
-          "Performance"
+          "customers"
         ]
       }
     },
@@ -19506,7 +15504,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Update Position"
+        "summary": "Update Position",
+        "tags": [
+          "holdings"
+        ]
       }
     },
     "/positions/{id}/transactions": {
@@ -19591,7 +15592,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List position transactions"
+        "summary": "List position transactions",
+        "tags": [
+          "activity"
+        ]
       }
     },
     "/positions/{position_id}/earnings": {
@@ -19690,7 +15694,7 @@
         ],
         "summary": "Retrieve earnings (P&L)",
         "tags": [
-          "Performance"
+          "performance"
         ]
       }
     },
@@ -19753,7 +15757,7 @@
         ],
         "summary": "Retrieve Position Returns (MWRR / TWRR)",
         "tags": [
-          "Performance"
+          "performance"
         ]
       }
     },
@@ -19814,7 +15818,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve position valuation"
+        "summary": "Retrieve position valuation",
+        "tags": [
+          "valuation"
+        ]
       }
     },
     "/prices": {
@@ -19881,7 +15888,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve prices"
+        "summary": "Retrieve prices",
+        "tags": [
+          "market-data"
+        ]
       }
     },
     "/signed-uploads": {
@@ -19925,124 +15935,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Request file upload"
-      }
-    },
-    "/tenant": {
-      "get": {
-        "description": "Retrieve information about the tenant account.",
-        "operationId": "get_tenant_tenant_get",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Tenant"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Get Tenant"
-      }
-    },
-    "/tenants": {
-      "get": {
-        "description": "List all tenant accounts in the system.",
-        "operationId": "list_tenants_tenants_get",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/Tenant"
-                  },
-                  "title": "Response List Tenants Tenants Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "List Tenants"
-      }
-    },
-    "/trades/{trade_id}": {
-      "get": {
-        "description": "Retrieve a trade by ID.",
-        "operationId": "get_trade_trades__trade_id__get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "trade_id",
-            "required": true,
-            "schema": {
-              "title": "Trade Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderTrade"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "Bad Request"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Get Trade"
+        "summary": "Request file upload",
+        "tags": [
+          "files"
+        ]
       }
     },
     "/webhook-deliveries/{delivery_id}": {
@@ -20089,7 +15985,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve webhook delivery"
+        "summary": "Retrieve webhook delivery",
+        "tags": [
+          "webhooks"
+        ]
       }
     },
     "/webhooks": {
@@ -20127,7 +16026,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List webhooks"
+        "summary": "List webhooks",
+        "tags": [
+          "webhooks"
+        ]
       },
       "post": {
         "description": "Create a new webhook.",
@@ -20169,7 +16071,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create a webhook"
+        "summary": "Create a webhook",
+        "tags": [
+          "webhooks"
+        ]
       }
     },
     "/webhooks/{webhook_id}": {
@@ -20216,7 +16121,10 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve webhook"
+        "summary": "Retrieve webhook",
+        "tags": [
+          "webhooks"
+        ]
       },
       "put": {
         "description": "Update an existing webhook.",
@@ -20271,13 +16179,108 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Update a webhook"
+        "summary": "Update a webhook",
+        "tags": [
+          "webhooks"
+        ]
       }
     }
   },
   "servers": [
     {
-      "url": "https://api.engine.usesophic.com/"
+      "url": "https://api.engine.usesophic.com"
+    }
+  ],
+  "tags": [
+    {
+      "description": "Retrieve accounts, statements, and account documents.",
+      "name": "accounts",
+      "x-group": "Accounts"
+    },
+    {
+      "description": "Read the audit trail of platform activity.",
+      "name": "activity",
+      "x-group": "Activity"
+    },
+    {
+      "description": "Obtain OAuth access tokens for the Engine API.",
+      "name": "auth",
+      "x-group": "Authentication"
+    },
+    {
+      "description": "Inspect the authenticated user or service principal.",
+      "name": "identity",
+      "x-group": "Identity"
+    },
+    {
+      "description": "Retrieve fee schedules and billing information.",
+      "name": "billing",
+      "x-group": "Billing"
+    },
+    {
+      "description": "Browse instruments and tradable products.",
+      "name": "catalog",
+      "x-group": "Catalog"
+    },
+    {
+      "description": "Track onboarding applications through completion.",
+      "name": "onboarding",
+      "x-group": "Onboarding"
+    },
+    {
+      "description": "Manage customer records and related person data.",
+      "name": "customers",
+      "x-group": "Customers"
+    },
+    {
+      "description": "List platform events and inspect individual occurrences.",
+      "name": "events",
+      "x-group": "Events"
+    },
+    {
+      "description": "Read positions, transactions, and portfolio holdings.",
+      "name": "holdings",
+      "x-group": "Holdings"
+    },
+    {
+      "description": "Retrieve legal agreements and required disclosures.",
+      "name": "legal-documents",
+      "x-group": "Legal Documents"
+    },
+    {
+      "description": "Access prices and market data for instruments.",
+      "name": "market-data",
+      "x-group": "Market Data"
+    },
+    {
+      "description": "Manage deposits, withdrawals, and funding accounts.",
+      "name": "payments",
+      "x-group": "Payments"
+    },
+    {
+      "description": "Retrieve returns, earnings, and performance metrics.",
+      "name": "performance",
+      "x-group": "Performance"
+    },
+    {
+      "description": "Place and manage orders, quotes, and trades.",
+      "name": "trading",
+      "x-group": "Trading"
+    },
+    {
+      "description": "Read position and account valuations over time.",
+      "name": "valuation",
+      "x-group": "Valuation"
+    },
+    {
+      "description": "Configure webhook endpoints and inspect deliveries.",
+      "name": "webhooks",
+      "x-group": "Webhooks"
+    },
+    {
+      "description": "Upload files and retrieve stored documents.",
+      "name": "files",
+      "x-group": "Files"
     }
   ]
 }
