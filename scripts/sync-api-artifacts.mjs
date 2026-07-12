@@ -47,7 +47,7 @@ function parseArguments(argv) {
   return options;
 }
 
-async function fetchJson(url) {
+async function fetchJsonText(url) {
   const response = await fetch(url, {
     headers: {
       Accept: "application/json",
@@ -58,7 +58,11 @@ async function fetchJson(url) {
   if (!response.ok) {
     throw new Error(`${url} returned HTTP ${response.status}`);
   }
-  return response.json();
+  return response.text();
+}
+
+async function fetchJson(url) {
+  return JSON.parse(await fetchJsonText(url));
 }
 
 function escapeNonAscii(value) {
@@ -67,11 +71,14 @@ function escapeNonAscii(value) {
   });
 }
 
-function canonicalJson(value) {
+function canonicalJson(value, numberLiterals = new Map()) {
   if (value === null || typeof value === "boolean") {
     return JSON.stringify(value);
   }
   if (typeof value === "string") {
+    if (numberLiterals.has(value)) {
+      return numberLiterals.get(value);
+    }
     return escapeNonAscii(JSON.stringify(value));
   }
   if (typeof value === "number") {
@@ -81,22 +88,82 @@ function canonicalJson(value) {
     return JSON.stringify(value);
   }
   if (Array.isArray(value)) {
-    return `[${value.map(canonicalJson).join(",")}]`;
+    return `[${value
+      .map((item) => canonicalJson(item, numberLiterals))
+      .join(",")}]`;
   }
   if (typeof value === "object") {
     return `{${Object.keys(value)
       .sort()
       .map(
         (key) =>
-          `${escapeNonAscii(JSON.stringify(key))}:${canonicalJson(value[key])}`,
+          `${escapeNonAscii(JSON.stringify(key))}:${canonicalJson(
+            value[key],
+            numberLiterals,
+          )}`,
       )
       .join(",")}}`;
   }
   throw new Error(`unsupported JSON value: ${typeof value}`);
 }
 
-function canonicalSha256(document) {
-  return createHash("sha256").update(canonicalJson(document)).digest("hex");
+function preserveNumberLiterals(source) {
+  const numberLiterals = new Map();
+  let placeholderPrefix = "__ENGINE_DOCS_JSON_NUMBER__";
+  while (source.includes(placeholderPrefix)) {
+    placeholderPrefix = `_${placeholderPrefix}`;
+  }
+
+  let transformed = "";
+  let inString = false;
+  for (let index = 0; index < source.length; index += 1) {
+    const character = source[index];
+
+    if (inString) {
+      transformed += character;
+      if (character === "\\") {
+        index += 1;
+        transformed += source[index];
+      } else if (character === '"') {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (character === '"') {
+      inString = true;
+      transformed += character;
+      continue;
+    }
+
+    if (character === "-" || (character >= "0" && character <= "9")) {
+      const match = source
+        .slice(index)
+        .match(/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/);
+      if (match === null) {
+        throw new Error(`invalid JSON number at offset ${index}`);
+      }
+      const placeholder = `${placeholderPrefix}${numberLiterals.size}__`;
+      numberLiterals.set(placeholder, match[0]);
+      transformed += JSON.stringify(placeholder);
+      index += match[0].length - 1;
+      continue;
+    }
+
+    transformed += character;
+  }
+
+  return {
+    document: JSON.parse(transformed),
+    numberLiterals,
+  };
+}
+
+function canonicalSha256(source) {
+  const { document, numberLiterals } = preserveNumberLiterals(source);
+  return createHash("sha256")
+    .update(canonicalJson(document, numberLiterals))
+    .digest("hex");
 }
 
 function sortJson(value) {
@@ -190,8 +257,9 @@ async function syncArtifacts(options) {
   for (let attempt = 1; attempt <= options.attempts; attempt += 1) {
     try {
       metadata = validateMetadata(await fetchJson(options.metadataUrl));
-      openapi = await fetchJson(options.openapiUrl);
-      const actualDigest = canonicalSha256(openapi);
+      const openapiSource = await fetchJsonText(options.openapiUrl);
+      openapi = JSON.parse(openapiSource);
+      const actualDigest = canonicalSha256(openapiSource);
       if (actualDigest !== metadata.openapi_sha256) {
         throw new Error(
           `production OpenAPI digest is ${actualDigest}, expected ${metadata.openapi_sha256}`,

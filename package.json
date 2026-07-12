@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "mint dev",
     "build": "mint validate",
-    "start": "mint start"
+    "start": "mint start",
+    "test": "node --test scripts/*.test.mjs"
   },
   "keywords": [],
   "author": "",
