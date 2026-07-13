@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
   pull-requests: write
 
 concurrency:
@@ -35,11 +36,10 @@ jobs:
     env:
       RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
       RENDER_SERVICE_ID: ${{ vars.ENGINE_API_RENDER_SERVICE_ID }}
-      CURSOR_AUTOMATION_WEBHOOK_URL: ${{ secrets.CURSOR_AUTOMATION_WEBHOOK_URL }}
-      CURSOR_AUTOMATION_KEY: ${{ secrets.CURSOR_AUTOMATION_KEY }}
     outputs:
       backend_current_revision: ${{ steps.deployment.outputs.revision }}
       backend_prev_revision: ${{ steps.previous.outputs.revision }}
+      deployed_image: ${{ steps.deployment.outputs.image }}
     steps:
       - name: Validate Inputs
         shell: bash
@@ -56,18 +56,12 @@ jobs:
             echo "::error::Set the RENDER_API_KEY repository secret"
             exit 1
           fi
-          if [[ -z "$CURSOR_AUTOMATION_WEBHOOK_URL" ]]; then
-            echo "::error::Set the CURSOR_AUTOMATION_WEBHOOK_URL repository secret"
-            exit 1
-          fi
-          if [[ -z "$CURSOR_AUTOMATION_KEY" ]]; then
-            echo "::error::Set the CURSOR_AUTOMATION_KEY repository secret"
-            exit 1
-          fi
 
       - name: Verify Production Deployment
         id: deployment
         shell: bash
+        env:
+          DISPATCHED_IMAGE: ${{ github.event.client_payload.image || '' }}
         run: |
           render_api="https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys"
           current_deploy="$(curl \
@@ -103,7 +97,17 @@ jobs:
             exit 1
           fi
 
+          deployed_image="$(jq -r '.image.ref // empty' <<< "$current_deploy")"
+          if [[ -z "$deployed_image" ]]; then
+            deployed_image="$DISPATCHED_IMAGE"
+          fi
+          if [[ -z "$deployed_image" ]]; then
+            echo "::error::The Render deployment does not identify a deployed image"
+            exit 1
+          fi
+
           echo "revision=${current_revision:0:8}" >> "$GITHUB_OUTPUT"
+          echo "image=$deployed_image" >> "$GITHUB_OUTPUT"
           echo "created_at=$(jq -r '.createdAt' <<< "$current_deploy")" >> "$GITHUB_OUTPUT"
 
       - name: Find Previous Production Deployment
@@ -213,12 +217,11 @@ jobs:
     needs: [validate-deployment, detect-changes]
     if: needs.detect-changes.outputs.should_run == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 45
     env:
       BACKEND_CURRENT_REVISION: ${{ needs.validate-deployment.outputs.backend_current_revision }}
       BACKEND_PREV_REVISION: ${{ needs.validate-deployment.outputs.backend_prev_revision }}
-      CURSOR_AUTOMATION_WEBHOOK_URL: ${{ secrets.CURSOR_AUTOMATION_WEBHOOK_URL }}
-      CURSOR_AUTOMATION_KEY: ${{ secrets.CURSOR_AUTOMATION_KEY }}
+      DEPLOYED_IMAGE: ${{ needs.validate-deployment.outputs.deployed_image }}
     steps:
       - name: Check Out Documentation
         uses: actions/checkout@v4
@@ -269,61 +272,238 @@ jobs:
           fi
 
           git push --set-upstream origin HEAD
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Check Out Backend
+        if: needs.detect-changes.outputs.generated_changed == 'false'
+        uses: actions/checkout@v4
+        with:
+          repository: joinsophic/backend
+          token: ${{ secrets.BACKEND_REPO_READ_TOKEN }}
+          fetch-depth: 0
+          path: .backend
+          persist-credentials: false
+
+      - name: Exclude Backend Checkout
+        if: needs.detect-changes.outputs.generated_changed == 'false'
+        shell: bash
+        run: |
+          echo "/.backend/" >> .git/info/exclude
+
+      - name: Generate Changelog
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            You are a changelog-only agent for joinsophic/engine-docs. Your only
+            content-writing responsibility is updating changelog.mdx, and only when
+            the deployed backend range contains a material partner-visible API change.
+
+            Inputs:
+            - repository: ${{ github.repository }}
+            - branch: ${{ steps.branch.outputs.name }}
+            - backend_prev_revision: ${{ needs.validate-deployment.outputs.backend_prev_revision }}
+            - backend_current_revision: ${{ needs.validate-deployment.outputs.backend_current_revision }}
+            - generated_changed: ${{ needs.detect-changes.outputs.generated_changed }}
+
+            Validate before doing anything:
+            - repository must equal joinsophic/engine-docs.
+            - branch must match automation/api-docs-[0-9a-f]{8}.
+            - Both backend revisions must be exactly 8 lowercase hexadecimal characters.
+            - The branch must already exist on origin and must be the checked-out branch.
+
+            Use the repository's git-branch, check-backend, write-changelog, and
+            git-commit skills. The workflow owns pull request creation.
+
+            Never create or switch branches, modify generated artifacts, rebase,
+            force-push, or push to main. The only file you may edit is changelog.mdx.
+
+            Start with the cheapest possible check:
+
+            1. Compare this branch with origin/main for:
+               - openapi.json
+               - metadata/docs.json
+
+            2. Inspect only the semantic differences:
+               - Added, removed, or changed API operations.
+               - Request or response fields, required fields, types, enum values,
+                 status codes, or security requirements.
+               - Added, removed, or changed webhook events.
+               - Added, removed, or changed error codes.
+               - A changed api_version.
+
+            Ignore formatting, key ordering, OpenAPI descriptions, examples, server
+            metadata, and openapi_sha256 by itself.
+
+            If the generated files changed but contain no material semantic change,
+            stop immediately. Do not inspect the backend, edit files, run the build,
+            commit, or push.
+
+            If the generated files are unchanged, treat the invocation as an explicit
+            breakglass request for a possible behavioral change. The workflow has
+            checked out joinsophic/backend at .backend. Resolve both short revisions
+            to full commits there using git -C .backend, then run only these cheap
+            checks first:
+            - git log --oneline backend_prev_revision..backend_current_revision
+            - git diff --name-only backend_prev_revision..backend_current_revision
+
+            If the changed commits and paths cannot affect partner-visible API
+            behavior, stop immediately. Otherwise inspect only the relevant backend
+            diff.
+
+            A changelog entry is necessary only for a material change that partners
+            can observe, including:
+            - New or removed endpoints, fields, enum values, webhook events, or error codes.
+            - Changed authentication, validation, defaults, pagination, sorting,
+              rounding, idempotency, retries, side effects, or response semantics.
+            - Deprecations or observable bug fixes.
+
+            Do not write entries for internal refactors, infrastructure, tests,
+            logging, performance changes without observable behavior,
+            documentation-only changes, or generated-file churn.
+
+            Before editing, check whether changelog.mdx already documents the same
+            change. If it does, stop without making changes.
+
+            Versioning is authoritative:
+            - If api_version changed, write a versioned entry for the new version and
+              clearly describe migration requirements.
+            - If api_version did not change, classify every material change as
+              backwards compatible.
+
+            Follow the write-changelog skill's changelog format and voice exactly,
+            while respecting this task's stricter rule that changelog.mdx is the only
+            file you may edit. Merge changes into an existing entry for the same
+            release date instead of creating a duplicate entry. Keep entries concise
+            and partner-focused.
+
+            If and only if a changelog entry is required:
+            1. Edit only changelog.mdx.
+            2. Run corepack enable, pnpm install --frozen-lockfile, and pnpm build.
+            3. Review the diff and confirm changelog.mdx is the only changed file
+               from your work.
+            4. Commit with: [docs] Add API changelog entry
+            5. Push the provided branch without force.
+
+            Return structured output with:
+            - changelog_updated: true only if you committed and pushed changelog.mdx.
+            - summary: a short partner-focused summary of what you added, or an empty
+              string if no changelog was required.
+          claude_args: |
+            --max-turns 30
+            --allowedTools "Read,Edit,Glob,Grep,Bash(git:*),Bash(jq:*),Bash(corepack:*),Bash(pnpm:*)"
+            --json-schema '{"type":"object","properties":{"changelog_updated":{"type":"boolean"},"summary":{"type":"string"}},"required":["changelog_updated","summary"],"additionalProperties":false}'
+            ${{ needs.detect-changes.outputs.generated_changed == 'false' && '--add-dir .backend' || '' }}
+
+      - name: Verify Changelog Changes
+        id: changelog
+        shell: bash
+        env:
+          ARTIFACT_SHA: ${{ steps.commit.outputs.sha }}
+          DOCS_BRANCH: ${{ steps.branch.outputs.name }}
+        run: |
+          if [[ -n "$(git status --porcelain --untracked-files=all)" ]]; then
+            echo "::error::Claude left uncommitted files in the documentation checkout"
+            git status --short
+            exit 1
+          fi
+
+          git fetch origin "$DOCS_BRANCH"
+          changed_files="$(git diff --name-only "$ARTIFACT_SHA..origin/$DOCS_BRANCH")"
+
+          if [[ -z "$changed_files" ]]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          elif [[ "$changed_files" == "changelog.mdx" ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::Claude changed files other than changelog.mdx"
+            printf '%s\n' "$changed_files"
+            exit 1
+          fi
 
       - name: Open Documentation Pull Request
-        if: needs.detect-changes.outputs.generated_changed == 'true'
         id: pull_request
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
+          CHANGELOG_CHANGED: ${{ steps.changelog.outputs.changed }}
           DOCS_BRANCH: ${{ steps.branch.outputs.name }}
+          GENERATED_CHANGED: ${{ needs.detect-changes.outputs.generated_changed }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          pull_request_url="$(gh pr list \
+          git fetch origin main "$DOCS_BRANCH"
+
+          if git diff --quiet "origin/main...origin/$DOCS_BRANCH"; then
+            echo "::notice::The documentation branch has no changes; no pull request is required"
+            echo "url=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          body="$(cat <<EOF
+          Synchronizes the API documentation for deployed image \`$DEPLOYED_IMAGE\`.
+
+          - Render deployment: \`$RENDER_DEPLOY_ID\`
+          - Backend range: \`$BACKEND_PREV_REVISION..$BACKEND_CURRENT_REVISION\`
+          - Generated API artifacts changed: \`$GENERATED_CHANGED\`
+          - Changelog updated: \`$CHANGELOG_CHANGED\`
+          EOF
+          )"
+
+          pull_request="$(gh pr list \
             --head "$DOCS_BRANCH" \
             --base main \
             --state open \
-            --json url \
-            --jq '.[0].url')"
+            --json url,isDraft \
+            --jq '.[0] // {}')"
+          pull_request_url="$(jq -r '.url // empty' <<< "$pull_request")"
 
           if [[ -z "$pull_request_url" ]]; then
             pull_request_url="$(gh pr create \
               --base main \
               --head "$DOCS_BRANCH" \
-              --title "[docs] Update production API documentation" \
-              --body "Synchronizes the committed API artifacts for Render deployment \`$RENDER_DEPLOY_ID\` (backend revision \`$BACKEND_CURRENT_REVISION\`).")"
+              --title "Docs update: $DEPLOYED_IMAGE" \
+              --body "$body")"
+          else
+            gh pr edit "$pull_request_url" \
+              --title "Docs update: $DEPLOYED_IMAGE" \
+              --body "$body"
+
+            if [[ "$(jq -r '.isDraft' <<< "$pull_request")" == "true" ]]; then
+              gh pr ready "$pull_request_url"
+            fi
           fi
 
           echo "url=$pull_request_url" >> "$GITHUB_OUTPUT"
 
-      - name: Trigger Changelog Automation
+      - name: Notify Slack
+        if: steps.changelog.outputs.changed == 'true'
         shell: bash
         env:
-          DOCS_BRANCH: ${{ steps.branch.outputs.name }}
+          CLAUDE_RESULT: ${{ steps.claude.outputs.structured_output }}
+          PULL_REQUEST_URL: ${{ steps.pull_request.outputs.url }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.DOCS_SLACK_CHANNEL_ID }}
         run: |
-          jq -n \
-            --arg backend_prev_revision "$(printf '%s' "$BACKEND_PREV_REVISION" | tr '[:upper:]' '[:lower:]')" \
-            --arg backend_current_revision "$(printf '%s' "$BACKEND_CURRENT_REVISION" | tr '[:upper:]' '[:lower:]')" \
-            --arg backend_compare_url "https://github.com/joinsophic/backend/compare/$BACKEND_PREV_REVISION...$BACKEND_CURRENT_REVISION" \
-            --arg render_deploy_id "$RENDER_DEPLOY_ID" \
-            --arg branch "$DOCS_BRANCH" \
-            --arg repository "$GITHUB_REPOSITORY" \
-            --arg pull_request_url "${{ steps.pull_request.outputs.url }}" \
-            '{
-              backend_prev_revision: $backend_prev_revision,
-              backend_current_revision: $backend_current_revision,
-              backend_compare_url: $backend_compare_url,
-              render_deploy_id: $render_deploy_id,
-              branch: $branch,
-              repository: $repository,
-              pull_request_url: $pull_request_url
-            }' > "$RUNNER_TEMP/cursor-payload.json"
+          summary="$(jq -r '.summary // empty' <<< "$CLAUDE_RESULT")"
+          if [[ -z "$summary" ]]; then
+            summary="Added an API changelog entry for $BACKEND_PREV_REVISION..$BACKEND_CURRENT_REVISION."
+          fi
 
-          curl \
+          payload="$(jq -n \
+            --arg channel "$SLACK_CHANNEL_ID" \
+            --arg text "$summary <$PULL_REQUEST_URL|Review the documentation update>." \
+            '{channel: $channel, text: $text}')"
+          response="$(curl \
             --fail-with-body \
             --silent \
             --show-error \
             --request POST \
-            --header "Authorization: Bearer $CURSOR_AUTOMATION_KEY" \
-            --header "Content-Type: application/json" \
-            --data-binary "@$RUNNER_TEMP/cursor-payload.json" \
-            "$CURSOR_AUTOMATION_WEBHOOK_URL"
+            --header "Authorization: Bearer $SLACK_BOT_TOKEN" \
+            --header "Content-Type: application/json; charset=utf-8" \
+            --data "$payload" \
+            "https://slack.com/api/chat.postMessage")"
+
+          if [[ "$(jq -r '.ok' <<< "$response")" != "true" ]]; then
+            echo "::error::Slack notification failed: $(jq -r '.error // "unknown_error"' <<< "$response")"
+            exit 1
+          fi
