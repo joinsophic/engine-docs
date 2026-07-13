@@ -182,7 +182,7 @@
       "detail": "Withdrawals are not enabled for this account."
     }
   ],
-  "openapi_sha256": "7a521a76a01283fa7031da1afe293481f90871db12fe4ef74b229fab267f8a00",
+  "openapi_sha256": "4a074b8240d30ad488eb3efbfcb897985c788db1f04fd3fc9f8e97cd7ecc379d",
   "schema_version": 1,
   "webhook_events": [
     {
@@ -211,14 +211,14 @@
       "resource_type": "account"
     },
     {
-      "description": "A customer profile is permanently closed.",
-      "name": "customer.closed",
-      "resource_type": "customer"
-    },
-    {
       "description": "A customer's authority is revoked.",
       "name": "customer_authority.revoked",
       "resource_type": "customer_authority"
+    },
+    {
+      "description": "A customer profile is permanently closed.",
+      "name": "customer.closed",
+      "resource_type": "customer"
     },
     {
       "description": "An order is cancelled.",
