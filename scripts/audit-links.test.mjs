@@ -9,6 +9,7 @@ import test from "node:test";
 import {
   auditApiReferenceLinks,
   buildEndpointIndex,
+  extractApiReferenceLinks,
   slugify,
   suggestEndpointPath,
 } from "./audit-links.mjs";
@@ -68,6 +69,20 @@ test("suggestEndpointPath maps flat slugs to tagged paths", () => {
     suggestEndpointPath("/api-reference/positions/update-position", index),
     undefined,
   );
+});
+
+test("extractApiReferenceLinks finds markdown and JSX hrefs", () => {
+  const content = `
+[Auth](/api-reference/auth)
+<Link href="/api-reference/error-codes">error code</Link>
+<Card href="/api-reference/idempotency" />
+`;
+
+  assert.deepEqual(extractApiReferenceLinks(content), [
+    "/api-reference/auth",
+    "/api-reference/error-codes",
+    "/api-reference/idempotency",
+  ]);
 });
 
 test("auditApiReferenceLinks accepts static topic pages", () => {

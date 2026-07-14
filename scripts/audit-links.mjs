@@ -2,7 +2,24 @@ import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-const LINK_PATTERN = /\]\((\/api-reference\/[^)#]+)(?:#[^)]+)?\)/g;
+const MARKDOWN_LINK_PATTERN = /\]\((\/api-reference\/[^)#]+)(?:#[^)]+)?\)/g;
+const JSX_HREF_PATTERN = /href="(\/api-reference\/[^"#]+)(?:#[^"]+)?"/g;
+
+/**
+ * @param {string} content
+ * @returns {string[]}
+ */
+export function extractApiReferenceLinks(content) {
+  const hrefs = new Set();
+
+  for (const pattern of [MARKDOWN_LINK_PATTERN, JSX_HREF_PATTERN]) {
+    for (const match of content.matchAll(pattern)) {
+      hrefs.add(match[1]);
+    }
+  }
+
+  return [...hrefs];
+}
 
 /** @param {string} text */
 export function slugify(text) {
@@ -114,8 +131,7 @@ export function auditApiReferenceLinks({ root = process.cwd(), openapi }) {
     .map((entry) => path.join(root, entry))) {
     const content = fs.readFileSync(filePath, "utf8");
 
-    for (const match of content.matchAll(LINK_PATTERN)) {
-      const href = match[1];
+    for (const href of extractApiReferenceLinks(content)) {
       if (staticPaths.has(href) || index.validPaths.has(href)) {
         continue;
       }
