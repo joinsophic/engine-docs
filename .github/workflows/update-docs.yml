@@ -1,6 +1,10 @@
 name: Update Docs
 
 on:
+  pull_request:
+  push:
+    branches:
+      - main
   repository_dispatch:
     types: [production-deployed]
   workflow_dispatch:
@@ -21,16 +25,50 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: production-api-docs-${{ github.event.client_payload.render_deploy_id || inputs.render_deploy_id }}
-  cancel-in-progress: false
+  group: >-
+    ${{ (github.event_name == 'pull_request' || github.event_name == 'push')
+        && format('docs-validate-{0}', github.ref)
+        || format('production-api-docs-{0}', github.event.client_payload.render_deploy_id || inputs.render_deploy_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
 
 env:
   RENDER_DEPLOY_ID: ${{ github.event.client_payload.render_deploy_id || inputs.render_deploy_id }}
   FORCE_DOCS_UPDATE: ${{ github.event.client_payload.force_docs_update || inputs.force_docs_update || false }}
 
 jobs:
+  validate:
+    name: Validate docs
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Check out documentation
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      - name: Audit internal API reference links
+        run: pnpm audit-links
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Validate Mintlify build
+        run: pnpm build
+
   validate-deployment:
     name: Validate Deployment
+    if: github.event_name == 'repository_dispatch' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
@@ -166,6 +204,7 @@ jobs:
   detect-changes:
     name: Detect Changes
     needs: validate-deployment
+    if: github.event_name == 'repository_dispatch' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
@@ -179,6 +218,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      - name: Audit internal API reference links
+        run: pnpm audit-links
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Validate Mintlify build
+        run: pnpm build
 
       - name: Download Production Artifacts
         run: node scripts/sync-api-artifacts.mjs
@@ -215,7 +268,9 @@ jobs:
   update-docs:
     name: Update Docs
     needs: [validate-deployment, detect-changes]
-    if: needs.detect-changes.outputs.should_run == 'true'
+    if: >-
+      (github.event_name == 'repository_dispatch' || github.event_name == 'workflow_dispatch')
+      && needs.detect-changes.outputs.should_run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
