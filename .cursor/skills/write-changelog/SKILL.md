@@ -1,4 +1,4 @@
----
+``---
 name: write-changelog
 description: Write and maintain the API changelog in changelog.mdx. Use when shipping a new API version, adding endpoints or fields, changing behavior, deprecating features, or when the user asks to record a change. Modeled after Mercury and Stripe changelogs.
 ---
@@ -101,7 +101,7 @@ When unsure whether a change is breaking, check the "Backwards compatible change
 1. **Detect the API version** (see "Detect the API version first"). Read the current version from `versioning.mdx` and determine whether this change is a new dated version or a backwards-compatible addition.
 2. **Confirm the facts.** If the entry makes specific claims about behavior (new fields, changed values, endpoints), verify them against the backend using the `check-backend` skill. Don't guess field names or endpoint paths.
 3. **Classify the change** as breaking or backwards compatible per `versioning.mdx`, then **choose the `description` tag** from the version tagging table.
-4. **Add a new `<Update>` at the top** of `changelog.mdx`, directly under the frontmatter, so entries stay reverse-chronological.
+4. **Add a new `<Update>` at the top** of `changelog.mdx`, directly under the frontmatter, so entries stay reverse-chronological. **Never delete or rewrite existing entries.** You may append bullets to an entry for the same release date, but do not remove, shorten, or replace anything already published.
 5. **Write benefit-first prose**, then categorized bullets. Follow the project tone rules (use "we"/"you", contractions, no em dashes, no "Sophic Engine" in prose). Run the `lint-docs-tone` skill mentality over the entry.
 6. **Cross-link** to the relevant API reference or docs page for anything new (use the `cross-reference-audit` skill to confirm links resolve).
 7. **Keep `rss: true`** in the frontmatter so the entry publishes to the RSS feed. Don't remove it.
@@ -115,6 +115,7 @@ When unsure whether a change is breaking, check the "Backwards compatible change
 - **Be honest about breakage.** If action is required, say so plainly and link the migration path.
 - **Past tense, active voice.** "We added", "we fixed", "we now return".
 - **No em dashes in prose.** Use commas, colons, parentheses, or a separate sentence.
+- **Append-only history.** Never delete or rewrite existing `<Update>` blocks or bullets. Add new entries at the top, or append to an entry for the same release date.
 
 ## Checklist
 
@@ -127,5 +128,6 @@ Before finishing:
 - If a new version shipped, `versioning.mdx` "Current version" and `Api-Version` examples were updated to match.
 - New endpoints/fields are cross-linked and verified against the backend.
 - Tone matches the writing rules (we/you, contractions, no em dashes).
+- No existing changelog entries or bullets were deleted or rewritten.
 - `rss: true` still present in frontmatter.
 - `changelog` page is present in `docs.json` navigation.

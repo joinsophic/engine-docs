@@ -223,17 +223,17 @@ jobs:
       BACKEND_PREV_REVISION: ${{ needs.validate-deployment.outputs.backend_prev_revision }}
       DEPLOYED_IMAGE: ${{ needs.validate-deployment.outputs.deployed_image }}
     steps:
-      - name: Check Out Documentation
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set Up Node.js
+      - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: 24
 
-      - name: Prepare Update Branch
+      - name: Prepare branch
         id: branch
         shell: bash
         run: |
@@ -249,13 +249,12 @@ jobs:
 
           echo "name=$branch" >> "$GITHUB_OUTPUT"
 
-      - name: Update Documentation
-        run: node scripts/sync-api-artifacts.mjs
-
-      - name: Commit Documentation Changes
+      - name: Sync and commit metadata
         id: commit
         shell: bash
         run: |
+          node scripts/sync-metadata.mjs
+
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "GitHub Actions"
           git add \
@@ -274,7 +273,7 @@ jobs:
           git push --set-upstream origin HEAD
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-      - name: Check Out Backend
+      - name: Checkout backend
         if: needs.detect-changes.outputs.generated_changed == 'false'
         uses: actions/checkout@v4
         with:
@@ -284,13 +283,13 @@ jobs:
           path: .backend
           persist-credentials: false
 
-      - name: Exclude Backend Checkout
+      - name: Exclude backend checkout
         if: needs.detect-changes.outputs.generated_changed == 'false'
         shell: bash
         run: |
           echo "/.backend/" >> .git/info/exclude
 
-      - name: Generate Changelog
+      - name: Generate changelog
         id: claude
         uses: anthropics/claude-code-action@v1
         with:
@@ -298,7 +297,8 @@ jobs:
           prompt: |
             You are a changelog-only agent for joinsophic/engine-docs. Your only
             content-writing responsibility is updating changelog.mdx, and only when
-            the deployed backend range contains a material partner-visible API change.
+            the deployed backend range contains a material partner-visible Engine API
+            change.
 
             Inputs:
             - repository: ${{ github.repository }}
@@ -318,37 +318,38 @@ jobs:
 
             Never create or switch branches, modify generated artifacts, rebase,
             force-push, or push to main. The only file you may edit is changelog.mdx.
+            Never delete or rewrite existing changelog entries. You may append bullets
+            to an existing entry for the same release date, or add a new entry at the
+            top. Do not remove, shorten, or replace prior entries.
 
-            Start with the cheapest possible check:
+            The `generated_changed` input tells you which investigation path to use:
 
-            1. Compare this branch with origin/main for:
-               - openapi.json
-               - metadata/docs.json
-
-            2. Inspect only the semantic differences:
-               - Added, removed, or changed API operations.
-               - Request or response fields, required fields, types, enum values,
-                 status codes, or security requirements.
-               - Added, removed, or changed webhook events.
-               - Added, removed, or changed error codes.
-               - A changed api_version.
+            Path A (generated_changed is true):
+            Production OpenAPI or metadata differs from what is already committed.
+            Compare this branch against origin/main for openapi.json and
+            metadata/docs.json, then inspect only semantic differences:
+            - Added, removed, or changed API operations.
+            - Request or response fields, required fields, types, enum values,
+              status codes, or security requirements.
+            - Added, removed, or changed webhook events or error codes.
+            - A changed api_version.
 
             Ignore formatting, key ordering, OpenAPI descriptions, examples, server
             metadata, and openapi_sha256 by itself.
 
-            If the generated files changed but contain no material semantic change,
-            stop immediately. Do not inspect the backend, edit files, run the build,
-            commit, or push.
+            If the diff is cosmetic only, stop immediately. Do not inspect the
+            backend, edit files, run the build, commit, or push.
 
-            If the generated files are unchanged, treat the invocation as an explicit
-            breakglass request for a possible behavioral change. The workflow has
-            checked out joinsophic/backend at .backend. Resolve both short revisions
-            to full commits there using git -C .backend, then run only these cheap
-            checks first:
+            Path B (generated_changed is false):
+            The synced artifacts match what is already committed, so OpenAPI alone
+            cannot explain why this job ran. Inspect the backend deployment range
+            instead. The workflow has checked out joinsophic/backend at .backend.
+            Resolve both short revisions to full commits with git -C .backend, then
+            run these cheap checks first:
             - git log --oneline backend_prev_revision..backend_current_revision
             - git diff --name-only backend_prev_revision..backend_current_revision
 
-            If the changed commits and paths cannot affect partner-visible API
+            If the commits and changed paths cannot affect partner-visible API
             behavior, stop immediately. Otherwise inspect only the relevant backend
             diff.
 
@@ -376,10 +377,11 @@ jobs:
             while respecting this task's stricter rule that changelog.mdx is the only
             file you may edit. Merge changes into an existing entry for the same
             release date instead of creating a duplicate entry. Keep entries concise
-            and partner-focused.
+            and partner-focused. Never delete existing entries or bullets.
 
             If and only if a changelog entry is required:
-            1. Edit only changelog.mdx.
+            1. Edit only changelog.mdx. Add or extend content; do not remove anything
+               that was already published.
             2. Run corepack enable, pnpm install --frozen-lockfile, and pnpm build.
             3. Review the diff and confirm changelog.mdx is the only changed file
                from your work.
@@ -391,12 +393,13 @@ jobs:
             - summary: a short partner-focused summary of what you added, or an empty
               string if no changelog was required.
           claude_args: |
-            --max-turns 30
+            --model claude-haiku-4-5
+            --max-turns 20
             --allowedTools "Read,Edit,Glob,Grep,Bash(git:*),Bash(jq:*),Bash(corepack:*),Bash(pnpm:*)"
             --json-schema '{"type":"object","properties":{"changelog_updated":{"type":"boolean"},"summary":{"type":"string"}},"required":["changelog_updated","summary"],"additionalProperties":false}'
             ${{ needs.detect-changes.outputs.generated_changed == 'false' && '--add-dir .backend' || '' }}
 
-      - name: Verify Changelog Changes
+      - name: Verify changelog changes
         id: changelog
         shell: bash
         env:
@@ -422,7 +425,7 @@ jobs:
             exit 1
           fi
 
-      - name: Open Documentation Pull Request
+      - name: Open pull request
         id: pull_request
         shell: bash
         env:
@@ -475,7 +478,7 @@ jobs:
 
           echo "url=$pull_request_url" >> "$GITHUB_OUTPUT"
 
-      - name: Notify Slack
+      - name: Notify on Slack
         if: steps.changelog.outputs.changed == 'true'
         shell: bash
         env:

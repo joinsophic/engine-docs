@@ -83,6 +83,7 @@
 						"group": "Topics",
 						"pages": [
 							"api-reference/auth",
+							"api-reference/data-formats",
 							"api-reference/idempotency",
 							"api-reference/errors",
 							"api-reference/versioning",

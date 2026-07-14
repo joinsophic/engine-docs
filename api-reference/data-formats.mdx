@@ -1,0 +1,120 @@
+---
+title: Data formats
+description: How to format dates, timestamps, decimal numbers, and percentages.
+---
+
+Our API uses consistent formats for dates and numeric values. The field definition in the
+API reference remains the source of truth for a field's type, precision, and constraints.
+
+## Dates and times
+
+### Dates
+
+We represent calendar dates as ISO 8601 strings in `YYYY-MM-DD` format:
+
+```json
+{
+  "settlement_date": "2026-07-14"
+}
+```
+
+A date identifies a calendar day. It does not include a time or time zone.
+
+### Timestamps
+
+We represent timestamps as ISO 8601 strings. Include a UTC designator (`Z`) or an explicit
+UTC offset when you send a timestamp that identifies an instant:
+
+```json
+{
+  "executed_at": "2026-07-14T08:36:12.345Z"
+}
+```
+
+The following values identify the same instant:
+
+```text
+2026-07-14T08:36:12.345Z
+2026-07-14T10:36:12.345+02:00
+```
+
+Fractional seconds are optional unless an endpoint states otherwise. We recommend sending
+timestamps in UTC and retaining the time zone from values returned by our API.
+
+<Warning>
+  Don't send a local timestamp without a time zone for fields that identify an instant.
+  Some endpoints require an offset and will reject an ambiguous value such as
+  `2026-07-14T08:36:12`.
+</Warning>
+
+When you use a positive UTC offset in a query parameter, URL-encode the `+` as `%2B`. For
+example, send `2026-07-14T10:36:12%2B02:00`.
+
+## Numbers
+
+We encode decimal values as JSON strings so their exact value survives serialization
+across programming languages:
+
+```json
+{
+  "cash_amount": "100.00",
+  "limit_price": "98.1250",
+  "quantity": "12.5000"
+}
+```
+
+Use a period (`.`) as the decimal separator. Don't include thousands separators or
+currency symbols.
+
+The required precision depends on the field. Common formats include:
+
+| Value | Typical precision | Example |
+| --- | ---: | --- |
+| Monetary amount | 2 decimal places | `"100.00"` |
+| Price or quantity | Up to 4 decimal places | `"98.1250"` |
+| FX rate or spread | Up to 5 decimal places | `"1.08425"` |
+| High-precision accrued value | Up to 8 decimal places | `"0.12345678"` |
+
+Some fields allow a different precision, so check the endpoint schema before validating
+or rounding a value. Integer fields, such as a year or count, remain JSON numbers.
+
+<Note>
+  Some request schemas also accept JSON numbers for decimal fields. We recommend sending
+  decimal strings to avoid binary floating-point rounding before the request reaches our
+  API. Use a decimal type such as Java's `BigDecimal`, Python's `Decimal`, or Swift's
+  `Decimal` when you calculate these values.
+</Note>
+
+## Percentages and rates
+
+Percentage-related fields use either decimal fractions or percentage-point values. Check
+the field description to determine which representation applies.
+
+### Decimal fractions
+
+Returns, ratios, allocation weights, and buffers are generally decimal fractions. Multiply
+the API value by 100 when displaying it as a percentage:
+
+| API value | Display value |
+| ---: | ---: |
+| `"0.0020"` | 0.20% |
+| `"0.0925"` | 9.25% |
+| `"1.0000"` | 100.00% |
+
+For example, an `expense_ratio` of `"0.0020"` means 0.20%, and a return of `"0.0925"`
+means 9.25%.
+
+### Percentage-point values
+
+Some fields follow financial-market or business conventions and contain the displayed
+percentage directly:
+
+| Field or value type | API value | Meaning |
+| --- | ---: | ---: |
+| `ownership_percentage` | `"25"` | 25% |
+| Coupon or yield to maturity | `"3.50"` | 3.50% |
+| Fixed-income price with `price_type: "percentage"` | `"98.30"` | 98.30% of par |
+
+Don't infer the representation from a field name alone. For example,
+`gross_unrealized_percentage` is a decimal fraction, while `ownership_percentage` is a
+percentage-point value. The endpoint's field description identifies the expected form.

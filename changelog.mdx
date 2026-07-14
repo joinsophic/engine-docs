@@ -8,6 +8,18 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="July 8, 2026" description="additions">
+  ## Limit orders and quantity-based ETF buys
+
+  You can place ETF limit orders and buy a specific ETF quantity using a
+  persisted quote.
+
+  **Added**
+  - ETF limit orders on [Get an order quote](/api-reference/get-an-order-quote) and [Place an order](/api-reference/place-an-order). Send `limit_price` with `order_type=limit`; quote responses include `max_cost` for buys or `min_proceeds` for sells.
+  - Quantity-based ETF buys on [Get an order quote](/api-reference/get-an-order-quote). Send `quantity` instead of `cash_amount`; we persist the quote automatically and return its `id` and `expires_at` for order placement.
+  - `limit_price` and `is_cancellable` on order responses, plus the `limit_budget_too_small` error code when a cash budget can't buy one trading increment at the limit price.
+</Update>
+
 <Update label="July 3, 2026" description="additions">
   ## ETF fields and person reads
 
