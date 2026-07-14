@@ -15,8 +15,8 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   persisted quote.
 
   **Added**
-  - ETF limit orders on [Get an order quote](/api-reference/get-an-order-quote) and [Place an order](/api-reference/place-an-order). Send `limit_price` with `order_type=limit`; quote responses include `max_cost` for buys or `min_proceeds` for sells.
-  - Quantity-based ETF buys on [Get an order quote](/api-reference/get-an-order-quote). Send `quantity` instead of `cash_amount`; we persist the quote automatically and return its `id` and `expires_at` for order placement.
+  - ETF limit orders on [Get an order quote](/api-reference/trading/get-an-order-quote) and [Place an order](/api-reference/trading/place-an-order). Send `limit_price` with `order_type=limit`; quote responses include `max_cost` for buys or `min_proceeds` for sells.
+  - Quantity-based ETF buys on [Get an order quote](/api-reference/trading/get-an-order-quote). Send `quantity` instead of `cash_amount`; we persist the quote automatically and return its `id` and `expires_at` for order placement.
   - `limit_price` and `is_cancellable` on order responses, plus the `limit_budget_too_small` error code when a cash budget can't buy one trading increment at the limit price.
 </Update>
 
@@ -27,10 +27,10 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   optional columns are unset in storage.
 
   **Added**
-  - `sri` and `hedge_currency` on ETF instruments returned from [List instruments](/api-reference/list-instruments) and [Retrieve an instrument](/api-reference/retrieve-an-instrument).
+  - `sri` and `hedge_currency` on ETF instruments returned from [List instruments](/api-reference/catalog/list-instruments) and [Retrieve an instrument](/api-reference/catalog/retrieve-an-instrument).
 
   **Fixed**
-  - [Retrieve a person](/api-reference/retrieve-a-person) no longer returns `500` when optional person columns are null in storage.
+  - [Retrieve a person](/api-reference/customers/retrieve-a-person) no longer returns `500` when optional person columns are null in storage.
 </Update>
 
 <Update label="June 30, 2026" description="additions">
@@ -61,7 +61,7 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
 
   **Added**
   - `GET /bills/otr` to retrieve the on-the-run bill matrix for an issuer country. Periods with no matching bill are omitted.
-  - ETF as an instrument type on [List instruments](/api-reference/list-instruments) and [Retrieve an instrument](/api-reference/retrieve-an-instrument).
+  - ETF as an instrument type on [List instruments](/api-reference/catalog/list-instruments) and [Retrieve an instrument](/api-reference/catalog/retrieve-an-instrument).
   - `accrued_interest` on `GET /prices` responses.
   - `next_coupon_date` on fixed income instruments.
 </Update>
@@ -73,13 +73,13 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   when listing claims.
 
   **Added**
-  - [Create a person](/api-reference/create-a-person) to create a person from claims with verification evidence. See [Persons](/docs/onboarding/persons).
-  - `joint_customer` as a customer type on [Retrieve a customer](/api-reference/retrieve-a-customer).
+  - [Create a person](/api-reference/customers/create-a-person) to create a person from claims with verification evidence. See [Persons](/docs/onboarding/persons).
+  - `joint_customer` as a customer type on [Retrieve a customer](/api-reference/customers/retrieve-a-customer).
   - `archived_at` and `lifecycle` on person claim responses.
-  - Idempotent onboarding submissions: a duplicate pending [Submit an onboarding application](/api-reference/submit-an-onboarding-application) returns `409 conflict`.
+  - Idempotent onboarding submissions: a duplicate pending [Submit an onboarding application](/api-reference/onboarding/submit-an-onboarding-application) returns `409 conflict`.
 
   **Changed** (backwards compatible)
-  - [List claims for a person](/api-reference/list-claims-for-a-person) now defaults to `include_history=true` (full audit trail, newest first). Pass `?include_history=false` to collapse to the current pending and verified row per claim type. See [Claims](/docs/onboarding/claims).
+  - [List claims for a person](/api-reference/customers/list-claims-for-a-person) now defaults to `include_history=true` (full audit trail, newest first). Pass `?include_history=false` to collapse to the current pending and verified row per claim type. See [Claims](/docs/onboarding/claims).
 </Update>
 
 <Update label="March 16, 2026" description="additions">
@@ -91,7 +91,7 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
 
   **Added**
   - `GET /legal-documents` and related version and file download endpoints.
-  - [Retrieve a person claim](/api-reference/retrieve-a-person-claim).
+  - [Retrieve a person claim](/api-reference/customers/retrieve-a-person-claim).
   - Webhook event types delivered to your registered endpoints: `order.placed`, `order.pending`, `order.executing`, `order.filled`, `order.settled`, `order.cancelled`, `trade.executed`, `trade.settled`, `position.opened`, `position.closing`, `position.closed`, `account.opened`, `account.suspended`, `account.activated`, `account.closing`, `account.closed`, and `customer.closed`. See [Webhooks](/docs/webhooks/overview).
 
   **Changed** (backwards compatible)
@@ -106,7 +106,7 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   automatically with retries.
 
   **Added**
-  - [List events](/api-reference/list-events) for tenant-scoped event reads.
+  - [List events](/api-reference/events/list-events) for tenant-scoped event reads.
   - Automatic webhook delivery with retries for subscribed event types. See [Deliveries](/docs/webhooks/deliveries).
 </Update>
 
