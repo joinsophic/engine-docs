@@ -224,6 +224,9 @@ jobs:
           corepack enable
           pnpm install --frozen-lockfile
 
+      - name: Download Production Artifacts
+        run: node scripts/sync-api-artifacts.mjs
+
       - name: Audit internal API reference links
         run: pnpm audit-links
 
@@ -232,9 +235,6 @@ jobs:
 
       - name: Validate Mintlify build
         run: pnpm build
-
-      - name: Download Production Artifacts
-        run: node scripts/sync-api-artifacts.mjs
 
       - name: Check for Documentation Changes
         id: gate
