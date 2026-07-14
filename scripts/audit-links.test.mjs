@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 import {
@@ -104,4 +106,16 @@ test("auditApiReferenceLinks reports flat endpoint slugs", () => {
   assert.equal(issues[0].suggestion, "/api-reference/events/list-events");
 
   fs.rmSync(root, { recursive: true, force: true });
+});
+
+test("audit-links CLI runs main via the entry guard", () => {
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+  const script = fileURLToPath(new URL("./audit-links.mjs", import.meta.url));
+  const result = spawnSync(process.execPath, [script], {
+    cwd: repoRoot,
+    encoding: "utf8",
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /All \/api-reference\/ links resolve/);
 });
