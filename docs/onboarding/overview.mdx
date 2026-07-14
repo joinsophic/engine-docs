@@ -20,7 +20,7 @@ We validate synchronously against the customer type's required claims, evidence,
 
 ## Persons vs. customers
 
-A **person** (`per_...`) is a party (natural or legal) that you create. A [customer](/api-reference/retrieve-a-customer) is formed once an application is approved, establishing an active relationship with us; your persons are granted the requested authority over the customer and are linked to any provisioned accounts.
+A **person** (`per_...`) is a party (natural or legal) that you create. A [customer](/api-reference/customers/retrieve-a-customer) is formed once an application is approved, establishing an active relationship with us; your persons are granted the requested authority over the customer and are linked to any provisioned accounts.
 
 <Note>
 You don't create customers directly. Submit an application and we provision the customer and accounts on approval.
@@ -30,9 +30,9 @@ You don't create customers directly. Submit an application and we provision the 
 
 | Resource | Prefix | Created by |
 |---|---|---|
-| Person | `per_` | You, via [`POST /persons`](/api-reference/create-a-person) |
-| Person claim | `clm_` | You, via [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person) |
-| Onboarding application | `onba_` | You, via [`POST /onboarding-applications`](/api-reference/submit-an-onboarding-application) |
+| Person | `per_` | You, via [`POST /persons`](/api-reference/customers/create-a-person) |
+| Person claim | `clm_` | You, via [`POST /persons/{person_id}/claims`](/api-reference/customers/create-a-claim-for-a-person) |
+| Onboarding application | `onba_` | You, via [`POST /onboarding-applications`](/api-reference/onboarding/submit-an-onboarding-application) |
 | Customer | `cus_` | Us, after application approval |
 
 ## A complete example
@@ -66,7 +66,7 @@ Individual end-to-end. For a business, create a person for the legal entity plus
     Keep the returned `id`; you'll reference it in the application.
   </Step>
   <Step title="Upload evidence files">
-    Upload the passport and selfie via the [Files API](/api-reference/create-a-file); hold onto the returned file IDs.
+    Upload the passport and selfie via the [Files API](/api-reference/files/create-a-file); hold onto the returned file IDs.
   </Step>
   <Step title="Submit the onboarding application">
     ```bash
@@ -103,7 +103,7 @@ Individual end-to-end. For a business, create a person for the legal entity plus
 </Steps>
 
 <Note>
-Every consent here except `data_accuracy` references a `legal_document_version`. `data_accuracy` is an attestation; omit the field. List valid document versions via the [legal document versions endpoint](/api-reference/list-versions-of-a-legal-document). See [required consents](/docs/onboarding/applications#required-consents) for the full breakdown.
+Every consent here except `data_accuracy` references a `legal_document_version`. `data_accuracy` is an attestation; omit the field. List valid document versions via the [legal document versions endpoint](/api-reference/legal-documents/list-versions-of-a-legal-document). See [required consents](/docs/onboarding/applications#required-consents) for the full breakdown.
 </Note>
 
 ## Where to next

@@ -36,7 +36,7 @@ Some orders pass through `pending` before `executing`; many skip `pending` entir
 
 ## Partial fills
 
-Partial scenarios are easy to misread. The order ends as **`filled`**, not `cancelled`: we execute part of the order, then cancel what is left. You get `trade.executed`, then `order.filled` (not `order.cancelled`). Use [Retrieve order](/api-reference/retrieve-an-order) or the trade resource to check `traded_quantity` and related fields.
+Partial scenarios are easy to misread. The order ends as **`filled`**, not `cancelled`: we execute part of the order, then cancel what is left. You get `trade.executed`, then `order.filled` (not `order.cancelled`). Use [Retrieve order](/api-reference/trading/retrieve-an-order) or the trade resource to check `traded_quantity` and related fields.
 
 | Trigger | Fill % | What to expect |
 |---|---|---|
@@ -233,7 +233,7 @@ Expect `trade.executed` with `quantity` of `10`, then `order.filled`.
 
 ## Tracking results
 
-Subscribe to [webhooks](/docs/webhooks/overview) for real-time updates, or poll [Retrieve order](/api-reference/retrieve-an-order) after each placement. Webhook delivery is at-least-once; deduplicate using the event ID or `Webhook-Id` header.
+Subscribe to [webhooks](/docs/webhooks/overview) for real-time updates, or poll [Retrieve order](/api-reference/trading/retrieve-an-order) after each placement. Webhook delivery is at-least-once; deduplicate using the event ID or `Webhook-Id` header.
 
 <Note>
 Sandbox execution does not mirror production routing, venue behavior, or FIX lifecycles. Use it to test your integration against predictable order and trade outcomes, not to validate production execution logic.

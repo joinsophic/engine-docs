@@ -45,7 +45,7 @@ The duplicate-person check runs before the authority-type check. If the same `pe
 
 ### Consents
 
-A consent records that a person agreed to a specific [legal document version](/api-reference/list-versions-of-a-legal-document), or made an attestation. See [required consents](#required-consents).
+A consent records that a person agreed to a specific [legal document version](/api-reference/legal-documents/list-versions-of-a-legal-document), or made an attestation. See [required consents](#required-consents).
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
@@ -60,7 +60,7 @@ Legal-document consents need a valid `legal_document_version` whose document typ
 
 ### Evidence
 
-Upload files via the [Files API](/api-reference/create-a-file), then reference the returned IDs.
+Upload files via the [Files API](/api-reference/files/create-a-file), then reference the returned IDs.
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
@@ -221,7 +221,7 @@ The same nine consents apply in every case:
 
 `data_accuracy` is an attestation; the person attests that the information they provided is accurate, so there is no legal document to version. Sending `legal_document_version` with it returns `400 invalid_request`.
 
-For every other consent, fetch a live document version via [`GET /legal-documents/{legal_document_id}/versions`](/api-reference/list-versions-of-a-legal-document) and pass its ID. The version's document type must equal the `consent_type`; mismatches return `400 invalid_request`.
+For every other consent, fetch a live document version via [`GET /legal-documents/{legal_document_id}/versions`](/api-reference/legal-documents/list-versions-of-a-legal-document) and pass its ID. The version's document type must equal the `consent_type`; mismatches return `400 invalid_request`.
 
 <Note>
 On a business application, any consent attributed to the legal-entity `owner` is accepted silently and counts for nothing. Missing the required consents on the signatories will still fail the application. Make sure you attribute every consent to a natural `signatory`.

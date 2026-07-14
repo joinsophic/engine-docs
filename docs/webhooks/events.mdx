@@ -11,9 +11,9 @@ We send a webhook for each event listed below. Every active webhook in your acco
 
 ## Event payloads
 
-Event payloads follow the [Event](/api-reference/list-events) resource schema. The `name` field matches the event type in the table, and `resource` identifies the resource that changed.
+Event payloads follow the [Event](/api-reference/events/list-events) resource schema. The `name` field matches the event type in the table, and `resource` identifies the resource that changed.
 
-As of now, events do not carry any data in the `data` field. It is always an empty object. To get the latest state, fetch the resource using `resource.id` and `resource.resource_type` (for example, call [Retrieve order](/api-reference/retrieve-an-order) when `resource_type` is `order`).
+As of now, events do not carry any data in the `data` field. It is always an empty object. To get the latest state, fetch the resource using `resource.id` and `resource.resource_type` (for example, call [Retrieve order](/api-reference/trading/retrieve-an-order) when `resource_type` is `order`).
 
 ```json
 {

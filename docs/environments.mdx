@@ -77,7 +77,7 @@ Sandbox execution does not mirror production routing, venue behavior, or FIX lif
 
 ## Events and webhooks
 
-Both environments emit the same [webhook events](/docs/webhooks/overview) and expose them via [`GET /events`](/api-reference/list-events). Delivery mechanics (headers, signatures, retries, deduplication) are identical.
+Both environments emit the same [webhook events](/docs/webhooks/overview) and expose them via [`GET /events`](/api-reference/events/list-events). Delivery mechanics (headers, signatures, retries, deduplication) are identical.
 
 Register webhooks separately in each environment. A Sandbox webhook URL receives Sandbox events only; Live webhooks receive Live events only.
 

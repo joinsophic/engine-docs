@@ -107,7 +107,7 @@ Event payloads don't carry the order data inline. Instead, they include a `resou
 }
 ```
 
-When you receive an order event, use the `resource.id` to call the [Retrieve order](/api-reference/retrieve-an-order) endpoint and get the order's current state. This ensures you're always working with the latest data, even if events arrive out of order.
+When you receive an order event, use the `resource.id` to call the [Retrieve order](/api-reference/trading/retrieve-an-order) endpoint and get the order's current state. This ensures you're always working with the latest data, even if events arrive out of order.
 
 <Warning>
 We may add new fields to event payloads at any time. Your integration should ignore unknown fields rather than failing on them.
