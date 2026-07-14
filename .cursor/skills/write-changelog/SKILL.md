@@ -67,7 +67,7 @@ Each entry is a Mintlify `<Update>` component, newest first. Use `label` for the
   reader should care. Write like a colleague, not a release bot.
 
   **Added**
-  - New `GET /accounts/{id}/statements` endpoint for retrieving monthly statements. See [Statements](/api-reference/...).
+  - New `GET /accounts/{id}/statements` endpoint for retrieving monthly statements. See [Create an account statement](/api-reference/accounts/create-an-account-statement).
 
   **Changed** (backwards compatible)
   - `GET /instruments` now returns an `exchange` field on each instrument.
@@ -103,7 +103,7 @@ When unsure whether a change is breaking, check the "Backwards compatible change
 3. **Classify the change** as breaking or backwards compatible per `versioning.mdx`, then **choose the `description` tag** from the version tagging table.
 4. **Add a new `<Update>` at the top** of `changelog.mdx`, directly under the frontmatter, so entries stay reverse-chronological. **Never delete or rewrite existing entries.** You may append bullets to an entry for the same release date, but do not remove, shorten, or replace anything already published.
 5. **Write benefit-first prose**, then categorized bullets. Follow the project tone rules (use "we"/"you", contractions, no em dashes, no "Sophic Engine" in prose). Run the `lint-docs-tone` skill mentality over the entry.
-6. **Cross-link** to the relevant API reference or docs page for anything new (use the `cross-reference-audit` skill to confirm links resolve).
+6. **Cross-link** to the relevant API reference or docs page for anything new (use the `cross-reference-audit` skill to confirm links resolve). OpenAPI endpoint URLs use `/api-reference/{tag}/{summary-slug}` (for example `/api-reference/trading/place-an-order`), not a flat `/api-reference/{summary-slug}` path.
 7. **Keep `rss: true`** in the frontmatter so the entry publishes to the RSS feed. Don't remove it.
 8. **If a new version was released**, also add the version badge to the entry and update the "Current version" in `api-reference/versioning.mdx` and the `Api-Version` header examples so the docs and changelog agree.
 
