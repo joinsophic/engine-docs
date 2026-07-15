@@ -45,10 +45,10 @@ jobs:
       contents: read
     steps:
       - name: Check out documentation
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
 
@@ -212,10 +212,10 @@ jobs:
       generated_changed: ${{ steps.gate.outputs.generated_changed }}
     steps:
       - name: Check Out Documentation
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set Up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
 
@@ -279,12 +279,12 @@ jobs:
       DEPLOYED_IMAGE: ${{ needs.validate-deployment.outputs.deployed_image }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
 
@@ -330,7 +330,7 @@ jobs:
 
       - name: Checkout backend
         if: needs.detect-changes.outputs.generated_changed == 'false'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: joinsophic/backend
           token: ${{ secrets.BACKEND_REPO_READ_TOKEN }}
