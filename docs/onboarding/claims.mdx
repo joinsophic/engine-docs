@@ -43,7 +43,7 @@ pending ──▶ verified
 
 | From | To | Trigger |
 |---|---|---|
-| *(none)* | `pending` | [`POST /persons`](/api-reference/create-a-person) or [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). The new row is `in_flight`. If a current pending for the same `claim_type` already exists, its `archived_at` is stamped in the same transaction and it becomes `historical`. Verified rows are not touched. |
+| *(none)* | `pending` | [`POST /persons`](/api-reference/customers/create-a-person) or [`POST /persons/{person_id}/claims`](/api-reference/customers/create-a-claim-for-a-person). The new row is `in_flight`. If a current pending for the same `claim_type` already exists, its `archived_at` is stamped in the same transaction and it becomes `historical`. Verified rows are not touched. |
 | `pending` | `verified` | Compliance review. If a prior `active` verified of the same type exists, its `superseded_at` is stamped in the same step and it becomes `historical`. Not self-service. |
 
 <Note>
@@ -207,10 +207,10 @@ curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?claim_type=re
 | `status` | `pending`, `verified` | Optional. `status=pending` on the default view returns every pending (current + archived); `status=verified` returns every verified (current + superseded). Combine with `include_history=false` to get just the current pending or current verified per type. |
 | `include_history` | `true`, `false` | Optional, default `true`. Set to `false` to collapse to the current rows only (`active` + `in_flight`). |
 
-Retrieve a specific claim by ID via [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/retrieve-a-person-claim). This always returns the exact claim you asked for (including archived pendings and superseded verifieds) with `lifecycle` on the response.
+Retrieve a specific claim by ID via [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/customers/retrieve-a-person-claim). This always returns the exact claim you asked for (including archived pendings and superseded verifieds) with `lifecycle` on the response.
 
 <Note>
-Claims can't be deleted. To correct a pending submission (or update a previously verified one) post a new claim of the same type via [`POST /persons/{person_id}/claims`](/api-reference/create-a-claim-for-a-person). Any current pending for that type is archived automatically. See [updating a claim value](#updating-a-claim-value).
+Claims can't be deleted. To correct a pending submission (or update a previously verified one) post a new claim of the same type via [`POST /persons/{person_id}/claims`](/api-reference/customers/create-a-claim-for-a-person). Any current pending for that type is archived automatically. See [updating a claim value](#updating-a-claim-value).
 </Note>
 
 ## Claim type reference

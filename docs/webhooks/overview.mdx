@@ -7,7 +7,7 @@ Webhooks let you receive real-time HTTP notifications when events happen in your
 
 ## Setting up a webhook
 
-To get started, use the [Create webhook](/api-reference/create-a-webhook) endpoint to
+To get started, use the [Create webhook](/api-reference/webhooks/create-a-webhook) endpoint to
 register a webhook URL (must be HTTPS and not an IP).
 
 ```bash
@@ -38,7 +38,7 @@ Every webhook delivery includes the following HTTP headers:
 
 ## Receiving webhooks
 
-When an event occurs, we send a `POST` request to your registered URL. The webhook payload follows the same schema as the [Event](/api-reference/list-events) resource:
+When an event occurs, we send a `POST` request to your registered URL. The webhook payload follows the same schema as the [Event](/api-reference/events/list-events) resource:
 
 ```json
 {

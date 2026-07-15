@@ -85,7 +85,7 @@ Required claims, consents, and evidence are defined per authority slot; a busine
 | `detail` pattern | Cause | Fix |
 |---|---|---|
 | `Consent '...' is missing a legal_document_version.` | A legal-document consent (anything other than `data_accuracy`) was sent without `legal_document_version`. | Supply the ID of the legal document version the customer agreed to. |
-| `Consent '...' references unknown legal_document_version:...` | The referenced version doesn't exist. | Fetch valid versions via [`GET /legal-documents/{legal_document_id}/versions`](/api-reference/list-versions-of-a-legal-document). |
+| `Consent '...' references unknown legal_document_version:...` | The referenced version doesn't exist. | Fetch valid versions via [`GET /legal-documents/{legal_document_id}/versions`](/api-reference/legal-documents/list-versions-of-a-legal-document). |
 | `Consent '...' references a legal_document_version whose document_type is '...'; consent_type and document_type must match.` | You pointed a consent at a legal document version of a different type (e.g. `consent_type: terms_of_service` but the referenced version is a `risk_disclosures` document). | Reference a version whose document type matches the `consent_type`. |
 | `Consent '...' is attributed to person '...', which is neither an authority nor a related person on this application.` | The consent's `person` isn't on the application. | Attribute the consent to an authority or a person declared in a `relationships` claim. |
 | `Consent '...' must not include a legal_document_version.` | A `data_accuracy` consent was sent with a `legal_document_version`. | `data_accuracy` is an attestation; omit `legal_document_version`. |

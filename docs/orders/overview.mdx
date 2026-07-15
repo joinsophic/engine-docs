@@ -11,11 +11,11 @@ To place an order, you'll need:
 
 - An [authenticated API session](/api-reference/auth) with a valid Bearer token
 - An **account ID** for the customer placing the order
-- The **instrument ID** for the security being traded; you can look these up via the [instruments endpoints](/api-reference/get-instruments)
+- The **instrument ID** for the security being traded; you can look these up via the [instruments endpoints](/api-reference/catalog/list-instruments)
 - Sufficient **cash balance** (for buy orders) or **position units** (for sell orders) in the account
 
 <Tip>
-You can check available cash and positions using the [cash balances](/api-reference/get-cash-balances) and [positions](/api-reference/get-positions) endpoints before placing an order.
+You can check available cash and positions using the [cash balances](/api-reference/holdings/list-cash-balances) and [positions](/api-reference/holdings/list-positions) endpoints before placing an order.
 
 In the sandbox environment, you can trigger predefined execution outcomes (cancel, partial fill, full fill) using specific `cash_amount` or `quantity` values. See [Testing](/docs/orders/testing).
 </Tip>
@@ -315,7 +315,7 @@ Key fields to note:
 - **`purpose`** is set by us. Orders you place through the API will always have `user_request`.
 
 <Note>
-Order creation is synchronous; we validate the request and return the order immediately. Everything after that (execution, settlement) happens asynchronously. Use [webhooks](/docs/webhooks/overview) or poll the [Retrieve order](/api-reference/retrieve-an-order) endpoint to track progress.
+Order creation is synchronous; we validate the request and return the order immediately. Everything after that (execution, settlement) happens asynchronously. Use [webhooks](/docs/webhooks/overview) or poll the [Retrieve order](/api-reference/trading/retrieve-an-order) endpoint to track progress.
 </Note>
 
 ## Retrieving orders
@@ -327,4 +327,4 @@ curl https://api.engine.usesophic.com/accounts/{account_id}/orders/{order_id} \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
-To list all orders for an account, use the [List orders](/api-reference/list-orders) endpoint. To list only orders that haven't reached a terminal state, use the [List pending orders](/api-reference/list-pending-orders) endpoint; this is useful for building dashboards or monitoring active trades.
+To list all orders for an account, use the [List orders](/api-reference/trading/list-orders) endpoint. To list only orders that haven't reached a terminal state, use the [List pending orders](/api-reference/trading/list-pending-orders) endpoint; this is useful for building dashboards or monitoring active trades.
