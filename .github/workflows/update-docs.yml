@@ -1,10 +1,6 @@
 name: Update Docs
 
 on:
-  pull_request:
-  push:
-    branches:
-      - main
   repository_dispatch:
     types: [production-deployed]
   workflow_dispatch:
@@ -21,54 +17,19 @@ on:
 
 permissions:
   contents: write
-  id-token: write
   pull-requests: write
 
 concurrency:
-  group: >-
-    ${{ (github.event_name == 'pull_request' || github.event_name == 'push')
-        && format('docs-validate-{0}', github.ref)
-        || format('production-api-docs-{0}', github.event.client_payload.render_deploy_id || inputs.render_deploy_id) }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
+  group: production-api-docs-${{ github.event.client_payload.render_deploy_id || inputs.render_deploy_id }}
+  cancel-in-progress: false
 
 env:
   RENDER_DEPLOY_ID: ${{ github.event.client_payload.render_deploy_id || inputs.render_deploy_id }}
   FORCE_DOCS_UPDATE: ${{ github.event.client_payload.force_docs_update || inputs.force_docs_update || false }}
 
 jobs:
-  validate:
-    name: Validate docs
-    if: github.event_name == 'pull_request' || github.event_name == 'push'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-    steps:
-      - name: Check out documentation
-        uses: actions/checkout@v6
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-
-      - name: Install dependencies
-        run: |
-          corepack enable
-          pnpm install --frozen-lockfile
-
-      - name: Audit internal API reference links
-        run: pnpm audit-links
-
-      - name: Run tests
-        run: pnpm test
-
-      - name: Validate Mintlify build
-        run: pnpm build
-
   validate-deployment:
     name: Validate deployment
-    if: github.event_name == 'repository_dispatch' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
@@ -204,7 +165,6 @@ jobs:
   detect-changes:
     name: Detect changes
     needs: validate-deployment
-    if: github.event_name == 'repository_dispatch' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
@@ -219,22 +179,8 @@ jobs:
         with:
           node-version: 24
 
-      - name: Install dependencies
-        run: |
-          corepack enable
-          pnpm install --frozen-lockfile
-
-      - name: Sync production metadata
+      - name: Sync production artifacts
         run: node scripts/sync-metadata.mjs
-
-      - name: Audit internal API reference links
-        run: pnpm audit-links
-
-      - name: Run tests
-        run: pnpm test
-
-      - name: Validate Mintlify build
-        run: pnpm build
 
       - name: Check for changes
         id: gate
@@ -268,9 +214,7 @@ jobs:
   update-docs:
     name: Update Docs
     needs: [validate-deployment, detect-changes]
-    if: >-
-      (github.event_name == 'repository_dispatch' || github.event_name == 'workflow_dispatch')
-      && needs.detect-changes.outputs.should_run == 'true'
+    if: needs.detect-changes.outputs.should_run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -278,10 +222,21 @@ jobs:
       BACKEND_PREV_REVISION: ${{ needs.validate-deployment.outputs.backend_prev_revision }}
       DEPLOYED_IMAGE: ${{ needs.validate-deployment.outputs.deployed_image }}
     steps:
+      - name: Require automation token
+        shell: bash
+        env:
+          DOCS_AUTOMATION_TOKEN: ${{ secrets.DOCS_AUTOMATION_TOKEN }}
+        run: |
+          if [[ -z "$DOCS_AUTOMATION_TOKEN" ]]; then
+            echo "::error::Set the DOCS_AUTOMATION_TOKEN repository secret"
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          token: ${{ secrets.DOCS_AUTOMATION_TOKEN }}
 
       - name: Setup node
         uses: actions/setup-node@v6
@@ -297,7 +252,8 @@ jobs:
 
           if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
             git fetch origin "$branch"
-            git switch --create "$branch" --track "origin/$branch"
+            # -C resets the local branch to the remote tip if it already exists.
+            git switch -C "$branch" "origin/$branch"
           else
             git switch --create "$branch"
           fi
@@ -327,6 +283,17 @@ jobs:
 
           git push --set-upstream origin HEAD
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Require backend token
+        if: needs.detect-changes.outputs.generated_changed == 'false'
+        shell: bash
+        env:
+          BACKEND_REPO_READ_TOKEN: ${{ secrets.BACKEND_REPO_READ_TOKEN }}
+        run: |
+          if [[ -z "$BACKEND_REPO_READ_TOKEN" ]]; then
+            echo "::error::Set the BACKEND_REPO_READ_TOKEN repository secret"
+            exit 1
+          fi
 
       - name: Checkout backend
         if: needs.detect-changes.outputs.generated_changed == 'false'
@@ -490,7 +457,7 @@ jobs:
           CHANGELOG_CHANGED: ${{ steps.changelog.outputs.changed }}
           DOCS_BRANCH: ${{ steps.branch.outputs.name }}
           GENERATED_CHANGED: ${{ needs.detect-changes.outputs.generated_changed }}
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.DOCS_AUTOMATION_TOKEN }}
         run: |
           git fetch origin main "$DOCS_BRANCH"
 
@@ -509,6 +476,8 @@ jobs:
           - Changelog updated: \`$CHANGELOG_CHANGED\`
           EOF
           )"
+          # Trim the leading indent that YAML forces onto the heredoc body.
+          body="$(sed 's/^[[:space:]]*//' <<< "$body")"
 
           pull_request="$(gh pr list \
             --head "$DOCS_BRANCH" \
@@ -545,6 +514,11 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_CHANNEL_ID: ${{ secrets.DOCS_SLACK_CHANNEL_ID }}
         run: |
+          if [[ -z "$SLACK_BOT_TOKEN" || -z "$SLACK_CHANNEL_ID" ]]; then
+            echo "::notice::Skipping Slack notification; SLACK_BOT_TOKEN or DOCS_SLACK_CHANNEL_ID is not set"
+            exit 0
+          fi
+
           summary="$(jq -r '.summary // empty' <<< "$CLAUDE_RESULT")"
           if [[ -z "$summary" ]]; then
             summary="Added an API changelog entry for $BACKEND_PREV_REVISION..$BACKEND_CURRENT_REVISION."
