@@ -70,6 +70,10 @@ export const errorCodes = [
     "detail": "The instrument is not currently tradable."
   },
   {
+    "code": "instrument_too_close_to_maturity",
+    "detail": "This instrument matures too soon to trade."
+  },
+  {
     "code": "insufficient_funds",
     "detail": "The account does not have sufficient available cash balance."
   },
@@ -148,10 +152,6 @@ export const errorCodes = [
   {
     "code": "quote_invalid",
     "detail": "The referenced quote cannot be used. Please request a new one and retry."
-  },
-  {
-    "code": "quote_not_supported",
-    "detail": "Quotes are not supported for this instrument type."
   },
   {
     "code": "refund_exceeds_refundable_amount",
