@@ -18,6 +18,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 
 concurrency:
   group: production-api-docs-${{ github.event.client_payload.render_deploy_id || inputs.render_deploy_id }}
