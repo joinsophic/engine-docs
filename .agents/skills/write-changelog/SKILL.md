@@ -102,7 +102,7 @@ When unsure whether a change is breaking, check the "Backwards compatible change
 2. **Confirm the facts.** If the entry makes specific claims about behavior (new fields, changed values, endpoints), verify them against the backend using the `check-backend` skill. Don't guess field names or endpoint paths.
 3. **Classify the change** as breaking or backwards compatible per `versioning.mdx`, then **choose the `description` tag** from the version tagging table.
 4. **Add a new `<Update>` at the top** of `changelog.mdx`, directly under the frontmatter, so entries stay reverse-chronological. **Never delete or rewrite existing entries.** You may append bullets to an entry for the same release date, but do not remove, shorten, or replace anything already published.
-5. **Write benefit-first prose**, then categorized bullets. Follow the project tone rules (use "we"/"you", contractions, no em dashes, no "Sophic Engine" in prose). Run the `lint-docs-tone` skill mentality over the entry.
+5. **Write benefit-first prose**, then categorized bullets. Follow the Voice rules in `AGENTS.md` (use "we"/"you", contractions, no em dashes, no "Sophic Engine" in prose). Run the `lint-docs-tone` skill mentality over the entry.
 6. **Cross-link** to the relevant API reference or docs page for anything new (use the `cross-reference-audit` skill to confirm links resolve). OpenAPI endpoint URLs use `/api-reference/{tag}/{summary-slug}` (for example `/api-reference/trading/place-an-order`), not a flat `/api-reference/{summary-slug}` path.
 7. **Keep `rss: true`** in the frontmatter so the entry publishes to the RSS feed. Don't remove it.
 8. **If a new version was released**, also add the version badge to the entry and update the "Current version" in `api-reference/versioning.mdx` and the `Api-Version` header examples so the docs and changelog agree.
@@ -127,7 +127,7 @@ Before finishing:
 - Breaking changes tag `description` with the new version date, include the version badge, and link to Versioning.
 - If a new version shipped, `versioning.mdx` "Current version" and `Api-Version` examples were updated to match.
 - New endpoints/fields are cross-linked and verified against the backend.
-- Tone matches the writing rules (we/you, contractions, no em dashes).
+- Tone matches `AGENTS.md` (we/you, contractions, no em dashes).
 - No existing changelog entries or bullets were deleted or rewritten.
 - `rss: true` still present in frontmatter.
 - `changelog` page is present in `docs.json` navigation.

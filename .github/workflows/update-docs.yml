@@ -67,7 +67,7 @@ jobs:
         run: pnpm build
 
   validate-deployment:
-    name: Validate Deployment
+    name: Validate deployment
     if: github.event_name == 'repository_dispatch' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -79,7 +79,7 @@ jobs:
       backend_prev_revision: ${{ steps.previous.outputs.revision }}
       deployed_image: ${{ steps.deployment.outputs.image }}
     steps:
-      - name: Validate Inputs
+      - name: Validate inputs
         shell: bash
         run: |
           if [[ ! "$RENDER_DEPLOY_ID" =~ ^dep-[a-z0-9]+$ ]]; then
@@ -95,7 +95,7 @@ jobs:
             exit 1
           fi
 
-      - name: Verify Production Deployment
+      - name: Verify production deployment
         id: deployment
         shell: bash
         env:
@@ -148,7 +148,7 @@ jobs:
           echo "image=$deployed_image" >> "$GITHUB_OUTPUT"
           echo "created_at=$(jq -r '.createdAt' <<< "$current_deploy")" >> "$GITHUB_OUTPUT"
 
-      - name: Find Previous Production Deployment
+      - name: Find previous production deployment
         id: previous
         shell: bash
         env:
@@ -202,7 +202,7 @@ jobs:
           echo "revision=${previous_revision:0:8}" >> "$GITHUB_OUTPUT"
 
   detect-changes:
-    name: Detect Changes
+    name: Detect changes
     needs: validate-deployment
     if: github.event_name == 'repository_dispatch' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
@@ -237,6 +237,18 @@ jobs:
         run: pnpm build
 
       - name: Check for Documentation Changes
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Sync metadata
+        run: node scripts/sync-metadata.mjs
+
+      - name: Check for changes
         id: gate
         shell: bash
         run: |
