@@ -25,6 +25,18 @@ Bad: "Duplicate event delivery is a possibility that must be accounted for."
 
 ## Skills
 
-For task-specific workflows, follow the matching skill under `.agents/skills/` (also linked from `.cursor/skills` and `.claude/skills`):
+For task-specific workflows, follow the matching skill under `.agents/skills/`
+(also linked from `.cursor/skills` and `.claude/skills`):
 
-- **Changelog** — when shipping a user-facing API change (new version, endpoint, field, behavior, or deprecation), use the `write-changelog` skill to update `changelog.mdx`.
+| Skill | Use when |
+|---|---|
+| `writing-docs` | Creating or editing documentation pages |
+| `lint-docs-tone` | Reviewing voice, tone, and structure before finishing |
+| `write-changelog` | Recording partner-visible API changes in `changelog.mdx` |
+| `check-backend` | Verifying behavior or inspecting a backend revision range |
+| `multi-language-examples` | Adding Python / Node.js / Go / Java / C# samples |
+| `cross-reference-audit` | Checking internal links after renames or new pages |
+| `sync-openapi-nav` | Confirming endpoint pages come from `openapi.json` |
+| `git-branch` | Creating or checking out documentation branches |
+| `git-commit` | Staging and committing documentation changes |
+| `create-pr` | Pushing a branch and opening a documentation PR |

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { canonicalSha256 } from "./sync-api-artifacts.mjs";
+import { canonicalSha256 } from "./sync-metadata.mjs";
 
 test("canonicalSha256 matches the backend's Python serialization", () => {
   const source =

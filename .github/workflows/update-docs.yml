@@ -211,10 +211,10 @@ jobs:
       should_run: ${{ steps.gate.outputs.should_run }}
       generated_changed: ${{ steps.gate.outputs.generated_changed }}
     steps:
-      - name: Check Out Documentation
+      - name: Check out documentation
         uses: actions/checkout@v6
 
-      - name: Set Up Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
           node-version: 24
@@ -224,8 +224,8 @@ jobs:
           corepack enable
           pnpm install --frozen-lockfile
 
-      - name: Download Production Artifacts
-        run: node scripts/sync-api-artifacts.mjs
+      - name: Sync production metadata
+        run: node scripts/sync-metadata.mjs
 
       - name: Audit internal API reference links
         run: pnpm audit-links
@@ -235,18 +235,6 @@ jobs:
 
       - name: Validate Mintlify build
         run: pnpm build
-
-      - name: Check for Documentation Changes
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      - name: Sync metadata
-        run: node scripts/sync-metadata.mjs
 
       - name: Check for changes
         id: gate
@@ -380,8 +368,9 @@ jobs:
             - Both backend revisions must be exactly 8 lowercase hexadecimal characters.
             - The branch must already exist on origin and must be the checked-out branch.
 
-            Use the repository's git-branch, check-backend, write-changelog, and
-            git-commit skills. The workflow owns pull request creation.
+            Use the repository's git-branch, check-backend, write-changelog,
+            lint-docs-tone, and git-commit skills. The workflow owns pull
+            request creation.
 
             Never create or switch branches, modify generated artifacts, rebase,
             force-push, or push to main. The only file you may edit is changelog.mdx.
@@ -440,11 +429,13 @@ jobs:
             - If api_version did not change, classify every material change as
               backwards compatible.
 
-            Follow the write-changelog skill's changelog format and voice exactly,
-            while respecting this task's stricter rule that changelog.mdx is the only
-            file you may edit. Merge changes into an existing entry for the same
-            release date instead of creating a duplicate entry. Keep entries concise
-            and partner-focused. Never delete existing entries or bullets.
+            Follow the write-changelog skill's format, inclusion rules, and
+            voice exactly, while respecting this task's stricter rule that
+            changelog.mdx is the only file you may edit. Apply lint-docs-tone
+            to the entry. Merge changes into an existing entry for the same
+            release date instead of creating a duplicate entry. Keep entries
+            concise and partner-focused. Never delete existing entries or
+            bullets.
 
             If and only if a changelog entry is required:
             1. Edit only changelog.mdx. Add or extend content; do not remove anything

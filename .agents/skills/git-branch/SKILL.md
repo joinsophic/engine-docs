@@ -9,9 +9,10 @@ This skill is adapted from the sibling backend repository's `git-branch` skill.
 
 ## Automation branches
 
-When a webhook payload provides a `branch`, validate that it:
+When the production workflow or agent payload provides a `branch`, validate that it:
 
 - Starts with `automation/api-docs-`.
+- Matches `automation/api-docs-[0-9a-f]{8}` for deploy-driven updates.
 - Contains only letters, digits, `/`, `_`, `-`, and `.`.
 - Exists on `origin`.
 

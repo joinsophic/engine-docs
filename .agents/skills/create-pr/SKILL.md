@@ -19,10 +19,13 @@ git push --set-upstream origin HEAD
 3. Check whether the branch already has an open pull request. Update that pull request instead of creating a duplicate.
 4. If no pull request exists, open one against `main` with a `[docs]` title.
 5. Include:
-   - The backend `backend_prev_revision..backend_current_revision` range.
-   - A concise summary of partner-visible changes.
+   - The backend `backend_prev_revision..backend_current_revision` range when
+     this update came from a production deploy.
+   - A concise summary of partner-visible changes (or that none required a
+     changelog entry).
    - Whether the API version changed.
-   - The generated OpenAPI and metadata verification performed.
+   - The generated OpenAPI and metadata verification performed
+     (`scripts/sync-metadata.mjs`).
    - The result of `pnpm build`.
 
 Never push directly to `main` or force-push an automation branch.

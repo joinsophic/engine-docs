@@ -1,40 +1,98 @@
-``---
+---
 name: write-changelog
-description: Write and maintain the API changelog in changelog.mdx. Use when shipping a new API version, adding endpoints or fields, changing behavior, deprecating features, or when the user asks to record a change. Modeled after Mercury and Stripe changelogs.
+description: Write and maintain the API changelog in changelog.mdx. Use when shipping a new API version, adding endpoints or fields, changing behavior, deprecating features, or when the production docs agent inspects a deployment range.
 ---
 
 # Write Changelog
 
-Record user-facing API changes in `changelog.mdx` so integrators can see what changed and whether it affects them. A good changelog answers three questions fast: *what changed*, *when*, and *do I need to do anything?*
+Record user-facing API changes in `changelog.mdx` so integrators can see what
+changed and whether it affects them. A good entry answers three questions fast:
+*what changed*, *when*, and *do I need to do anything?*
 
-Model the tone and structure after [Stripe's API changelog](https://docs.stripe.com/changelog) (rigorous about breaking vs. backwards-compatible) and [Mercury's changelog](https://mercury.com/api/changelog) (readable, human, benefit-first prose).
+Model tone and structure after [Stripe's API changelog](https://docs.stripe.com/changelog)
+(rigorous about breaking vs backwards-compatible) and
+[Mercury's changelog](https://mercury.com/api/changelog) (readable, benefit-first).
 
-## When to Use
+Follow `AGENTS.md` voice rules and run `lint-docs-tone` over every entry you
+write. Verify facts with `check-backend`.
 
-- A new dated API version is released (e.g. `2026-04-01`).
-- An endpoint, field, enum value, event type, or error code is added.
-- Behavior changes (pagination, sorting, rounding, rate limits, retry schedule, defaults).
-- A feature, field, or version is deprecated or sunset.
-- The user asks to "add a changelog entry", "document this release", or "note this change".
+## When to write an entry
 
-Don't log purely internal changes that a developer integrating with the API can't observe (infra, refactors, doc typo fixes).
+Write an entry only for material changes partners can observe:
+
+- New dated API version (e.g. `2026-04-01`)
+- Endpoint, field, enum value, webhook event, or error code added/removed/changed
+- Observable behavior changes (pagination, sorting, rounding, rate limits, retry
+  schedule, defaults, validation, auth, idempotency, side effects)
+- Deprecation or sunset
+- Observable bug fix
+
+## When not to write an entry
+
+Do **not** log:
+
+- Internal refactors, infrastructure, CI, tests, logging
+- Performance changes with no observable behavior change
+- Documentation-only edits or typo fixes
+- Generated-file churn by itself (formatting, key ordering, OpenAPI descriptions,
+  examples, server metadata, or `openapi_sha256` alone)
+- Cosmetic OpenAPI diffs with no semantic change
+
+If you're unsure, inspect the backend with `check-backend`. When the evidence is
+still thin, prefer no entry over a speculative one.
+
+## Investigation paths (production automation)
+
+The production workflow may pass `generated_changed`. Use it to choose a path:
+
+### Path A (`generated_changed` is true)
+
+Production OpenAPI or metadata differs from what is committed. Compare this
+branch against `origin/main` for `openapi.json` and `metadata/docs.json`. Inspect
+only semantic differences:
+
+- Added, removed, or changed operations
+- Request/response fields, required fields, types, enums, status codes, security
+- Webhook events or error codes
+- A changed `api_version`
+
+Ignore formatting, key ordering, descriptions, examples, server metadata, and
+`openapi_sha256` alone. If the diff is cosmetic only, stop: no changelog edit,
+no commit.
+
+### Path B (`generated_changed` is false)
+
+Synced artifacts match the committed ones, so OpenAPI alone cannot explain the
+run (typically `force_docs_update`). Inspect the backend deployment range with
+`check-backend` (cheap log/diff first, then targeted reads). If nothing
+partner-visible changed, stop.
+
+### Deduping
+
+Before editing, check whether `changelog.mdx` already documents the same change.
+If it does, stop without making changes.
 
 ## Detect the API version first
 
-Before writing any entry, determine whether the change ships as a **new dated API version** or as a **backwards-compatible addition** to the current version. This decision drives how you tag the entry.
+Before writing, decide whether this ships as a **new dated API version** or a
+**backwards-compatible addition** to the current version.
 
-1. **Read the current version.** Open [`api-reference/versioning.mdx`](../../../api-reference/versioning.mdx) and note the value under "Current version" (e.g. `2026-01-01`). This is the latest released version.
-2. **Compare against the change.** Look for signals that a new version was cut:
-   - The user explicitly names a new dated version (e.g. "ship this as `2026-04-01`").
-   - The OpenAPI spec (`api.openapi` in `docs.json`) advertises a newer version, or the backend defines a new version constant (search `../backend` for `API_VERSION`, `Api-Version`, or dated version strings; use the `check-backend` skill).
-   - The change itself is breaking per the lists in `versioning.mdx`, which *forces* a new version.
-3. **Pick the tag** (see below) based on that determination. When a new version exists, the newest entry's `description` must be that version.
+1. Read the current version under "Current version" in
+   [`api-reference/versioning.mdx`](../../../api-reference/versioning.mdx).
+2. Look for a new version signal:
+   - User names a new dated version
+   - Backend `sophic/apps/engine/versions.py` `TIMELINE` gained a version
+   - OpenAPI / metadata advertises a newer `api_version`
+   - The change is breaking per `versioning.mdx` (forces a new version)
+3. Choose the `description` tag from the table below. When a new version exists,
+   the newest entry's `description` must be that version.
 
-If you can't confirm the current version, stop and ask rather than guessing a version string.
+If you can't confirm the current version, stop and ask. Never guess a version
+string.
 
-## Version tagging convention
+## Version tagging
 
-The `<Update description>` field is the entry's version tag. Use exactly one of:
+The `<Update description>` field is the version tag. Use exactly one of:
 
 | Situation | `description` value | Example |
 |---|---|---|
@@ -42,7 +100,7 @@ The `<Update description>` field is the entry's version tag. Use exactly one of:
 | Backwards-compatible change, no version bump | `additions` | `description="additions"` |
 | Deprecation or sunset notice only | `deprecations` | `description="deprecations"` |
 
-When an entry ships alongside a new version, add a version badge in the body so it's scannable, and always link to Versioning:
+New version entry shape:
 
 ```mdx
 <Update label="April 1, 2026" description="2026-04-01">
@@ -57,7 +115,8 @@ When an entry ships alongside a new version, add a version badge in the body so 
 
 ## Format
 
-Each entry is a Mintlify `<Update>` component, newest first. Use `label` for the date and `description` for the version tag chosen above.
+Each entry is a Mintlify `<Update>`, newest first. `label` is the human date;
+`description` is the version tag.
 
 ```mdx
 <Update label="April 1, 2026" description="additions">
@@ -81,53 +140,68 @@ Each entry is a Mintlify `<Update>` component, newest first. Use `label` for the
 
 Group bullets under bold labels, in this order (omit empty ones):
 
-1. **Breaking** — only in a new API version. Lead with these and link to [Versioning](/api-reference/versioning).
-2. **Added** — new endpoints, fields, enum values, event types, error codes.
-3. **Changed** — behavior or response changes. Mark each as backwards compatible or breaking.
-4. **Deprecated** — still works, but scheduled for removal. State the sunset date.
-5. **Fixed** — bug fixes with observable impact.
+1. **Breaking**: only in a new API version. Lead with these and link to
+   [Versioning](/api-reference/versioning).
+2. **Added**: new endpoints, fields, enum values, event types, error codes.
+3. **Changed**: behavior or response changes. Mark each as backwards compatible
+   or breaking.
+4. **Deprecated**: still works, scheduled for removal. State the sunset date.
+5. **Fixed**: bug fixes with observable impact.
 
-### Breaking vs. backwards compatible
+### Breaking vs backwards compatible
 
-This is the most important distinction. Classify every change using [`api-reference/versioning.mdx`](../../../api-reference/versioning.mdx) as the source of truth:
+Classify every change using `api-reference/versioning.mdx` as the source of
+truth:
 
-- **Backwards-compatible** changes (new resources, new optional params, new response fields, new enum values, new error codes) ship to all versions. Log them under **Added**/**Changed** without a version bump, and tag the entry `description="additions"`.
-- **Breaking** changes (removing/renaming params or fields, new required params, type changes, changed semantics) require a **new dated API version**. Log them under **Breaking** in an entry whose `description` is that version date, add the version badge, and call out the migration path.
+- **Backwards-compatible** (new resources, optional params, response fields,
+  enum values, error codes): ship under **Added**/**Changed**, tag
+  `description="additions"`.
+- **Breaking** (removing/renaming fields, new required params, type changes,
+  changed semantics): require a new dated version, tag `description` with that
+  date, add the version badge, and call out the migration path.
 
-When unsure whether a change is breaking, check the "Backwards compatible changes" and "Breaking changes" lists in `versioning.mdx` before writing.
+When unsure, re-read the "Backwards compatible changes" and "Breaking changes"
+lists in `versioning.mdx` before writing.
 
 ## Instructions
 
-1. **Detect the API version** (see "Detect the API version first"). Read the current version from `versioning.mdx` and determine whether this change is a new dated version or a backwards-compatible addition.
-2. **Confirm the facts.** If the entry makes specific claims about behavior (new fields, changed values, endpoints), verify them against the backend using the `check-backend` skill. Don't guess field names or endpoint paths.
-3. **Classify the change** as breaking or backwards compatible per `versioning.mdx`, then **choose the `description` tag** from the version tagging table.
-4. **Add a new `<Update>` at the top** of `changelog.mdx`, directly under the frontmatter, so entries stay reverse-chronological. **Never delete or rewrite existing entries.** You may append bullets to an entry for the same release date, but do not remove, shorten, or replace anything already published.
-5. **Write benefit-first prose**, then categorized bullets. Follow the Voice rules in `AGENTS.md` (use "we"/"you", contractions, no em dashes, no "Sophic Engine" in prose). Run the `lint-docs-tone` skill mentality over the entry.
-6. **Cross-link** to the relevant API reference or docs page for anything new (use the `cross-reference-audit` skill to confirm links resolve). OpenAPI endpoint URLs use `/api-reference/{tag}/{summary-slug}` (for example `/api-reference/trading/place-an-order`), not a flat `/api-reference/{summary-slug}` path.
-7. **Keep `rss: true`** in the frontmatter so the entry publishes to the RSS feed. Don't remove it.
-8. **If a new version was released**, also add the version badge to the entry and update the "Current version" in `api-reference/versioning.mdx` and the `Api-Version` header examples so the docs and changelog agree.
+1. Detect the API version (new dated version vs additions).
+2. Confirm facts with `check-backend`. Don't guess paths or field names.
+3. Classify breaking vs backwards compatible, then choose the `description` tag.
+4. Add a new `<Update>` at the top of `changelog.mdx`, directly under the
+   frontmatter, or append bullets to an existing entry for the **same release
+   date**. **Never delete, shorten, or rewrite** existing entries or bullets.
+5. Write benefit-first prose in `AGENTS.md` voice. Apply `lint-docs-tone`.
+6. Cross-link new endpoints/fields. OpenAPI URLs use
+   `/api-reference/{tag}/{summary-slug}`. Confirm with `cross-reference-audit`.
+7. Keep `rss: true` in the frontmatter.
+8. If a new version shipped, update "Current version" in
+   `api-reference/versioning.mdx` and `Api-Version` header examples so docs and
+   changelog agree. (Changelog-only automation agents: skip this step and only
+   edit `changelog.mdx` unless your task explicitly allows other files.)
 
 ## Style rules
 
-- **One entry per release/date**, not one per change. Batch same-day changes together.
-- **Lead with the reader's benefit**, not the implementation detail. "You can now retrieve monthly statements" beats "Added statements endpoint".
-- **Link, don't re-document.** The changelog points to the reference; it isn't the reference.
-- **Be honest about breakage.** If action is required, say so plainly and link the migration path.
+- **One entry per release/date**, not one per change. Batch same-day changes.
+- **Lead with the reader's benefit.** "You can now retrieve monthly statements"
+  beats "Added statements endpoint".
+- **Link, don't re-document.** The changelog points to the reference.
+- **Be honest about breakage.** If action is required, say so and link migration.
 - **Past tense, active voice.** "We added", "we fixed", "we now return".
-- **No em dashes in prose.** Use commas, colons, parentheses, or a separate sentence.
-- **Append-only history.** Never delete or rewrite existing `<Update>` blocks or bullets. Add new entries at the top, or append to an entry for the same release date.
+- **No em dashes in prose.**
+- **Append-only history.** Never delete or rewrite published entries.
 
 ## Checklist
 
-Before finishing:
-- Checked the current version in `versioning.mdx` and determined new-version vs. additions.
-- New `<Update>` is at the top, reverse-chronological.
-- `label` is a human date; `description` is a valid version tag (`YYYY-MM-DD`, `additions`, or `deprecations`).
-- Every change is classified breaking vs. backwards compatible.
-- Breaking changes tag `description` with the new version date, include the version badge, and link to Versioning.
-- If a new version shipped, `versioning.mdx` "Current version" and `Api-Version` examples were updated to match.
-- New endpoints/fields are cross-linked and verified against the backend.
-- Tone matches `AGENTS.md` (we/you, contractions, no em dashes).
-- No existing changelog entries or bullets were deleted or rewritten.
-- `rss: true` still present in frontmatter.
-- `changelog` page is present in `docs.json` navigation.
+- Current version checked in `versioning.mdx`; new-version vs additions decided
+- Entry only covers partner-visible changes (or you correctly chose no entry)
+- New `<Update>` is at the top, or same-day bullets were appended
+- `label` is a human date; `description` is `YYYY-MM-DD`, `additions`, or
+  `deprecations`
+- Every change classified breaking vs backwards compatible
+- Breaking changes use the version date, include the badge, and link Versioning
+- New version also reflected in `versioning.mdx` when this task allows it
+- Facts verified against the backend; links verified
+- Tone matches `AGENTS.md` (we/you, contractions, no em dashes)
+- No existing entries or bullets deleted or rewritten
+- `rss: true` still present; `changelog` still in `docs.json` navigation
