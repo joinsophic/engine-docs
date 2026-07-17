@@ -16,19 +16,25 @@ Check that all internal links in documentation pages point to valid destinations
 
 ## Instructions
 
-1. **Find all internal links.** Search `.mdx` files for markdown link patterns like `](/some/path)` and `](#anchor)`.
+1. Prefer the repo's automated check when you only need a pass/fail signal:
 
-2. **Validate static page links.** For links starting with `/docs/` or `/api-reference/`:
+```bash
+pnpm audit-links
+```
+
+2. **Find all internal links.** Search `.mdx` files for markdown link patterns like `](/some/path)` and `](#anchor)`.
+
+3. **Validate static page links.** For links starting with `/docs/` or `/api-reference/`:
    - Check that a corresponding `.mdx` file exists on disk at that path.
    - Check that the page is listed in `docs.json` navigation (a file on disk won't appear in docs unless it's in the nav).
 
-3. **Validate anchor links.** For links containing `#fragment`:
+4. **Validate anchor links.** For links containing `#fragment`:
    - Open the target page.
    - Verify a heading exists that would produce that anchor ID (Mintlify generates IDs by lowercasing and hyphenating heading text, e.g. `## Handling Duplicates` becomes `#handling-duplicates`).
 
-4. **Flag auto-generated page links.** Links to API endpoint pages (e.g. `/api-reference/webhooks/create-a-webhook`) depend on how Mintlify generates slugs from the OpenAPI spec. Mintlify uses `/api-reference/{tag}/{summary-slug}` where `tag` is the operation's first OpenAPI tag and `summary-slug` is the slugified `summary` field. Verify these against the live site or `llms.txt`; flat `/api-reference/{summary-slug}` paths 404.
+5. **Flag auto-generated page links.** Links to API endpoint pages (e.g. `/api-reference/webhooks/create-a-webhook`) depend on how Mintlify generates slugs from the OpenAPI spec. Mintlify uses `/api-reference/{tag}/{summary-slug}` where `tag` is the operation's first OpenAPI tag and `summary-slug` is the slugified `summary` field. Verify these against the live site or `llms.txt`; flat `/api-reference/{summary-slug}` paths 404.
 
-5. **Check for stale references.** If any files were renamed or moved during this session, search all `.mdx` files for references to the old paths and update them.
+6. **Check for stale references.** If any files were renamed or moved during this session, search all `.mdx` files for references to the old paths and update them.
 
 ## Common Issues
 

@@ -151,16 +151,18 @@ dispatch with this payload:
 }
 ```
 
-Set the `ENGINE_API_RENDER_SERVICE_ID` and `CURSOR_AUTOMATION_WEBHOOK_URL`
-repository variables, plus the `RENDER_API_KEY` and `CURSOR_AUTOMATION_KEY`
-repository secrets, before running the workflow. The workflow resolves the
+Set the `ENGINE_API_RENDER_SERVICE_ID` repository variable, plus the
+`RENDER_API_KEY`, `ANTHROPIC_API_KEY`, and (for Slack) `SLACK_BOT_TOKEN` /
+`DOCS_SLACK_CHANNEL_ID` repository secrets, before running the workflow. The workflow resolves the
 current and previous backend revisions from Render deployment history. It then
 verifies production by checking that `/.meta/docs` and `/openapi.json` agree on
-`openapi_sha256`, commits the generated artifacts to an
-`automation/api-docs-*` branch, opens a pull request, and sends the derived
-revision range to the Cursor automation.
+`openapi_sha256` (via `scripts/sync-metadata.mjs`), validates the synced docs
+(`pnpm audit-links`, `pnpm test`, `pnpm build`), and only then gates on whether
+generated artifacts changed. When they did (or when forced), it commits them to
+an `automation/api-docs-*` branch, runs the changelog agent, and opens a pull
+request.
 
-The workflow skips the branch and Cursor automation when `openapi.json`,
+The workflow skips the branch and changelog agent when `openapi.json`,
 `metadata/docs.json`, and the generated snippets are unchanged. To run the
 agent for a behavioral change that does not affect those files, set
 `client_payload.force_docs_update` to `true` or run the workflow manually with

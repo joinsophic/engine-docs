@@ -5,7 +5,9 @@ description: Generate code examples in Python, Node.js, Go, Java, and C# wrapped
 
 # Multi-Language Code Examples
 
-Generate equivalent code examples in all five supported languages, wrapped in a Mintlify `<CodeGroup>` component.
+Generate equivalent code examples in all five supported languages, wrapped in a
+Mintlify `<CodeGroup>` component. Keep surrounding prose aligned with
+`writing-docs` and `AGENTS.md` voice.
 
 ## When to Use
 

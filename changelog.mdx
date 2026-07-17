@@ -8,46 +8,24 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
-<Update label="July 8, 2026" description="additions">
-  ## Limit orders and quantity-based ETF buys
-
-  You can place ETF limit orders and buy a specific ETF quantity using a
-  persisted quote.
-
-  **Added**
-  - ETF limit orders on [Get an order quote](/api-reference/trading/get-an-order-quote) and [Place an order](/api-reference/trading/place-an-order). Send `limit_price` with `order_type=limit`; quote responses include `max_cost` for buys or `min_proceeds` for sells.
-  - Quantity-based ETF buys on [Get an order quote](/api-reference/trading/get-an-order-quote). Send `quantity` instead of `cash_amount`; we persist the quote automatically and return its `id` and `expires_at` for order placement.
-  - `limit_price` and `is_cancellable` on order responses, plus the `limit_budget_too_small` error code when a cash budget can't buy one trading increment at the limit price.
-</Update>
-
 <Update label="July 3, 2026" description="additions">
-  ## ETF fields and person reads
-
-  We added risk metadata on ETF instruments and fixed person reads when
-  optional columns are unset in storage.
-
-  **Added**
-  - `sri` and `hedge_currency` on ETF instruments returned from [List instruments](/api-reference/catalog/list-instruments) and [Retrieve an instrument](/api-reference/catalog/retrieve-an-instrument).
+  ## Fixed person reads
 
   **Fixed**
   - [Retrieve a person](/api-reference/customers/retrieve-a-person) no longer returns `500` when optional person columns are null in storage.
 </Update>
 
 <Update label="June 30, 2026" description="additions">
-  ## Richer instruments and more reliable valuation
+  ## More reliable valuation
 
   Instrument responses carry more ETF detail, and account valuation reads are
   more consistent across price providers.
 
   **Added**
-  - `about` and `net_assets` on ETF instrument responses.
   - `trading_increment` on instrument responses.
-  - Date-based API versioning via the `Api-Version` header (current version remains `2026-01-01`). See [Versioning](/api-reference/versioning).
 
   **Changed** (backwards compatible)
-  - `investment_objective` on money market fund instruments is now optional in responses.
   - `GET /accounts/{account_id}/valuation` uses the latest price per timestamp across providers.
-  - ETF listings no longer include `exchange_mic`; use the instrument's `exchange_id` (an ISO 10383 MIC code) instead.
 
   **Fixed**
   - Unrealized earnings percentage on `GET /accounts/{account_id}/earnings` no longer errors on zero cost basis.
