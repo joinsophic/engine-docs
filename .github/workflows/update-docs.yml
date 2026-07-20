@@ -317,6 +317,14 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Keep the prompt cache warm across long tool runs (pnpm install/build).
+          # Claude Code adds cache_control automatically; 1h TTL avoids 5m expiry misses.
+          settings: |
+            {
+              "env": {
+                "ENABLE_PROMPT_CACHING_1H": "1"
+              }
+            }
           prompt: |
             You are a changelog-only agent for joinsophic/engine-docs. Your only
             content-writing responsibility is updating changelog.mdx, and only when
@@ -420,7 +428,7 @@ jobs:
               string if no changelog was required.
           claude_args: |
             --model claude-haiku-4-5
-            --max-turns 20
+            --max-turns 40
             --allowedTools "Read,Edit,Glob,Grep,Bash(git:*),Bash(jq:*),Bash(corepack:*),Bash(pnpm:*)"
             --json-schema '{"type":"object","properties":{"changelog_updated":{"type":"boolean"},"summary":{"type":"string"}},"required":["changelog_updated","summary"],"additionalProperties":false}'
             ${{ needs.detect-changes.outputs.generated_changed == 'false' && '--add-dir .backend' || '' }}
