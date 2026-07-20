@@ -18,6 +18,10 @@
       "detail": "The Client-Request-Id header value exceeds the maximum length."
     },
     {
+      "code": "client_user_id_too_long",
+      "detail": "The Client-User-Id header value exceeds the maximum length."
+    },
+    {
       "code": "conflict",
       "detail": "The provided param or resource conflicts with an existing resource."
     },
@@ -142,6 +146,10 @@
       "detail": "The payment cannot be completed in its current state."
     },
     {
+      "code": "person_id_too_long",
+      "detail": "The Person-Id header value exceeds the maximum length."
+    },
+    {
       "code": "professional_trader_required",
       "detail": "This operation requires a professional trader authorization."
     },
@@ -182,7 +190,7 @@
       "detail": "Withdrawals are not enabled for this account."
     }
   ],
-  "openapi_sha256": "2a5bfc57dbd61af17da468aa13a58abed5c15889aeb77be81a915c7651e3ce0d",
+  "openapi_sha256": "af45079ec792a06a8c4e5c2fc97f0b56df7dd558c13727c66c580f7e9134ac41",
   "schema_version": 1,
   "webhook_events": [
     {

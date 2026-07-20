@@ -8379,7 +8379,7 @@
                 "type": "null"
               }
             ],
-            "description": "Total wallet debit for buy orders, including fees. Cash-mode buys set this directly; quantity-mode buys compute it at placement.",
+            "description": "The amount to invest (before fees). Buy orders are cash-based (you specify how much to invest, not how many units to buy).",
             "examples": [
               "1000.00"
             ],
@@ -8501,7 +8501,7 @@
                 "type": "null"
               }
             ],
-            "description": "The cash amount before fees.",
+            "description": "The amount to invest after fees. This is what gets traded.",
             "examples": [
               "998.50"
             ],
@@ -8544,7 +8544,7 @@
                 "type": "null"
               }
             ],
-            "description": "Requested unit quantity for sell orders and quantity-mode buys.",
+            "description": "Requested unit quantity for sell orders.",
             "examples": [
               "10.5"
             ],
@@ -8660,7 +8660,7 @@
                 "type": "null"
               }
             ],
-            "description": "Total wallet debit for buy orders, including fees. Set for cash-mode and quantity-mode buys.",
+            "description": "The gross cash amount (before fees). Set for buys.",
             "examples": [
               "1000.00"
             ],
@@ -8675,7 +8675,7 @@
                 "type": "null"
               }
             ],
-            "description": "Estimated gross purchase amount before fees; set for quantity-mode buys and sells.",
+            "description": "The estimated cash value.",
             "examples": [
               "998.55"
             ],
@@ -8811,26 +8811,11 @@
                 "type": "null"
               }
             ],
-            "description": "The quoted cash amount before fees.",
+            "description": "The net cash amount (after fees).",
             "examples": [
               "998.50"
             ],
             "title": "Net Cash Amount"
-          },
-          "price_buffer_percentage": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The price buffer percentage applied to quantity-mode buys.",
-            "examples": [
-              "0.0100"
-            ],
-            "title": "Price Buffer Percentage"
           },
           "quantity": {
             "anyOf": [
@@ -8841,7 +8826,7 @@
                 "type": "null"
               }
             ],
-            "description": "Unit quantity; set for sells and quantity-mode buys.",
+            "description": "The unit quantity. Set for sells.",
             "examples": [
               "10.5"
             ],
