@@ -18,6 +18,10 @@ export const errorCodes = [
     "detail": "The Client-Request-Id header value exceeds the maximum length."
   },
   {
+    "code": "client_user_id_too_long",
+    "detail": "The Client-User-Id header value exceeds the maximum length."
+  },
+  {
     "code": "conflict",
     "detail": "The provided param or resource conflicts with an existing resource."
   },
@@ -140,6 +144,10 @@ export const errorCodes = [
   {
     "code": "payment_completion_forbidden",
     "detail": "The payment cannot be completed in its current state."
+  },
+  {
+    "code": "person_id_too_long",
+    "detail": "The Person-Id header value exceeds the maximum length."
   },
   {
     "code": "professional_trader_required",
