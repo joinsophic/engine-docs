@@ -1,4 +1,7 @@
 name: Update Docs
+run-name: >-
+  Update docs for
+  ${{ github.event.client_payload.render_deploy_id || inputs.render_deploy_id }}
 
 on:
   repository_dispatch:
