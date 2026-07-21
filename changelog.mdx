@@ -8,6 +8,16 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="July 21, 2026" description="additions">
+  ## Instrument icons now available
+
+  All instrument responses now include an optional `icon_url` field with a public CDN image URL.
+  You can use this to display instrument-branded icons in your UI without hosting assets yourself.
+
+  **Added**
+  - `icon_url` on all instrument types ([Retrieve an instrument](/api-reference/catalog/retrieve-an-instrument)). This nullable string field contains the public CDN URL of the instrument's icon.
+</Update>
+
 <Update label="July 3, 2026" description="additions">
   ## Fixed person reads
 
