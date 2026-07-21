@@ -63,6 +63,21 @@
             ],
             "title": "Exchange"
           },
+          "icon_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Public CDN URL of the instrument's icon.",
+            "examples": [
+              "https://storage.googleapis.com/sophic-assets/instrument-icons/in_x7GqT.png"
+            ],
+            "title": "Icon Url"
+          },
           "id": {
             "description": "Unique resource identifier.",
             "title": "Id",
@@ -940,6 +955,21 @@
             ],
             "title": "Exchange"
           },
+          "icon_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Public CDN URL of the instrument's icon.",
+            "examples": [
+              "https://storage.googleapis.com/sophic-assets/instrument-icons/in_x7GqT.png"
+            ],
+            "title": "Icon Url"
+          },
           "id": {
             "description": "Unique resource identifier.",
             "title": "Id",
@@ -1320,6 +1350,21 @@
               "2025-07-15"
             ],
             "title": "First Coupon Date"
+          },
+          "icon_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Public CDN URL of the instrument's icon.",
+            "examples": [
+              "https://storage.googleapis.com/sophic-assets/instrument-icons/in_x7GqT.png"
+            ],
+            "title": "Icon Url"
           },
           "id": {
             "description": "Unique resource identifier.",
@@ -3002,6 +3047,21 @@
             ],
             "title": "Exchange"
           },
+          "icon_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Public CDN URL of the instrument's icon.",
+            "examples": [
+              "https://storage.googleapis.com/sophic-assets/instrument-icons/in_x7GqT.png"
+            ],
+            "title": "Icon Url"
+          },
           "id": {
             "description": "Unique resource identifier.",
             "title": "Id",
@@ -3616,6 +3676,21 @@
             "examples": [
               "EUR"
             ]
+          },
+          "icon_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Public CDN URL of the instrument's icon.",
+            "examples": [
+              "https://storage.googleapis.com/sophic-assets/instrument-icons/in_x7GqT.png"
+            ],
+            "title": "Icon Url"
           },
           "id": {
             "description": "Unique resource identifier.",
@@ -7167,6 +7242,21 @@
             ],
             "title": "Fund Ongoing Charges",
             "type": "string"
+          },
+          "icon_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Public CDN URL of the instrument's icon.",
+            "examples": [
+              "https://storage.googleapis.com/sophic-assets/instrument-icons/in_x7GqT.png"
+            ],
+            "title": "Icon Url"
           },
           "id": {
             "description": "Unique resource identifier.",
