@@ -22,6 +22,9 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
     same end user, for log correlation and support.
   - Error codes `person_id_too_long` and `client_user_id_too_long` when either
     header exceeds 255 characters.
+  - `icon_url` field (optional string, public CDN URL) on all instrument responses.
+  - `GET /me/permissions` endpoint to list your effective permissions in the current realm. Returns scopes and conditional permission ids when applicable.
+  - `duplicate_tenant` error code when creating a tenant with a name that already exists.
 </Update>
 
 <Update label="July 3, 2026" description="additions">
