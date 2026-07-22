@@ -1,0 +1,45 @@
+---
+title: Attribution
+description: Attribute API calls to the end person they concern.
+---
+
+When a request concerns an end person, tell us who that person is. We use these
+headers to attribute the action for compliance, and to correlate your identifiers
+with ours in logs and support.
+
+```bash
+curl https://api.engine.usesophic.com/me \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Person-Id: per_…" \
+  -H "Client-User-Id: your-end-user-id"
+```
+
+Neither header replaces [authentication](/api-reference/auth). Your Bearer token
+still identifies your tenant; these headers identify the end person the call is
+about.
+
+## Person-Id
+
+Send `Person-Id` with our person ID (`per_…`) whenever the request concerns an
+end person. This is how we attribute the call for compliance.
+
+Create persons via [`POST /persons`](/api-reference/customers/create-a-person),
+then pass the returned ID on subsequent requests that act for that person.
+
+## Client-User-Id
+
+`Client-User-Id` is your own identifier for the same end user. It's optional and
+doesn't affect authorization. Send it when you want us to correlate our logs with
+yours during support or incident investigation.
+
+The format is up to you. Prefer a stable ID from your system rather than a
+display name or email.
+
+## Limits
+
+Both headers are capped at 255 characters. Longer values return `400` with
+`person_id_too_long` or `client_user_id_too_long`. See
+[Errors](/api-reference/errors).
+
+Don't put secrets or unnecessary PII in `Client-User-Id`. We store the value in
+our request logs.

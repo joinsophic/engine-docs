@@ -16,5 +16,7 @@ The following is a non-exhaustive list of recommended best practices for a stabl
 - Validate inputs client-side where feasible, but do not rely on client-side validation alone
 - Log request IDs returned by Sophic to speed up support and incident resolution and, if possible,
 provide a `Client-Request-Id` header in your requests
+- Send `Person-Id` whenever a request concerns an end person, and optionally
+`Client-User-Id` for your own identifier. See [Attribution](/api-reference/attribution)
 - Pin your integration to a specific Api-Version and plan upgrades during the published support window
 - Monitor for deprecation signals (e.g., `Api-Version-Sunset` header) and alert on them

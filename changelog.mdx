@@ -8,6 +8,22 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="July 22, 2026" description="additions">
+  ## Identify the end person on each request
+
+  When a call concerns an end person, send `Person-Id` so we can attribute the
+  action for compliance. `Client-User-Id` is optional and helps with debugging.
+
+  **Added**
+  - `Person-Id` request header for our person ID (`per_…`) you're acting on
+    behalf of. Send this whenever the request concerns an end person. See
+    [Attribution](/api-reference/attribution).
+  - Optional `Client-User-Id` request header for your own identifier of the
+    same end user, for log correlation and support.
+  - Error codes `person_id_too_long` and `client_user_id_too_long` when either
+    header exceeds 255 characters.
+</Update>
+
 <Update label="July 3, 2026" description="additions">
   ## Fixed person reads
 
