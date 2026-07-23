@@ -63,6 +63,21 @@
             ],
             "title": "Exchange"
           },
+          "icon_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Public CDN URL of the instrument's icon.",
+            "examples": [
+              "https://storage.googleapis.com/sophic-assets/instrument-icons/in_x7GqT.png"
+            ],
+            "title": "Icon Url"
+          },
           "id": {
             "description": "Unique resource identifier.",
             "title": "Id",
@@ -940,6 +955,21 @@
             ],
             "title": "Exchange"
           },
+          "icon_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Public CDN URL of the instrument's icon.",
+            "examples": [
+              "https://storage.googleapis.com/sophic-assets/instrument-icons/in_x7GqT.png"
+            ],
+            "title": "Icon Url"
+          },
           "id": {
             "description": "Unique resource identifier.",
             "title": "Id",
@@ -1320,6 +1350,21 @@
               "2025-07-15"
             ],
             "title": "First Coupon Date"
+          },
+          "icon_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Public CDN URL of the instrument's icon.",
+            "examples": [
+              "https://storage.googleapis.com/sophic-assets/instrument-icons/in_x7GqT.png"
+            ],
+            "title": "Icon Url"
           },
           "id": {
             "description": "Unique resource identifier.",
@@ -3002,6 +3047,21 @@
             ],
             "title": "Exchange"
           },
+          "icon_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Public CDN URL of the instrument's icon.",
+            "examples": [
+              "https://storage.googleapis.com/sophic-assets/instrument-icons/in_x7GqT.png"
+            ],
+            "title": "Icon Url"
+          },
           "id": {
             "description": "Unique resource identifier.",
             "title": "Id",
@@ -3616,6 +3676,21 @@
             "examples": [
               "EUR"
             ]
+          },
+          "icon_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Public CDN URL of the instrument's icon.",
+            "examples": [
+              "https://storage.googleapis.com/sophic-assets/instrument-icons/in_x7GqT.png"
+            ],
+            "title": "Icon Url"
           },
           "id": {
             "description": "Unique resource identifier.",
@@ -7168,6 +7243,21 @@
             "title": "Fund Ongoing Charges",
             "type": "string"
           },
+          "icon_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Public CDN URL of the instrument's icon.",
+            "examples": [
+              "https://storage.googleapis.com/sophic-assets/instrument-icons/in_x7GqT.png"
+            ],
+            "title": "Icon Url"
+          },
           "id": {
             "description": "Unique resource identifier.",
             "title": "Id",
@@ -9699,6 +9789,41 @@
         "properties": {},
         "title": "Period",
         "type": "string"
+      },
+      "Permission": {
+        "properties": {
+          "permission": {
+            "description": "Permission in `resource.action` form (e.g. `user.read`).",
+            "title": "Permission",
+            "type": "string"
+          },
+          "scopes": {
+            "description": "Concrete scope paths where this permission applies in the current realm (e.g. `tenant/T1` or `tenant/T1/customer/C5`).",
+            "items": {
+              "type": "string"
+            },
+            "title": "Scopes",
+            "type": "array"
+          },
+          "when": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Stable condition id when the permission is conditional (e.g. `is_own_user`). Omitted when unconditional.",
+            "title": "When"
+          }
+        },
+        "required": [
+          "permission",
+          "scopes"
+        ],
+        "title": "Permission",
+        "type": "object"
       },
       "PersonCreationResponse": {
         "properties": {
@@ -15999,6 +16124,47 @@
           }
         ],
         "summary": "Me",
+        "tags": [
+          "identity"
+        ]
+      }
+    },
+    "/me/permissions": {
+      "get": {
+        "description": "List effective permissions for the authenticated actor in the current realm. Conditional permissions include a stable `when` condition id.",
+        "operationId": "me_permissions_me_permissions_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Permission"
+                  },
+                  "title": "Response Me Permissions Me Permissions Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Bad Request"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Me Permissions",
         "tags": [
           "identity"
         ]
