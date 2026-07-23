@@ -8,6 +8,21 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="July 23, 2026" description="additions">
+  ## Permissions introspection and instrument icons
+
+  You can now list your effective permissions and instrument responses include
+  icon URLs for display in your UI.
+
+  **Added**
+  - [List your permissions](/api-reference/identity/list-your-permissions) to introspect
+    effective permissions for the authenticated actor. Returns permission resource.action
+    strings scoped to the realm, with optional condition ids for conditional permissions.
+  - `icon_url` field on all instrument responses: a nullable CDN URL of the
+    instrument's icon for display.
+  - Error code `duplicate_tenant` when a tenant with the same name already exists.
+</Update>
+
 <Update label="July 22, 2026" description="additions">
   ## Identify the end person on each request
 
