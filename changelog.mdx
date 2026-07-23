@@ -8,6 +8,19 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="July 23, 2026" description="additions">
+  ## Instrument icons and tenant duplicate detection
+
+  Instrument responses now include icon images, and we report a new error code
+  when you attempt to create a duplicate tenant.
+
+  **Added**
+  - `icon_url` field on instrument responses: an optional CDN-hosted URL to the
+    instrument's icon image.
+  - `duplicate_tenant` error code when attempting to create a tenant with a name
+    that already exists.
+</Update>
+
 <Update label="July 22, 2026" description="additions">
   ## Identify the end person on each request
 
