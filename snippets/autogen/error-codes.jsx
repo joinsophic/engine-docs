@@ -46,6 +46,10 @@ export const errorCodes = [
     "detail": "A funding account with the same IBAN and bank code already exists for this account."
   },
   {
+    "code": "duplicate_tenant",
+    "detail": "A tenant with the same name already exists."
+  },
+  {
     "code": "duplicate_webhook",
     "detail": "A webhook with the same URL already exists."
   },
