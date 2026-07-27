@@ -8,6 +8,18 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="July 27, 2026" description="additions">
+  ## Permissions lookup and instrument icons
+
+  List your effective permissions, and instrument responses now include a CDN
+  icon URL. We also added an error code for duplicate tenant names.
+
+  **Added**
+  - [List your permissions](/api-reference/identity/me-permissions) to see all effective permissions in the current realm. Conditional permissions include a stable `when` condition id (e.g. `is_own_user`) so you can cache and act on rules without polling.
+  - `icon_url` on all instrument responses (Stock, Bond, ETF, Fund, and Cryptocurrency) with a public CDN URL for the instrument's icon.
+  - Error code `duplicate_tenant` when creating a tenant with a duplicate name.
+</Update>
+
 <Update label="July 22, 2026" description="additions">
   ## Identify the end person on each request
 
