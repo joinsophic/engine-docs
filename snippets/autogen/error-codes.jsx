@@ -94,6 +94,10 @@ export const errorCodes = [
     "detail": "The OAuth client is invalid, inactive, or not authorized for this request."
   },
   {
+    "code": "invalid_credentials",
+    "detail": "The provided sign-in credentials are invalid, expired, or revoked."
+  },
+  {
     "code": "invalid_param",
     "detail": "A parameter is invalid."
   },

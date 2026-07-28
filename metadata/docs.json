@@ -94,6 +94,10 @@
       "detail": "The OAuth client is invalid, inactive, or not authorized for this request."
     },
     {
+      "code": "invalid_credentials",
+      "detail": "The provided sign-in credentials are invalid, expired, or revoked."
+    },
+    {
       "code": "invalid_param",
       "detail": "A parameter is invalid."
     },
@@ -190,7 +194,7 @@
       "detail": "Withdrawals are not enabled for this account."
     }
   ],
-  "openapi_sha256": "1a952190d39d6c1bf67d53e02dda1e2839cc30eae39cc1e87680afa8cb6c196e",
+  "openapi_sha256": "cf73473995583063bba554aa73c10eb3e4eadce3d529e4de50f935de90a6e9dc",
   "schema_version": 1,
   "webhook_events": [
     {
