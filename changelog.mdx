@@ -8,6 +8,17 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="July 28, 2026" description="additions">
+  ## OAuth error handling and sign-in improvements
+
+  We now provide more detailed OAuth error responses per RFC 6749 and support
+  a new error code for invalid sign-in credentials.
+
+  **Added**
+  - `401 Unauthorized` response on [Issue an OAuth token](/api-reference/auth/issue-an-oauth-token) when client authentication fails (RFC 6749 §5.2). Previously this returned `400 Bad Request`.
+  - `invalid_credentials` error code for sign-in failures when the provided credentials are invalid, expired, or revoked.
+</Update>
+
 <Update label="July 27, 2026" description="additions">
   ## Permissions and reference expansion
 
