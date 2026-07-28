@@ -524,7 +524,7 @@ jobs:
           CLAUDE_RESULT: ${{ steps.claude.outputs.structured_output }}
           PULL_REQUEST_URL: ${{ steps.pull_request.outputs.url }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          SLACK_CHANNEL_ID: ${{ secrets.DOCS_SLACK_CHANNEL_ID }}
+          SLACK_CHANNEL_ID: ${{ vars.DOCS_SLACK_CHANNEL_ID }}
         run: |
           if [[ -z "$SLACK_BOT_TOKEN" || -z "$SLACK_CHANNEL_ID" ]]; then
             echo "::notice::Skipping Slack notification; SLACK_BOT_TOKEN or DOCS_SLACK_CHANNEL_ID is not set"
