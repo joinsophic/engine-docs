@@ -7859,6 +7859,27 @@
         "title": "NaturalPerson",
         "type": "object"
       },
+      "OAuthErrorBody": {
+        "description": "RFC 6749 §5.2 error body returned by the OAuth protocol endpoints.\n\nReferenced in the OpenAPI schema only; responses are never serialized from\nthis model.",
+        "properties": {
+          "error": {
+            "description": "The RFC 6749 error code, e.g. `invalid_grant`.",
+            "title": "Error",
+            "type": "string"
+          },
+          "error_description": {
+            "description": "A human-readable description of the error.",
+            "title": "Error Description",
+            "type": "string"
+          }
+        },
+        "required": [
+          "error",
+          "error_description"
+        ],
+        "title": "OAuthErrorBody",
+        "type": "object"
+      },
       "OAuthToken": {
         "properties": {
           "access_token": {
@@ -14940,11 +14961,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/OAuthErrorBody"
                 }
               }
             },
-            "description": "Bad Request"
+            "description": "OAuth error response (RFC 6749 §5.2). Malformed form fields return the standard error envelope instead."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthErrorBody"
+                }
+              }
+            },
+            "description": "Client authentication failed (RFC 6749 §5.2)."
           }
         },
         "summary": "Issue an OAuth token",
@@ -16088,7 +16119,7 @@
     },
     "/me": {
       "get": {
-        "description": "Retrieve the authenticated user or service.",
+        "description": "Retrieves the authenticated user or service actor for inspection and debugging.",
         "operationId": "me_me_get",
         "responses": {
           "200": {
@@ -16125,7 +16156,7 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Me",
+        "summary": "Retrieve current actor",
         "tags": [
           "identity"
         ]
@@ -16133,8 +16164,8 @@
     },
     "/me/permissions": {
       "get": {
-        "description": "List effective permissions for the authenticated actor in the current realm. Conditional permissions include a stable `when` condition id.",
-        "operationId": "me_permissions_me_permissions_get",
+        "description": "Lists all effective permissions for the authenticated actor. Conditional permissions include a stable `when` condition id.",
+        "operationId": "list_permissions_me_permissions_get",
         "responses": {
           "200": {
             "content": {
@@ -16143,7 +16174,7 @@
                   "items": {
                     "$ref": "#/components/schemas/Permission"
                   },
-                  "title": "Response Me Permissions Me Permissions Get",
+                  "title": "Response List Permissions Me Permissions Get",
                   "type": "array"
                 }
               }
@@ -16166,7 +16197,7 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Me Permissions",
+        "summary": "List current actor permissions",
         "tags": [
           "identity"
         ]
@@ -17717,7 +17748,7 @@
       "x-group": "Authentication"
     },
     {
-      "description": "Inspect the authenticated user or service principal.",
+      "description": "Inspect the authenticated user or service actor.",
       "name": "identity",
       "x-group": "Identity"
     },
