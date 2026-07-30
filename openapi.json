@@ -3553,6 +3553,21 @@
             ],
             "title": "About"
           },
+          "currency_sentence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Plain-language description of the fund's currency risk.",
+            "examples": [
+              "The fund is denominated in USD; your return in EUR will vary with the USD/EUR rate."
+            ],
+            "title": "Currency Sentence"
+          },
           "decimal_precision": {
             "description": "Decimal places used by the trading increment.",
             "examples": [
@@ -3560,6 +3575,21 @@
             ],
             "title": "Decimal Precision",
             "type": "integer"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Short card headline derived from the legal name with share-class tokens removed.",
+            "examples": [
+              "iShares Core MSCI World UCITS ETF"
+            ],
+            "title": "Display Name"
           },
           "distribution_frequency": {
             "anyOf": [
@@ -3618,6 +3648,20 @@
             ],
             "title": "Expense Ratio"
           },
+          "fund_base_currency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Currency"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Currency in which the fund's net assets figure is reported.",
+            "examples": [
+              "USD"
+            ]
+          },
           "fund_category": {
             "anyOf": [
               {
@@ -3662,6 +3706,21 @@
               "BlackRock Asset Management Ireland Limited"
             ],
             "title": "Fund Management"
+          },
+          "headline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "One-line \"what do I own\" summary shown on the holding card.",
+            "examples": [
+              "Global developed-market equities in a single fund."
+            ],
+            "title": "Headline"
           },
           "hedge_currency": {
             "anyOf": [
@@ -3827,6 +3886,21 @@
             "title": "Required Cash Increment",
             "type": "integer"
           },
+          "rhp_years": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Recommended holding period in years from the PRIIPs KID.",
+            "examples": [
+              5
+            ],
+            "title": "Rhp Years"
+          },
           "rollout_stage": {
             "anyOf": [
               {
@@ -3938,7 +4012,12 @@
           "distribution_policy",
           "distribution_frequency",
           "sri",
-          "hedge_currency"
+          "hedge_currency",
+          "display_name",
+          "headline",
+          "currency_sentence",
+          "rhp_years",
+          "fund_base_currency"
         ],
         "title": "ETF",
         "type": "object"
