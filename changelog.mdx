@@ -8,6 +8,23 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="July 31, 2026" description="additions">
+  ## Enhanced ETF detail and fee variant tracking
+
+  ETF instrument responses now carry more display and currency data, and you can
+  retrieve fee variants to understand scoped fee modifications per instrument or
+  portfolio type.
+
+  **Added**
+  - [Retrieve a fee](/api-reference/billing/retrieve-a-fee) to fetch a fee by ID, including its scoped variants.
+  - `display_name` on ETF instruments: short card headline derived from the legal name.
+  - `headline` on ETF instruments: one-line "what do I own" summary shown on the holding card.
+  - `currency_sentence` on ETF instruments: plain-language description of the fund's currency risk.
+  - `fund_base_currency` on ETF instruments: currency in which the fund's net assets are reported.
+  - `rhp_years` on ETF instruments: recommended holding period in years from the PRIIPs KID.
+  - `variants` on fee objects: array of scoped fee variants per instrument, instrument type, portfolio type, or transaction type.
+</Update>
+
 <Update label="July 28, 2026" description="additions">
   ## OAuth token endpoint RFC 6749 compliance
 
