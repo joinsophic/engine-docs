@@ -8,6 +8,16 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="July 31, 2026" description="additions">
+  ## Deeper ETF insight and scoped fee variants
+
+  ETF responses now include fund-level detail for currency and positioning context, and fees support instrument-scoped variants for more granular cost modeling.
+
+  **Added**
+  - `display_name`, `headline`, `currency_sentence`, `fund_base_currency`, and `rhp_years` on ETF responses for richer fund context on the [Retrieve an instrument](/api-reference/catalog/retrieve-an-instrument) and [List instruments](/api-reference/catalog/list-instruments) endpoints.
+  - `variants` array on Fee responses to scope fees to specific instruments and currencies. Each variant captures how a fee applies within a narrower context.
+</Update>
+
 <Update label="July 28, 2026" description="additions">
   ## OAuth token endpoint RFC 6749 compliance
 
