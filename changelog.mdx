@@ -8,6 +8,18 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="August 3, 2026" description="additions">
+  ## Enhanced fund details and fee variant support
+
+  We expanded ETF attributes to surface fund display metadata and currency
+  details, and added a new endpoint to retrieve fees with their scoped variants.
+
+  **Added**
+  - New fields on [ETF instrument responses](/api-reference/catalog/retrieve-an-instrument): `display_name`, `headline`, `currency_sentence`, `rhp_years`, and `fund_base_currency`.
+  - [Retrieve a fee](/api-reference/billing/retrieve-a-fee) endpoint to look up a specific fee by ID, including its variants.
+  - `variants` array on [Fee](/api-reference/billing/list-fees) objects containing scoped fee variants per instrument, instrument type, portfolio type, or transaction type.
+</Update>
+
 <Update label="July 28, 2026" description="additions">
   ## OAuth token endpoint RFC 6749 compliance
 
