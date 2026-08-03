@@ -3553,6 +3553,21 @@
             ],
             "title": "About"
           },
+          "currency_sentence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Plain-language description of the fund's currency risk.",
+            "examples": [
+              "The fund is denominated in USD; your return in EUR will vary with the USD/EUR rate."
+            ],
+            "title": "Currency Sentence"
+          },
           "decimal_precision": {
             "description": "Decimal places used by the trading increment.",
             "examples": [
@@ -3560,6 +3575,21 @@
             ],
             "title": "Decimal Precision",
             "type": "integer"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Short card headline derived from the legal name with share-class tokens removed.",
+            "examples": [
+              "iShares Core MSCI World UCITS ETF"
+            ],
+            "title": "Display Name"
           },
           "distribution_frequency": {
             "anyOf": [
@@ -3618,6 +3648,20 @@
             ],
             "title": "Expense Ratio"
           },
+          "fund_base_currency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Currency"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Currency in which the fund's net assets figure is reported.",
+            "examples": [
+              "USD"
+            ]
+          },
           "fund_category": {
             "anyOf": [
               {
@@ -3662,6 +3706,21 @@
               "BlackRock Asset Management Ireland Limited"
             ],
             "title": "Fund Management"
+          },
+          "headline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "One-line \"what do I own\" summary shown on the holding card.",
+            "examples": [
+              "Global developed-market equities in a single fund."
+            ],
+            "title": "Headline"
           },
           "hedge_currency": {
             "anyOf": [
@@ -3827,6 +3886,21 @@
             "title": "Required Cash Increment",
             "type": "integer"
           },
+          "rhp_years": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Recommended holding period in years from the PRIIPs KID.",
+            "examples": [
+              5
+            ],
+            "title": "Rhp Years"
+          },
           "rollout_stage": {
             "anyOf": [
               {
@@ -3938,7 +4012,12 @@
           "distribution_policy",
           "distribution_frequency",
           "sri",
-          "hedge_currency"
+          "hedge_currency",
+          "display_name",
+          "headline",
+          "currency_sentence",
+          "rhp_years",
+          "fund_base_currency"
         ],
         "title": "ETF",
         "type": "object"
@@ -5037,6 +5116,14 @@
             ],
             "description": "Transaction type to which the fee applies.",
             "title": "Transaction Type"
+          },
+          "variants": {
+            "description": "Scoped variants of this fee.",
+            "items": {
+              "$ref": "#/components/schemas/FeeVariant"
+            },
+            "title": "Variants",
+            "type": "array"
           }
         },
         "required": [
@@ -5050,7 +5137,8 @@
           "tax_rate",
           "fee_type",
           "transaction_type",
-          "chargeable_currencies"
+          "chargeable_currencies",
+          "variants"
         ],
         "title": "Fee",
         "type": "object"
@@ -5288,6 +5376,101 @@
         "properties": {},
         "title": "FeeType",
         "type": "string"
+      },
+      "FeeVariant": {
+        "description": "An immutable scoped slice of a fee.",
+        "properties": {
+          "created_at": {
+            "description": "The timestamp (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format) of when the resource was created.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Authoring note; never used in matching.",
+            "title": "Description"
+          },
+          "fee": {
+            "description": "The fee this variant scopes.",
+            "title": "Fee",
+            "type": "string"
+          },
+          "id": {
+            "description": "Unique resource identifier.",
+            "title": "Id",
+            "type": "string"
+          },
+          "instrument": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Instrument-id scope.",
+            "title": "Instrument"
+          },
+          "instrument_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Instrument-type scope.",
+            "title": "Instrument Type"
+          },
+          "modified_at": {
+            "description": "The timestamp (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format) of when the resource was last modified.",
+            "format": "date-time",
+            "title": "Modified At",
+            "type": "string"
+          },
+          "portfolio_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Forward-looking portfolio-type scope key.",
+            "title": "Portfolio Type"
+          },
+          "transaction_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Triggering transaction type (transaction fees only).",
+            "title": "Transaction Type"
+          }
+        },
+        "required": [
+          "created_at",
+          "modified_at",
+          "id",
+          "fee"
+        ],
+        "title": "FeeVariant",
+        "type": "object"
       },
       "File": {
         "properties": {
@@ -15454,6 +15637,54 @@
           }
         ],
         "summary": "Retrieve a fee charge",
+        "tags": [
+          "billing"
+        ]
+      }
+    },
+    "/fees/{fee_id}": {
+      "get": {
+        "description": "Retrieve a fee by ID, including its variants.",
+        "operationId": "retrieve_fee_fees__fee_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "fee_id",
+            "required": true,
+            "schema": {
+              "title": "Fee Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Fee"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Bad Request"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Retrieve a fee",
         "tags": [
           "billing"
         ]
