@@ -32,7 +32,7 @@ pnpm audit-links
    - Open the target page.
    - Verify a heading exists that would produce that anchor ID (Mintlify generates IDs by lowercasing and hyphenating heading text, e.g. `## Handling Duplicates` becomes `#handling-duplicates`).
 
-5. **Flag auto-generated page links.** Links to API endpoint pages (e.g. `/api-reference/webhooks/create-a-webhook`) depend on how Mintlify generates slugs from the OpenAPI spec. Mintlify uses `/api-reference/{tag}/{summary-slug}` where `tag` is the operation's first OpenAPI tag and `summary-slug` is the slugified `summary` field. Verify these against the live site or `llms.txt`; flat `/api-reference/{summary-slug}` paths 404.
+5. **Flag auto-generated page links.** Links to API endpoint pages (e.g. `/api-reference/webhooks/create-a-webhook`) depend on how Mintlify generates slugs from the OpenAPI spec. Mintlify uses `/api-reference/{tag}/{summary-slug}` where `tag` is the operation's first OpenAPI tag and `summary-slug` is the slugified `summary` field. Verify against `openapi.json` (or run `pnpm audit-links`). Do **not** derive the slug from the HTTP path: `/me/permissions` is not `me-permissions`. Flat `/api-reference/{summary-slug}` paths 404.
 
 6. **Check for stale references.** If any files were renamed or moved during this session, search all `.mdx` files for references to the old paths and update them.
 
