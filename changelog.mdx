@@ -8,6 +8,29 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="August 6, 2026" description="additions">
+  ## Portfolio state validation and document references
+
+  We added validation error codes for portfolio and position state, updated
+  the document type enum for clarity, added a reference field to documents,
+  and adjusted fixed-income instrument details.
+
+  **Added**
+  - Error codes `portfolio_closed` and `position_not_open` when a portfolio is
+    closed or a position can no longer be updated.
+  - `reference` optional field on [Document](/api-reference/resources/document)
+    responses to link documents to the order they confirm or other referenced
+    objects.
+
+  **Changed** (backwards compatible)
+  - `DocumentType` enum value changed from `trade_confirmation` to
+    `order_confirmation` for naming clarity.
+
+  **Removed**
+  - `par_value` field from [Bill](/api-reference/catalog/retrieve-an-instrument)
+    instrument responses.
+</Update>
+
 <Update label="August 3, 2026" description="additions">
   ## Enhanced fund details and fee variant support
 
