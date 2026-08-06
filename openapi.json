@@ -1109,21 +1109,6 @@
             "title": "Name",
             "type": "string"
           },
-          "par_value": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Nominal value per unit used for price quotation.",
-            "examples": [
-              "100.00"
-            ],
-            "title": "Par Value"
-          },
           "price_type": {
             "allOf": [
               {
@@ -1238,8 +1223,7 @@
           "issuer_credit_rating",
           "initial_auction_date",
           "latest_auction_date",
-          "latest_issue_date",
-          "par_value"
+          "latest_issue_date"
         ],
         "title": "Bill",
         "type": "object"
@@ -1666,10 +1650,10 @@
           "initial_auction_date",
           "latest_auction_date",
           "latest_issue_date",
-          "par_value",
           "coupon_type",
           "coupon_frequency",
-          "coupon"
+          "coupon",
+          "par_value"
         ],
         "title": "Bond",
         "type": "object"
@@ -3503,6 +3487,21 @@
             ],
             "title": "Period Start"
           },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ID of the object this document evidences; the order an order confirmation confirms. Null for documents covering a period.",
+            "examples": [
+              "ord_2eF9kQ7pXn"
+            ],
+            "title": "Reference"
+          },
           "title": {
             "description": "Document title.",
             "title": "Title",
@@ -3520,6 +3519,7 @@
           "file",
           "period_start",
           "period_end",
+          "reference",
           "is_downloadable"
         ],
         "title": "Document",
@@ -3528,7 +3528,7 @@
       "DocumentType-Output": {
         "enum": [
           "welcome_letter",
-          "trade_confirmation",
+          "order_confirmation",
           "fee_statement",
           "account_statement"
         ],
@@ -5507,7 +5507,7 @@
               "verification_evidence",
               "legal_document",
               "welcome_letter",
-              "trade_confirmation",
+              "order_confirmation",
               "fee_statement",
               "account_statement"
             ],
@@ -13775,7 +13775,7 @@
       "sophic__domain__broker__enums__DocumentType": {
         "enum": [
           "welcome_letter",
-          "trade_confirmation",
+          "order_confirmation",
           "fee_statement",
           "account_statement"
         ],

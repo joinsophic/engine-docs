@@ -150,6 +150,14 @@
       "detail": "The Person-Id header value exceeds the maximum length."
     },
     {
+      "code": "portfolio_closed",
+      "detail": "This portfolio is closed and cannot be traded in."
+    },
+    {
+      "code": "position_not_open",
+      "detail": "The position is no longer open and cannot be updated."
+    },
+    {
       "code": "professional_trader_required",
       "detail": "This operation requires a professional trader authorization."
     },
@@ -190,7 +198,7 @@
       "detail": "Withdrawals are not enabled for this account."
     }
   ],
-  "openapi_sha256": "b05b2cdb77a6b2dfd12207262ab4191337daad07ab560c4401d1c36dad937b69",
+  "openapi_sha256": "b1fed5402e3d8f09c0e78526109febe0c4b43697979dd6461907a0fae694f9a4",
   "schema_version": 1,
   "webhook_events": [
     {
