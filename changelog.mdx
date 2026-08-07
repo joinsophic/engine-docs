@@ -17,7 +17,7 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   **Added**
   - New fields on [ETF instrument responses](/api-reference/catalog/retrieve-an-instrument): `display_name`, `headline`, `currency_sentence`, `rhp_years`, and `fund_base_currency`.
   - [Retrieve a fee](/api-reference/billing/retrieve-a-fee) endpoint to look up a specific fee by ID, including its variants.
-  - `variants` array on [Fee](/api-reference/billing/list-fees) objects containing scoped fee variants per instrument, instrument type, portfolio type, or transaction type.
+  - `variants` array on [Fee](/api-reference/billing/retrieve-a-fee) objects containing scoped fee variants per instrument, instrument type, portfolio type, or transaction type.
 </Update>
 
 <Update label="July 28, 2026" description="additions">
@@ -27,7 +27,7 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   so you can distinguish between bad requests and authentication failures.
 
   **Added**
-  - `401 Unauthorized` response for client authentication failures on [Issue an OAuth token](/api-reference/authentication/issue-an-oauth-token), with an `OAuthErrorBody` payload following RFC 6749 §5.2.
+  - `401 Unauthorized` response for client authentication failures on [Issue an OAuth token](/api-reference/auth/issue-an-oauth-token), with an `OAuthErrorBody` payload following RFC 6749 §5.2.
 
   **Changed** (backwards compatible)
   - `400 Bad Request` response on `POST /auth/token` now uses `OAuthErrorBody` schema with `error` and `error_description` fields (RFC 6749 §5.2) instead of the standard error envelope.
@@ -40,7 +40,7 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   `portfolio_transfer` as a reference type for activity tracking.
 
   **Added**
-  - [List permissions](/api-reference/identity/me-permissions) to retrieve effective permissions for the authenticated actor, including scope and conditional details.
+  - [List permissions](/api-reference/identity/list-current-actor-permissions) to retrieve effective permissions for the authenticated actor, including scope and conditional details.
   - `portfolio_transfer` enum value on reference types for tracking portfolio transfers.
 </Update>
 

@@ -172,8 +172,13 @@ lists in `versioning.mdx` before writing.
    frontmatter, or append bullets to an existing entry for the **same release
    date**. **Never delete, shorten, or rewrite** existing entries or bullets.
 5. Write benefit-first prose in `AGENTS.md` voice. Apply `lint-docs-tone`.
-6. Cross-link new endpoints/fields. OpenAPI URLs use
-   `/api-reference/{tag}/{summary-slug}`. Confirm with `cross-reference-audit`.
+6. Cross-link new endpoints/fields. Derive each URL from `openapi.json`:
+   `/api-reference/{tag}/{summary-slug}` where `tag` is the operation's first
+   OpenAPI tag and `summary-slug` is the slugified `summary` field (lowercase,
+   non-alphanumerics to `-`). Never invent slugs from the HTTP path (e.g.
+   `/me/permissions` is not `me-permissions`; use the summary, such as
+   `list-current-actor-permissions`). Never guess tag names (`auth`, not
+   `authentication`). Run `pnpm audit-links` before finishing; fix any failures.
 7. Keep `rss: true` in the frontmatter.
 8. If a new version shipped, update "Current version" in
    `api-reference/versioning.mdx` and `Api-Version` header examples so docs and
@@ -201,7 +206,7 @@ lists in `versioning.mdx` before writing.
 - Every change classified breaking vs backwards compatible
 - Breaking changes use the version date, include the badge, and link Versioning
 - New version also reflected in `versioning.mdx` when this task allows it
-- Facts verified against the backend; links verified
+- Facts verified against the backend; links verified with `pnpm audit-links`
 - Tone matches `AGENTS.md` (we/you, contractions, no em dashes)
 - No existing entries or bullets deleted or rewritten
 - `rss: true` still present; `changelog` still in `docs.json` navigation
