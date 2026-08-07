@@ -150,6 +150,10 @@ export const errorCodes = [
     "detail": "The Person-Id header value exceeds the maximum length."
   },
   {
+    "code": "position_not_open",
+    "detail": "The position is no longer open and cannot be updated."
+  },
+  {
     "code": "professional_trader_required",
     "detail": "This operation requires a professional trader authorization."
   },
