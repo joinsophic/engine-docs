@@ -8,6 +8,21 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="August 10, 2026" description="additions">
+  ## Document references and position validation
+
+  Documents now track what they confirm (order confirmations, fee statements, etc.),
+  and we added validation to prevent updates on closed positions.
+
+  **Added**
+  - `reference` field on [Document](/api-reference/documents/retrieve-a-document) objects to link documents to the order or transaction they confirm. Null for period-spanning documents like statements.
+  - `position_not_open` error code when attempting to update a position that's no longer open.
+
+  **Changed** (backwards compatible)
+  - Document type enum value `trade_confirmation` is now `order_confirmation` to better reflect the document's scope.
+  - `par_value` on [Bill](/api-reference/catalog/retrieve-an-instrument) objects is now optional (was required). Bonds continue to include `par_value` in responses.
+</Update>
+
 <Update label="August 3, 2026" description="additions">
   ## Enhanced fund details and fee variant support
 
