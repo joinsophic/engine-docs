@@ -8,6 +8,15 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="August 4, 2026" description="additions">
+  ## Fixed-income instrument schema updates
+
+  We cleaned up the Bill instrument schema by removing the `par_value` field from responses. The field remains available on Bond instruments.
+
+  **Changed** (breaking)
+  - Removed `par_value` field from [Bill](/api-reference/catalog/retrieve-an-instrument) instrument responses. The `par_value` field is still present on [Bond](/api-reference/catalog/retrieve-an-instrument) instruments.
+</Update>
+
 <Update label="August 3, 2026" description="additions">
   ## Enhanced fund details and fee variant support
 
