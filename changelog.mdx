@@ -8,6 +8,21 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="August 7, 2026" description="2026-08-07">
+  ## Simplified fixed-income fields and document references
+
+  <Info>New API version `2026-08-07`. See [Versioning](/api-reference/versioning) to migrate.</Info>
+
+  We streamlined fixed-income instrument schemas and added reference tracking to documents. We've removed `par_value` from Bill responses and renamed the `trade_confirmation` document type to `order_confirmation`.
+
+  **Breaking**
+  - `par_value` field removed from [Bill](/api-reference/catalog/retrieve-an-instrument) responses. Use price and quantity to calculate nominal value.
+  - `trade_confirmation` enum value removed from `DocumentType`. Use `order_confirmation` instead on requests and responses on `2026-08-07` and later.
+
+  **Added**
+  - `reference` field on [Document](/api-reference/accounts/list-account-documents) responses to track the order or object the document evidences (order ID for confirmations, null for period documents).
+  - `position_not_open` error code when attempting to update a closed or closing position.
+
 <Update label="August 4, 2026" description="additions">
   ## Fixed-income instrument schema updates
 

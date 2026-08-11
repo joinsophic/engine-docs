@@ -3487,6 +3487,21 @@
             ],
             "title": "Period Start"
           },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ID of the object this document evidences; the order an order confirmation confirms. Null for documents covering a period.",
+            "examples": [
+              "ord_2eF9kQ7pXn"
+            ],
+            "title": "Reference"
+          },
           "title": {
             "description": "Document title.",
             "title": "Title",
@@ -3504,6 +3519,7 @@
           "file",
           "period_start",
           "period_end",
+          "reference",
           "is_downloadable"
         ],
         "title": "Document",
@@ -3512,7 +3528,7 @@
       "DocumentType-Output": {
         "enum": [
           "welcome_letter",
-          "trade_confirmation",
+          "order_confirmation",
           "fee_statement",
           "account_statement"
         ],
@@ -5491,7 +5507,7 @@
               "verification_evidence",
               "legal_document",
               "welcome_letter",
-              "trade_confirmation",
+              "order_confirmation",
               "fee_statement",
               "account_statement"
             ],
@@ -13759,7 +13775,7 @@
       "sophic__domain__broker__enums__DocumentType": {
         "enum": [
           "welcome_letter",
-          "trade_confirmation",
+          "order_confirmation",
           "fee_statement",
           "account_statement"
         ],
@@ -17993,7 +18009,7 @@
       "x-group": "Events"
     },
     {
-      "description": "Read positions, transactions, and portfolio holdings.",
+      "description": "Read positions, transactions, and account holdings.",
       "name": "holdings",
       "x-group": "Holdings"
     },
