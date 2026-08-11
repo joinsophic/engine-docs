@@ -8,6 +8,21 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="August 11, 2026" description="additions">
+  ## Document references and refined financial instrument attributes
+
+  We added document references to track order confirmations and updated
+  financial instrument schema for clearer semantics.
+
+  **Added**
+  - `reference` field on [Document](/api-reference/documents/retrieve-a-document) responses containing the ID of the object the document evidences (e.g., an order reference for order confirmations).
+  - `position_not_open` error code when attempting to update a position that is no longer open.
+
+  **Changed** (backwards compatible)
+  - [Document](/api-reference/documents/retrieve-a-document) `type` enum now returns `order_confirmation` instead of `trade_confirmation` to align with order terminology.
+  - `par_value` field no longer returned on [Bill](/api-reference/catalog/retrieve-an-instrument) instrument responses.
+</Update>
+
 <Update label="August 3, 2026" description="additions">
   ## Enhanced fund details and fee variant support
 
