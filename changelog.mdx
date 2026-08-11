@@ -22,6 +22,14 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   **Added**
   - `reference` field on [Document](/api-reference/accounts/list-account-documents) responses to track the order or object the document evidences (order ID for confirmations, null for period documents).
   - `position_not_open` error code when attempting to update a closed or closing position.
+
+<Update label="August 4, 2026" description="additions">
+  ## Fixed-income instrument schema updates
+
+  We cleaned up the Bill instrument schema by removing the `par_value` field from responses. The field remains available on Bond instruments.
+
+  **Changed** (breaking)
+  - Removed `par_value` field from [Bill](/api-reference/catalog/retrieve-an-instrument) instrument responses. The `par_value` field is still present on [Bond](/api-reference/catalog/retrieve-an-instrument) instruments.
 </Update>
 
 <Update label="August 3, 2026" description="additions">
