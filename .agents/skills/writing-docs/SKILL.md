@@ -45,9 +45,10 @@ Bad: "Duplicate event delivery is a possibility that must be accounted for."
    skill (Python, Node.js, Go, Java, C#).
 4. **Explain trade-offs and gotchas.** Use `<Note>` for important context and
    `<Warning>` for things that can break an integration.
-5. **Cross-link.** Link related guides and API endpoints. Confirm links with
-   `cross-reference-audit`. OpenAPI endpoint URLs use
-   `/api-reference/{tag}/{summary-slug}`.
+5. **Cross-link.** Link related guides and API endpoints. OpenAPI endpoint URLs
+   use `/api-reference/{tag}/{summary-slug}`. Before finishing, run
+   `pnpm audit-links` via `cross-reference-audit` and do not stop until it
+   passes.
 6. **Keep pages focused.** One topic per page. Split when a page grows long.
 7. **Use Mintlify components.** Prefer `<Steps>`, `<CodeGroup>`, `<Note>`,
    `<Warning>`, `<Tip>`, and `<CardGroup>` where they clarify the page.
@@ -67,7 +68,11 @@ We model our docs after [Stripe](https://docs.stripe.com/api),
 [Persona](https://docs.withpersona.com), and [Column](https://column.com/docs/).
 When unsure about structure or tone, consult those.
 
-## Before finishing
+## Definition of done
 
-Run the `lint-docs-tone` checklist over every page you edited. For user-facing
-API changes, also follow `write-changelog`.
+Do **not** stop until all of the following are true:
+
+1. Run the `lint-docs-tone` checklist over every page you edited.
+2. Run `pnpm audit-links` (see `cross-reference-audit`) and fix until it exits 0.
+3. For user-facing API changes, follow `write-changelog` when an entry is
+   required (including its version-tagging and link-audit rules).

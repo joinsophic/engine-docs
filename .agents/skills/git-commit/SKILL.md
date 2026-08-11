@@ -9,7 +9,9 @@ This skill is adapted from the sibling backend repository's `git-commit` skill.
 
 ## Instructions
 
-1. Run `pnpm build` before committing documentation or configuration changes.
+1. Run `pnpm build` and `pnpm audit-links` before committing documentation or
+   configuration changes. Do not commit while `pnpm audit-links` fails; fix
+   reported links first (see `cross-reference-audit`).
 2. For prose edits, run the `lint-docs-tone` checklist. For API behavior claims,
    confirm facts with `check-backend`. For partner-visible API changes, follow
    `write-changelog` when an entry is required.
