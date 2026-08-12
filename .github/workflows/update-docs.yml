@@ -348,8 +348,8 @@ jobs:
             - The branch must already exist on origin and must be the checked-out branch.
 
             Use the repository's git-branch, check-backend, write-changelog,
-            lint-docs-tone, and git-commit skills. The workflow owns pull
-            request creation.
+            cross-reference-audit, lint-docs-tone, and git-commit skills. The
+            workflow owns pull request creation.
 
             Never create or switch branches, modify generated artifacts, rebase,
             force-push, or push to main. The only file you may edit is changelog.mdx.
@@ -402,11 +402,20 @@ jobs:
             Before editing, check whether changelog.mdx already documents the same
             change. If it does, stop without making changes.
 
-            Versioning is authoritative:
-            - If api_version changed, write a versioned entry for the new version and
-              clearly describe migration requirements.
-            - If api_version did not change, classify every material change as
-              backwards compatible.
+            Version tagging is authoritative. You do not decide what is breaking.
+            Dated changelog entries are the API version log (breaking changes);
+            they are a subset of all partner-visible changes.
+            - Confirm a new version only from metadata/docs.json api_version,
+              OpenAPI api_version, or a new TIMELINE entry in
+              sophic/apps/engine/versions.py for this deployment range.
+            - If api_version / TIMELINE changed, write a versioned entry
+              (description="<new-version>") and describe migration from that
+              version release. Use a **Breaking** section only in that case.
+            - If api_version / TIMELINE did not change, use description="additions"
+              or description="deprecations". Never invent a YYYY-MM-DD
+              description. Never use a **Breaking** section. Do not promote an
+              entry to a new version because a change looks breaking under
+              versioning.mdx policy.
 
             Follow the write-changelog skill's format, inclusion rules, and
             voice exactly, while respecting this task's stricter rule that
@@ -419,11 +428,21 @@ jobs:
             If and only if a changelog entry is required:
             1. Edit only changelog.mdx. Add or extend content; do not remove anything
                that was already published.
-            2. Run corepack enable, pnpm install --frozen-lockfile, and pnpm build.
-            3. Review the diff and confirm changelog.mdx is the only changed file
+            2. Run corepack enable, pnpm install --frozen-lockfile, pnpm build, and
+               pnpm audit-links.
+            3. If pnpm audit-links fails, fix every broken link in changelog.mdx
+               (use /api-reference/{tag}/{summary-slug}), then re-run until it
+               exits 0. Do not commit while audit-links is failing. Follow
+               cross-reference-audit.
+            4. Review the diff and confirm changelog.mdx is the only changed file
                from your work.
-            4. Commit with: [docs] Add API changelog entry
-            5. Push the provided branch without force.
+            5. Commit with: [docs] Add API changelog entry
+            6. Push the provided branch without force.
+
+            Definition of done: changelog.mdx updated only when required, version
+            tag taken only from authoritative signals, pnpm build and
+            pnpm audit-links both exit 0, then commit and push. Do not stop
+            after writing prose if audit-links still fails.
 
             Return structured output with:
             - changelog_updated: true only if you committed and pushed changelog.mdx.
