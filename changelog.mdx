@@ -18,6 +18,13 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - New fields on [ETF instrument responses](/api-reference/catalog/retrieve-an-instrument): `display_name`, `headline`, `currency_sentence`, `rhp_years`, and `fund_base_currency`.
   - [Retrieve a fee](/api-reference/billing/retrieve-a-fee) endpoint to look up a specific fee by ID, including its variants.
   - `variants` array on [Fee](/api-reference/billing/list-fees) objects containing scoped fee variants per instrument, instrument type, portfolio type, or transaction type.
+  - `reference` field on [Document](/api-reference/documents/list-documents) objects to track which resource the document evidences (e.g., the order an order confirmation confirms).
+  - `collected_amount`, `collections`, and `outstanding_amount` fields on [FeeCharge](/api-reference/billing/list-fees) objects to track fee payment progress across collections and refunds.
+  - `position_not_open` error code when attempting to update a position that's no longer open.
+
+  **Changed** (backwards compatible)
+  - [Document](/api-reference/documents/list-documents) type enum now uses `order_confirmation` instead of `trade_confirmation` to better reflect the document's role in order tracking.
+  - [Bill](/api-reference/catalog/retrieve-an-instrument) instrument responses no longer include the `par_value` field, which is replaced by the instrument's decimal precision and trading increment.
 </Update>
 
 <Update label="July 28, 2026" description="additions">
