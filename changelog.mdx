@@ -9,15 +9,17 @@ Track what's new and what's changed in our API. We publish an entry for every us
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
 <Update label="August 13, 2026" description="additions">
-  ## Fee charge collection tracking
+  ## Fee charge collection tracking and earnings breakdowns
 
   Fee charges now track how much has been collected and what's outstanding,
-  with a full history of collection events.
+  and earnings responses include gross capital and income fields for finer-grained reporting.
 
   **Added**
   - `collected_amount` on [Retrieve a fee charge](/api-reference/billing/retrieve-a-fee-charge) for the cash collected so far.
   - `outstanding_amount` on [Retrieve a fee charge](/api-reference/billing/retrieve-a-fee-charge) for what's still owed on the charge.
   - `collections` array on [Retrieve a fee charge](/api-reference/billing/retrieve-a-fee-charge) with a history of collection events per fee charge.
+  - `gross_capital` on earnings responses for capital gains before fees and taxes.
+  - `gross_income` on earnings responses for income earnings before fees and taxes.
 </Update>
 
 <Update label="August 7, 2026" description="additions">
