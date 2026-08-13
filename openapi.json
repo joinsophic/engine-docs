@@ -1109,21 +1109,6 @@
             "title": "Name",
             "type": "string"
           },
-          "par_value": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Nominal value per unit used for price quotation.",
-            "examples": [
-              "100.00"
-            ],
-            "title": "Par Value"
-          },
           "price_type": {
             "allOf": [
               {
@@ -1238,8 +1223,7 @@
           "issuer_credit_rating",
           "initial_auction_date",
           "latest_auction_date",
-          "latest_issue_date",
-          "par_value"
+          "latest_issue_date"
         ],
         "title": "Bill",
         "type": "object"
@@ -1666,10 +1650,10 @@
           "initial_auction_date",
           "latest_auction_date",
           "latest_issue_date",
-          "par_value",
           "coupon_type",
           "coupon_frequency",
-          "coupon"
+          "coupon",
+          "par_value"
         ],
         "title": "Bond",
         "type": "object"
@@ -3503,6 +3487,21 @@
             ],
             "title": "Period Start"
           },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ID of the object this document evidences; the order an order confirmation confirms. Null for documents covering a period.",
+            "examples": [
+              "ord_2eF9kQ7pXn"
+            ],
+            "title": "Reference"
+          },
           "title": {
             "description": "Document title.",
             "title": "Title",
@@ -3520,6 +3519,7 @@
           "file",
           "period_start",
           "period_end",
+          "reference",
           "is_downloadable"
         ],
         "title": "Document",
@@ -3528,7 +3528,7 @@
       "DocumentType-Output": {
         "enum": [
           "welcome_letter",
-          "trade_confirmation",
+          "order_confirmation",
           "fee_statement",
           "account_statement"
         ],
@@ -5169,6 +5169,14 @@
             "title": "Amount Total",
             "type": "string"
           },
+          "collected_amount": {
+            "description": "Cash actually collected for the charge so far.",
+            "examples": [
+              "8.00"
+            ],
+            "title": "Collected Amount",
+            "type": "string"
+          },
           "collected_at": {
             "anyOf": [
               {
@@ -5184,6 +5192,14 @@
               "2026-02-01T09:30:00Z"
             ],
             "title": "Collected At"
+          },
+          "collections": {
+            "description": "Collection events that paid the charge down, in the order they were recorded. Empty means nothing has been collected.",
+            "items": {
+              "$ref": "#/components/schemas/FeeCollection"
+            },
+            "title": "Collections",
+            "type": "array"
           },
           "created_at": {
             "description": "The timestamp (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format) of when the resource was created.",
@@ -5226,6 +5242,14 @@
             "description": "The timestamp (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format) of when the resource was last modified.",
             "format": "date-time",
             "title": "Modified At",
+            "type": "string"
+          },
+          "outstanding_amount": {
+            "description": "What is still owed on the charge: the uncollected portion net of refunds, zero until the charge becomes due.",
+            "examples": [
+              "4.00"
+            ],
+            "title": "Outstanding Amount",
             "type": "string"
           },
           "period_end": {
@@ -5346,7 +5370,10 @@
           "collected_at",
           "related_transaction",
           "related_transaction_amount",
-          "refunds"
+          "collected_amount",
+          "outstanding_amount",
+          "refunds",
+          "collections"
         ],
         "title": "FeeCharge",
         "type": "object"
@@ -5366,6 +5393,63 @@
           "unit_amount"
         ],
         "title": "FeeChargeableCurrency",
+        "type": "object"
+      },
+      "FeeCollection": {
+        "description": "One collection event: cash actually taken from the client for a fee charge.",
+        "properties": {
+          "amount": {
+            "description": "Cash collected by this event, in the charge's currency.",
+            "examples": [
+              "4.00"
+            ],
+            "title": "Amount",
+            "type": "string"
+          },
+          "collected_at": {
+            "description": "When the cash actually moved.",
+            "examples": [
+              "2026-07-02T09:00:00Z"
+            ],
+            "format": "date-time",
+            "title": "Collected At",
+            "type": "string"
+          },
+          "created_at": {
+            "description": "The timestamp (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format) of when the resource was created.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Currency"
+              }
+            ],
+            "description": "Currency of the collected amount."
+          },
+          "id": {
+            "description": "Unique resource identifier.",
+            "title": "Id",
+            "type": "string"
+          },
+          "modified_at": {
+            "description": "The timestamp (in [ISO-8601](https://www.iso.org/iso-8601-date-and-time-format.html) format) of when the resource was last modified.",
+            "format": "date-time",
+            "title": "Modified At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "created_at",
+          "modified_at",
+          "id",
+          "amount",
+          "currency",
+          "collected_at"
+        ],
+        "title": "FeeCollection",
         "type": "object"
       },
       "FeeType": {
@@ -5507,7 +5591,7 @@
               "verification_evidence",
               "legal_document",
               "welcome_letter",
-              "trade_confirmation",
+              "order_confirmation",
               "fee_statement",
               "account_statement"
             ],
@@ -13775,7 +13859,7 @@
       "sophic__domain__broker__enums__DocumentType": {
         "enum": [
           "welcome_letter",
-          "trade_confirmation",
+          "order_confirmation",
           "fee_statement",
           "account_statement"
         ],
@@ -18009,7 +18093,7 @@
       "x-group": "Events"
     },
     {
-      "description": "Read positions, transactions, and portfolio holdings.",
+      "description": "Read positions, transactions, and account holdings.",
       "name": "holdings",
       "x-group": "Holdings"
     },

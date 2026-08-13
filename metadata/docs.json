@@ -150,6 +150,10 @@
       "detail": "The Person-Id header value exceeds the maximum length."
     },
     {
+      "code": "position_not_open",
+      "detail": "The position is no longer open and cannot be updated."
+    },
+    {
       "code": "professional_trader_required",
       "detail": "This operation requires a professional trader authorization."
     },
@@ -190,7 +194,7 @@
       "detail": "Withdrawals are not enabled for this account."
     }
   ],
-  "openapi_sha256": "b05b2cdb77a6b2dfd12207262ab4191337daad07ab560c4401d1c36dad937b69",
+  "openapi_sha256": "c90b692fe1cc70c74cb217f345535de7db26c33abb999dff7a0b7c9e8712c006",
   "schema_version": 1,
   "webhook_events": [
     {
