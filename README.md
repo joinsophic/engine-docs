@@ -163,6 +163,10 @@ repository secrets, before running the workflow:
 | `BACKEND_REPO_READ_TOKEN` | Check out `joinsophic/backend` when forced to inspect a no-artifact deploy range |
 | `SLACK_BOT_TOKEN` (secret) / `DOCS_SLACK_CHANNEL_ID` (variable) | Optional: notify Slack when the changelog changes |
 
+`SLACK_BOT_TOKEN` must be a Bot User OAuth token (`xoxb-`) with `chat:write`.
+App-level tokens (`xapp-`) cannot post messages. A Slack failure will not fail
+the job.
+
 The workflow resolves the current and previous backend revisions from Render
 deployment history, then syncs production artifacts with
 `scripts/sync-metadata.mjs` (which checks that `/.meta/docs` and

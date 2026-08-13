@@ -450,7 +450,7 @@ jobs:
               string if no changelog was required.
           claude_args: |
             --model claude-haiku-4-5
-            --max-turns 40
+            --max-turns 50
             --allowedTools "Read,Edit,Glob,Grep,Bash(git:*),Bash(jq:*),Bash(corepack:*),Bash(pnpm:*)"
             --json-schema '{"type":"object","properties":{"changelog_updated":{"type":"boolean"},"summary":{"type":"string"}},"required":["changelog_updated","summary"],"additionalProperties":false}'
             ${{ needs.detect-changes.outputs.generated_changed == 'false' && '--add-dir .backend' || '' }}
@@ -538,6 +538,7 @@ jobs:
 
       - name: Notify on Slack
         if: steps.changelog.outputs.changed == 'true'
+        continue-on-error: true
         shell: bash
         env:
           CLAUDE_RESULT: ${{ steps.claude.outputs.structured_output }}
@@ -545,6 +546,7 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_CHANNEL_ID: ${{ vars.DOCS_SLACK_CHANNEL_ID }}
         run: |
+          # Slack is optional. Never fail the job after the documentation PR exists.
           if [[ -z "$SLACK_BOT_TOKEN" || -z "$SLACK_CHANNEL_ID" ]]; then
             echo "::notice::Skipping Slack notification; SLACK_BOT_TOKEN or DOCS_SLACK_CHANNEL_ID is not set"
             exit 0
@@ -570,6 +572,6 @@ jobs:
             "https://slack.com/api/chat.postMessage")"
 
           if [[ "$(jq -r '.ok' <<< "$response")" != "true" ]]; then
-            echo "::error::Slack notification failed: $(jq -r '.error // "unknown_error"' <<< "$response")"
-            exit 1
+            echo "::warning::Slack notification failed: $(jq -r '.error // "unknown_error"' <<< "$response")"
+            exit 0
           fi
