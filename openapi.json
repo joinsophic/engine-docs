@@ -506,6 +506,22 @@
             "title": "Fees",
             "type": "string"
           },
+          "gross_capital": {
+            "description": "Capital earnings before fees and taxes.",
+            "examples": [
+              "175.00"
+            ],
+            "title": "Gross Capital",
+            "type": "string"
+          },
+          "gross_income": {
+            "description": "Income earnings before fees and taxes.",
+            "examples": [
+              "34.75"
+            ],
+            "title": "Gross Income",
+            "type": "string"
+          },
           "gross_realized": {
             "description": "Realized earnings before fees and taxes.",
             "examples": [
@@ -618,6 +634,8 @@
           "gross_realized",
           "gross_unrealized",
           "gross_total",
+          "gross_capital",
+          "gross_income",
           "realized_capital",
           "realized_income",
           "unrealized_capital",
@@ -10652,6 +10670,22 @@
             ],
             "description": "Currency of the earnings amounts."
           },
+          "gross_capital": {
+            "description": "Capital earnings before fees and taxes.",
+            "examples": [
+              "175.00"
+            ],
+            "title": "Gross Capital",
+            "type": "string"
+          },
+          "gross_income": {
+            "description": "Income earnings before fees and taxes.",
+            "examples": [
+              "34.75"
+            ],
+            "title": "Gross Income",
+            "type": "string"
+          },
           "gross_realized": {
             "description": "Realized earnings before fees and taxes.",
             "examples": [
@@ -10745,6 +10779,8 @@
           "gross_realized",
           "gross_unrealized",
           "gross_total",
+          "gross_capital",
+          "gross_income",
           "gross_unrealized_percentage",
           "realized_capital",
           "realized_income",
