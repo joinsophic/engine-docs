@@ -158,7 +158,7 @@ repository secrets, before running the workflow:
 | Secret / variable | Purpose |
 |---|---|
 | `RENDER_API_KEY` | Verify the Render deployment and resolve backend revisions |
-| `DOCS_AUTOMATION_TOKEN` | Push the automation branch and open the PR (must be a PAT or GitHub App token so the PR can trigger CI) |
+| `DOCS_REPO_WRITE_TOKEN` | Push the automation branch and open the PR (must be a PAT or GitHub App token so the PR can trigger CI) |
 | `ANTHROPIC_API_KEY` | Run the changelog agent |
 | `BACKEND_REPO_READ_TOKEN` | Check out `joinsophic/backend` when forced to inspect a no-artifact deploy range |
 | `SLACK_BOT_TOKEN` (secret) / `DOCS_SLACK_CHANNEL_ID` (variable) | Optional: notify Slack when the changelog changes |
