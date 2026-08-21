@@ -8,6 +8,19 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="August 21, 2026" description="additions">
+  ## Deduplication and error clarity for order placement
+
+  [Place an order](/api-reference/trading/place-an-order) now accepts an optional
+  `Idempotency-Key` header for request deduplication, and we return specific error
+  codes when idempotency keys conflict or expire.
+
+  **Added**
+  - Optional `Idempotency-Key` request header on [Place an order](/api-reference/trading/place-an-order) for deduplicating create requests.
+  - `idempotency_key_conflict` error code when the Idempotency-Key was already used for a resource outside the scope of the request.
+  - `idempotency_key_expired` error code when the Idempotency-Key was already used, but the resource is older than the replay window.
+</Update>
+
 <Update label="August 13, 2026" description="additions">
   ## Fee charge collection tracking and earnings breakdowns
 
