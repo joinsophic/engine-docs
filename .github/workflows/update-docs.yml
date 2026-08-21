@@ -226,13 +226,13 @@ jobs:
       BACKEND_PREV_REVISION: ${{ needs.validate-deployment.outputs.backend_prev_revision }}
       DEPLOYED_IMAGE: ${{ needs.validate-deployment.outputs.deployed_image }}
     steps:
-      - name: Require automation token
+      - name: Require docs repo write token
         shell: bash
         env:
-          DOCS_AUTOMATION_TOKEN: ${{ secrets.DOCS_AUTOMATION_TOKEN }}
+          DOCS_REPO_WRITE_TOKEN: ${{ secrets.DOCS_REPO_WRITE_TOKEN }}
         run: |
-          if [[ -z "$DOCS_AUTOMATION_TOKEN" ]]; then
-            echo "::error::Set the DOCS_AUTOMATION_TOKEN repository secret"
+          if [[ -z "$DOCS_REPO_WRITE_TOKEN" ]]; then
+            echo "::error::Set the DOCS_REPO_WRITE_TOKEN repository secret"
             exit 1
           fi
 
@@ -240,7 +240,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          token: ${{ secrets.DOCS_AUTOMATION_TOKEN }}
+          token: ${{ secrets.DOCS_REPO_WRITE_TOKEN }}
 
       - name: Setup node
         uses: actions/setup-node@v6
@@ -488,7 +488,7 @@ jobs:
           CHANGELOG_CHANGED: ${{ steps.changelog.outputs.changed }}
           DOCS_BRANCH: ${{ steps.branch.outputs.name }}
           GENERATED_CHANGED: ${{ needs.detect-changes.outputs.generated_changed }}
-          GH_TOKEN: ${{ secrets.DOCS_AUTOMATION_TOKEN }}
+          GH_TOKEN: ${{ secrets.DOCS_REPO_WRITE_TOKEN }}
         run: |
           git fetch origin main "$DOCS_BRANCH"
 
