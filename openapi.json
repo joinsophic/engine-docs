@@ -676,16 +676,7 @@
             "type": "string"
           },
           "customer": {
-            "description": "Customer that owns the account.",
-            "discriminator": {
-              "mapping": {
-                "business": "#/components/schemas/BusinessCustomer",
-                "individual": "#/components/schemas/IndividualCustomer",
-                "joint": "#/components/schemas/JointCustomer"
-              },
-              "propertyName": "customer_type"
-            },
-            "oneOf": [
+            "anyOf": [
               {
                 "$ref": "#/components/schemas/IndividualCustomer"
               },
@@ -696,6 +687,7 @@
                 "$ref": "#/components/schemas/BusinessCustomer"
               }
             ],
+            "description": "Customer that owns the account.",
             "title": "Customer"
           },
           "id": {
@@ -3176,16 +3168,7 @@
             "type": "string"
           },
           "customer": {
-            "description": "Customer covered by the authority.",
-            "discriminator": {
-              "mapping": {
-                "business": "#/components/schemas/BusinessCustomer",
-                "individual": "#/components/schemas/IndividualCustomer",
-                "joint": "#/components/schemas/JointCustomer"
-              },
-              "propertyName": "customer_type"
-            },
-            "oneOf": [
+            "anyOf": [
               {
                 "$ref": "#/components/schemas/IndividualCustomer"
               },
@@ -3196,6 +3179,7 @@
                 "$ref": "#/components/schemas/BusinessCustomer"
               }
             ],
+            "description": "Customer covered by the authority.",
             "title": "Customer"
           },
           "granted_at": {
@@ -3219,15 +3203,7 @@
             "type": "string"
           },
           "person": {
-            "description": "Person granted the authority.",
-            "discriminator": {
-              "mapping": {
-                "legal": "#/components/schemas/LegalPerson",
-                "natural": "#/components/schemas/NaturalPerson"
-              },
-              "propertyName": "person_type"
-            },
-            "oneOf": [
+            "anyOf": [
               {
                 "$ref": "#/components/schemas/NaturalPerson"
               },
@@ -3235,6 +3211,7 @@
                 "$ref": "#/components/schemas/LegalPerson"
               }
             ],
+            "description": "Person granted the authority.",
             "title": "Person"
           },
           "revoked_at": {
@@ -8828,19 +8805,7 @@
             "type": "string"
           },
           "instrument": {
-            "description": "The instrument to buy or sell.",
-            "discriminator": {
-              "mapping": {
-                "amc": "#/components/schemas/AMC",
-                "bill": "#/components/schemas/Bill",
-                "bond": "#/components/schemas/Bond",
-                "currency_pair": "#/components/schemas/CurrencyPair",
-                "etf": "#/components/schemas/ETF",
-                "money_market_fund": "#/components/schemas/MoneyMarketFund"
-              },
-              "propertyName": "instrument_type"
-            },
-            "oneOf": [
+            "anyOf": [
               {
                 "$ref": "#/components/schemas/Bill"
               },
@@ -8860,6 +8825,7 @@
                 "$ref": "#/components/schemas/ETF"
               }
             ],
+            "description": "The instrument to buy or sell.",
             "title": "Instrument"
           },
           "is_cancellable": {
@@ -9441,19 +9407,7 @@
             "type": "string"
           },
           "instrument": {
-            "description": "The traded instrument.",
-            "discriminator": {
-              "mapping": {
-                "amc": "#/components/schemas/AMC",
-                "bill": "#/components/schemas/Bill",
-                "bond": "#/components/schemas/Bond",
-                "currency_pair": "#/components/schemas/CurrencyPair",
-                "etf": "#/components/schemas/ETF",
-                "money_market_fund": "#/components/schemas/MoneyMarketFund"
-              },
-              "propertyName": "instrument_type"
-            },
-            "oneOf": [
+            "anyOf": [
               {
                 "$ref": "#/components/schemas/Bill"
               },
@@ -9473,6 +9427,7 @@
                 "$ref": "#/components/schemas/ETF"
               }
             ],
+            "description": "The traded instrument.",
             "title": "Instrument"
           },
           "is_reportable": {
@@ -10136,30 +10091,7 @@
           "claims": {
             "description": "Claims created for this person.",
             "items": {
-              "discriminator": {
-                "mapping": {
-                  "business_nature": "#/components/schemas/BusinessNaturePersonClaimSummary",
-                  "contact_details": "#/components/schemas/ContactDetailsPersonClaimSummary",
-                  "education_level": "#/components/schemas/EducationLevelPersonClaimSummary",
-                  "employment": "#/components/schemas/EmploymentPersonClaimSummary",
-                  "expected_activity": "#/components/schemas/ExpectedActivityPersonClaimSummary",
-                  "fatca_status": "#/components/schemas/FatcaStatusPersonClaimSummary",
-                  "financial_profile": "#/components/schemas/FinancialProfilePersonClaimSummary",
-                  "identity": "#/components/schemas/IdentityPersonClaimSummary",
-                  "investment_experience": "#/components/schemas/InvestmentExperiencePersonClaimSummary",
-                  "lei": "#/components/schemas/LeiPersonClaimSummary",
-                  "nationalities": "#/components/schemas/NationalitiesPersonClaimSummary",
-                  "operating_address": "#/components/schemas/OperatingAddressPersonClaimSummary",
-                  "pep_status": "#/components/schemas/PepStatusPersonClaimSummary",
-                  "registered_address": "#/components/schemas/RegisteredAddressPersonClaimSummary",
-                  "registration": "#/components/schemas/RegistrationPersonClaimSummary",
-                  "relationships": "#/components/schemas/RelationshipsPersonClaimSummary",
-                  "residence": "#/components/schemas/ResidencePersonClaimSummary",
-                  "tax_residencies": "#/components/schemas/TaxResidenciesPersonClaimSummary"
-                },
-                "propertyName": "claim_type"
-              },
-              "oneOf": [
+              "anyOf": [
                 {
                   "$ref": "#/components/schemas/IdentityPersonClaimSummary"
                 },
@@ -10497,19 +10429,7 @@
             "type": "string"
           },
           "instrument": {
-            "description": "Instrument held in the position.",
-            "discriminator": {
-              "mapping": {
-                "amc": "#/components/schemas/AMC",
-                "bill": "#/components/schemas/Bill",
-                "bond": "#/components/schemas/Bond",
-                "currency_pair": "#/components/schemas/CurrencyPair",
-                "etf": "#/components/schemas/ETF",
-                "money_market_fund": "#/components/schemas/MoneyMarketFund"
-              },
-              "propertyName": "instrument_type"
-            },
-            "oneOf": [
+            "anyOf": [
               {
                 "$ref": "#/components/schemas/Bill"
               },
@@ -10529,6 +10449,7 @@
                 "$ref": "#/components/schemas/ETF"
               }
             ],
+            "description": "Instrument held in the position.",
             "title": "Instrument"
           },
           "modified_at": {
@@ -14456,6 +14377,22 @@
             "schema": {
               "title": "Account Id",
               "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
             }
           }
         ],
