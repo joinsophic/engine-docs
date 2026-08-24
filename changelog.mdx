@@ -8,6 +8,20 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="August 24, 2026" description="additions">
+  ## Idempotency key error codes and union schema updates
+
+  We now return distinct error codes for idempotency key conflicts and expirations,
+  and updated discriminated union types to clarify how responses are structured.
+
+  **Added**
+  - `idempotency_key_conflict` error code when the Idempotency-Key was already used for a different resource.
+  - `idempotency_key_expired` error code when the Idempotency-Key was used before and its resource is outside the replay window.
+
+  **Changed** (backwards compatible)
+  - Union types for Account `customer`, AuthorityDetails `customer` and `person`, and Order `instrument` now use `anyOf` schema representation instead of `oneOf` with discriminator. This clarifies response structure without changing the actual API behavior.
+</Update>
+
 <Update label="August 13, 2026" description="additions">
   ## Fee charge collection tracking and earnings breakdowns
 
