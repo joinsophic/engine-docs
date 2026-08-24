@@ -8,6 +8,17 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="August 24, 2026" description="additions">
+  ## Enhanced idempotency handling
+
+  We added better error reporting for idempotency key conflicts and improved
+  replay detection to help you handle edge cases when retrying requests.
+
+  **Added**
+  - `idempotency_key_conflict` error code when an Idempotency-Key was already used for a resource outside the scope of the current request.
+  - `idempotency_key_expired` error code when an Idempotency-Key was already used, and the resource it created is older than the replay window.
+</Update>
+
 <Update label="August 13, 2026" description="additions">
   ## Fee charge collection tracking and earnings breakdowns
 
