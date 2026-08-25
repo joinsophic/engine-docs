@@ -8,6 +8,19 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="August 25, 2026" description="additions">
+  ## Idempotency improvements and fee transaction tracking
+
+  We improved idempotency support with more granular error codes, and added a new
+  transaction type to distinguish fee collections from other fee-related activity.
+
+  **Added**
+  - `idempotency_key_conflict` error code when the Idempotency-Key was already used for a resource outside the scope of the request.
+  - `idempotency_key_expired` error code when the Idempotency-Key was previously used but the resource it created is older than the replay window.
+  - `fee_collection` transaction type on [List account transactions](/api-reference/activity/list-account-transactions) for fee collection activity.
+  - `Idempotency-Key` header support on [Place an order](/api-reference/trading/place-an-order) to prevent duplicate order submissions.
+</Update>
+
 <Update label="August 13, 2026" description="additions">
   ## Fee charge collection tracking and earnings breakdowns
 
