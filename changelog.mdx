@@ -8,6 +8,19 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="August 26, 2026" description="additions">
+  ## Idempotency error handling and transaction type expansion
+
+  We've enhanced idempotency support with clearer error codes when keys conflict or expire,
+  and added `write_off` as a new transaction type for tracking account write-offs.
+
+  **Added**
+  - `idempotency_key_conflict` error code when the Idempotency-Key was already used for a resource outside the scope of the request.
+  - `idempotency_key_expired` error code when the Idempotency-Key was already used, but the resource it created is older than the replay window.
+  - `write_off` enum value on `TransactionType` for tracking account write-offs.
+  - `Idempotency-Key` optional request header for idempotent request handling. See [Idempotency](/api-reference/idempotency).
+</Update>
+
 <Update label="August 13, 2026" description="additions">
   ## Fee charge collection tracking and earnings breakdowns
 
