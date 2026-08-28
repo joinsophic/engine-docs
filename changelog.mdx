@@ -8,6 +8,20 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="August 28, 2026" description="additions">
+  ## Idempotent order placement and expanded transaction tracking
+
+  We now support idempotent order placement with the `Idempotency-Key` header,
+  and we've added new transaction types and error codes for improved tracking
+  and conflict resolution.
+
+  **Added**
+  - `Idempotency-Key` optional header on [Place an order](/api-reference/trading/place-an-order) to safely retry requests without creating duplicate orders.
+  - `idempotency_key_conflict` error code when an `Idempotency-Key` was already used for a different resource.
+  - `idempotency_key_expired` error code when an `Idempotency-Key` was used but the resource it created is older than the replay window.
+  - `fee_collection` and `write_off` enum values on `TransactionType` for activity tracking.
+</Update>
+
 <Update label="August 13, 2026" description="additions">
   ## Fee charge collection tracking and earnings breakdowns
 
