@@ -8,6 +8,18 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="August 28, 2026" description="additions">
+  ## Idempotency key scope and expiry error codes
+
+  We added new error codes to help you handle idempotency key conflicts and
+  expirations more precisely. You'll now get distinct codes when a key was used
+  outside your request's scope or when the original resource has aged out.
+
+  **Added**
+  - `idempotency_key_conflict` error code when you reuse an Idempotency-Key for a resource outside the scope of the original request.
+  - `idempotency_key_expired` error code when you replay an Idempotency-Key whose resource has aged out beyond the replay window. See [Idempotency](/api-reference/idempotency).
+</Update>
+
 <Update label="August 13, 2026" description="additions">
   ## Fee charge collection tracking and earnings breakdowns
 
