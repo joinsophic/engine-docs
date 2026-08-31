@@ -66,6 +66,14 @@ export const errorCodes = [
     "detail": "The credentials are not authorized to perform this operation."
   },
   {
+    "code": "idempotency_key_conflict",
+    "detail": "The Idempotency-Key was already used for a resource outside the scope of this request."
+  },
+  {
+    "code": "idempotency_key_expired",
+    "detail": "The Idempotency-Key was already used, and the resource it created is older than the replay window."
+  },
+  {
     "code": "idempotency_key_too_long",
     "detail": "The Idempotency-Key header value exceeds the maximum length."
   },
