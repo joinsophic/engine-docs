@@ -8,6 +8,21 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="September 2, 2026" description="2026-09-02">
+  ## Support for quotes on fixed-income and cash instruments
+
+  <Info>New API version `2026-09-02`. See [Versioning](/api-reference/versioning) to migrate.</Info>
+
+  We've expanded the [Get an order quote](/api-reference/trading/get-an-order-quote) endpoint to support price estimates for additional instrument types beyond equities, enabling you to provide clients with fees and estimated quantities for fixed-income orders.
+
+  **Added**
+  - `amc_market_cash` quote type for American Equity Mutual Certificates
+  - `bill_market_cash` quote type for Treasury Bills
+  - `bond_fixed_coupon_market_cash` and `bond_zero_coupon_market_cash` quote types for Bonds
+  - `mmf_market_cash` quote type for Money Market Funds
+  - Each new quote type includes estimated `fees`, `net_cash_amount`, `price`, and `quantity` fields matching the behavior of equity quotes.
+</Update>
+
 <Update label="August 31, 2026" description="additions">
   ## Enhanced idempotency key error handling
 
