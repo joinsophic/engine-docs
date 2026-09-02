@@ -450,7 +450,7 @@ jobs:
               string if no changelog was required.
           claude_args: |
             --model claude-haiku-4-5
-            --max-turns 50
+            --max-turns 100
             --allowedTools "Read,Edit,Glob,Grep,Bash(git:*),Bash(jq:*),Bash(corepack:*),Bash(pnpm:*)"
             --json-schema '{"type":"object","properties":{"changelog_updated":{"type":"boolean"},"summary":{"type":"string"}},"required":["changelog_updated","summary"],"additionalProperties":false}'
             ${{ needs.detect-changes.outputs.generated_changed == 'false' && '--add-dir .backend' || '' }}
