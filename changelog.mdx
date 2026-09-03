@@ -8,6 +8,27 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="September 2, 2026" description="2026-09-02">
+  ## Instrument-specific order quotes
+
+  <Info>New API version `2026-09-02`. See [Versioning](/api-reference/versioning) to migrate.</Info>
+
+  Order quotes now use instrument-specific response types that clearly distinguish between quote variants—market vs. limit orders, and cash vs. quantity-based purchases—so you can reliably handle each scenario. Quote responses include structured pricing details and a binding reservation.
+
+  **Breaking**
+  - `POST /accounts/{account_id}/order-quotes` now returns a discriminated union of instrument-specific quote types instead of a single generic OrderQuote object. Use the `quote_type` field to determine which variant you've received (one of `amc_market_cash`, `bill_market_cash`, `bond_fixed_coupon_market_cash`, `bond_zero_coupon_market_cash`, `etf_market_cash`, `etf_limit_cash`, `etf_market_quantity`, `etf_limit_quantity`, `mmf_market_cash`, or `sell`). See [Get an order quote](/api-reference/trading/get-an-order-quote).
+  - Quote responses no longer include flat `estimated_cash`, `estimated_price`, `estimated_quantity`, `fees`, or `net_cash_amount` fields. These are now nested inside the `estimate` object on each quote type.
+  - `instrument` is now the full instrument object instead of just an ID string.
+
+  **Added**
+  - New quote types for market and limit orders across all tradable instruments: `AmcMarketCashQuote`, `BillMarketCashQuote`, `BondFixedCouponMarketCashQuote`, `BondZeroCouponMarketCashQuote`, `EtfMarketCashQuote`, `EtfLimitCashQuote`, `EtfMarketQuantityQuote`, `EtfLimitQuantityQuote`, and `MmfMarketCashQuote`.
+  - `quote_type` field on all quotes to discriminate between quote variants.
+  - `currency` field on all quotes.
+  - `order_type` field indicating whether the quote is for a market or limit order.
+  - `estimate` object on each quote containing pricing details: `price`, `asof`, `quantity`, `net_cash_amount`, `fees`, and `yield` (for fixed-income instruments).
+  - `reservation` object on each quote for holding quote economics until order placement.
+</Update>
+
 <Update label="August 31, 2026" description="additions">
   ## Enhanced idempotency key error handling
 
