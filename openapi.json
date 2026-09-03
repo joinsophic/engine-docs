@@ -884,6 +884,171 @@
         "title": "Address",
         "type": "object"
       },
+      "AmcMarketCashEstimate": {
+        "properties": {
+          "asof": {
+            "description": "Timestamp of the price the estimate is based on.",
+            "format": "date-time",
+            "title": "Asof",
+            "type": "string"
+          },
+          "fees": {
+            "description": "Estimated order fees.",
+            "examples": [
+              "20.00"
+            ],
+            "title": "Fees",
+            "type": "string"
+          },
+          "net_cash_amount": {
+            "description": "Cash invested after fees.",
+            "examples": [
+              "149980.00"
+            ],
+            "title": "Net Cash Amount",
+            "type": "string"
+          },
+          "price": {
+            "description": "Latest certificate price per unit.",
+            "examples": [
+              "109.5501"
+            ],
+            "title": "Price",
+            "type": "string"
+          },
+          "quantity": {
+            "description": "Estimated certificate units the order would acquire.",
+            "examples": [
+              "1369.05"
+            ],
+            "title": "Quantity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "price",
+          "asof",
+          "quantity",
+          "net_cash_amount",
+          "fees"
+        ],
+        "title": "AmcMarketCashEstimate",
+        "type": "object"
+      },
+      "AmcMarketCashQuote": {
+        "properties": {
+          "cash_amount": {
+            "description": "Cash the user chose to invest (before fees).",
+            "examples": [
+              "150000.00"
+            ],
+            "title": "Cash Amount",
+            "type": "string"
+          },
+          "created_at": {
+            "description": "When the quote was issued.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Currency"
+              }
+            ],
+            "description": "The currency every cash amount in this quote is given in."
+          },
+          "estimate": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AmcMarketCashEstimate"
+              }
+            ],
+            "description": "Estimated economics at the latest price."
+          },
+          "expires_at": {
+            "description": "When the quote expires.",
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "description": "Quote ID, redeemable via `quote_id` at order placement.",
+            "title": "Id",
+            "type": "string"
+          },
+          "instrument": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Bill"
+              },
+              {
+                "$ref": "#/components/schemas/CurrencyPair"
+              },
+              {
+                "$ref": "#/components/schemas/Bond"
+              },
+              {
+                "$ref": "#/components/schemas/MoneyMarketFund"
+              },
+              {
+                "$ref": "#/components/schemas/AMC"
+              },
+              {
+                "$ref": "#/components/schemas/ETF"
+              }
+            ],
+            "description": "The full instrument being quoted.",
+            "title": "Instrument"
+          },
+          "is_binding": {
+            "description": "Whether the quoted price is binding at execution. Always false for security quotes; binding FX quotes are issued via /order-quotes/fx.",
+            "title": "Is Binding",
+            "type": "boolean"
+          },
+          "order_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderType"
+              }
+            ],
+            "description": "Market or limit."
+          },
+          "quote_type": {
+            "const": "amc_market_cash",
+            "default": "amc_market_cash",
+            "description": "The kind of order quote returned, which determines the set of fields present in this response.",
+            "title": "Quote Type"
+          },
+          "reservation": {
+            "$ref": "#/components/schemas/OrderQuoteReservation"
+          },
+          "side": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderSide"
+              }
+            ],
+            "description": "Buy or sell."
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "expires_at",
+          "is_binding",
+          "instrument",
+          "side",
+          "order_type",
+          "currency",
+          "reservation",
+          "cash_amount",
+          "estimate"
+        ],
+        "title": "AmcMarketCashQuote",
+        "type": "object"
+      },
       "AttestationType": {
         "const": "data_accuracy",
         "description": "Self-declarations a person can make about a specific action or submission.\n\nAn attestation is always recorded against a target resource (see\n`ConsentTargetType`) — for example, asserting data accuracy for an\nonboarding application the person is submitting. It does not\nreference a `LegalDocumentVersion`; the wording is implicit in the\nsurrounding flow.",
@@ -1236,6 +1401,186 @@
           "latest_issue_date"
         ],
         "title": "Bill",
+        "type": "object"
+      },
+      "BillMarketCashEstimate": {
+        "properties": {
+          "asof": {
+            "description": "Timestamp of the price the estimate is based on.",
+            "format": "date-time",
+            "title": "Asof",
+            "type": "string"
+          },
+          "fees": {
+            "description": "Estimated order fees.",
+            "examples": [
+              "1.00"
+            ],
+            "title": "Fees",
+            "type": "string"
+          },
+          "net_cash_amount": {
+            "description": "Cash invested after fees.",
+            "examples": [
+              "9999.00"
+            ],
+            "title": "Net Cash Amount",
+            "type": "string"
+          },
+          "price": {
+            "description": "Latest price per unit.",
+            "examples": [
+              "99.9281"
+            ],
+            "title": "Price",
+            "type": "string"
+          },
+          "quantity": {
+            "description": "Estimated units the order would acquire; for fixed income this is the nominal redeemed at par at maturity.",
+            "examples": [
+              "10000"
+            ],
+            "title": "Quantity",
+            "type": "string"
+          },
+          "yield": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Annualised yield (yield to maturity for fixed income). Percent, e.g. 2.25 = 2.25%.",
+            "examples": [
+              "2.25"
+            ],
+            "title": "Yield"
+          }
+        },
+        "required": [
+          "price",
+          "asof",
+          "quantity",
+          "net_cash_amount",
+          "fees"
+        ],
+        "title": "BillMarketCashEstimate",
+        "type": "object"
+      },
+      "BillMarketCashQuote": {
+        "properties": {
+          "cash_amount": {
+            "description": "Cash the user chose to invest (before fees).",
+            "examples": [
+              "10000.00"
+            ],
+            "title": "Cash Amount",
+            "type": "string"
+          },
+          "created_at": {
+            "description": "When the quote was issued.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Currency"
+              }
+            ],
+            "description": "The currency every cash amount in this quote is given in."
+          },
+          "estimate": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BillMarketCashEstimate"
+              }
+            ],
+            "description": "Estimated economics at the latest price."
+          },
+          "expires_at": {
+            "description": "When the quote expires.",
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "description": "Quote ID, redeemable via `quote_id` at order placement.",
+            "title": "Id",
+            "type": "string"
+          },
+          "instrument": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Bill"
+              },
+              {
+                "$ref": "#/components/schemas/CurrencyPair"
+              },
+              {
+                "$ref": "#/components/schemas/Bond"
+              },
+              {
+                "$ref": "#/components/schemas/MoneyMarketFund"
+              },
+              {
+                "$ref": "#/components/schemas/AMC"
+              },
+              {
+                "$ref": "#/components/schemas/ETF"
+              }
+            ],
+            "description": "The full instrument being quoted.",
+            "title": "Instrument"
+          },
+          "is_binding": {
+            "description": "Whether the quoted price is binding at execution. Always false for security quotes; binding FX quotes are issued via /order-quotes/fx.",
+            "title": "Is Binding",
+            "type": "boolean"
+          },
+          "order_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderType"
+              }
+            ],
+            "description": "Market or limit."
+          },
+          "quote_type": {
+            "const": "bill_market_cash",
+            "default": "bill_market_cash",
+            "description": "The kind of order quote returned, which determines the set of fields present in this response.",
+            "title": "Quote Type"
+          },
+          "reservation": {
+            "$ref": "#/components/schemas/OrderQuoteReservation"
+          },
+          "side": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderSide"
+              }
+            ],
+            "description": "Buy or sell."
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "expires_at",
+          "is_binding",
+          "instrument",
+          "side",
+          "order_type",
+          "currency",
+          "reservation",
+          "cash_amount",
+          "estimate"
+        ],
+        "title": "BillMarketCashQuote",
         "type": "object"
       },
       "Bond": {
@@ -1694,6 +2039,396 @@
         "properties": {},
         "title": "BondCouponType",
         "type": "string"
+      },
+      "BondFixedCouponMarketCashEstimate": {
+        "properties": {
+          "accrued_interest": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Total accrued interest amount (cash, not a percent of par) included in the purchase cost.",
+            "examples": [
+              "50.0000"
+            ],
+            "title": "Accrued Interest"
+          },
+          "annual_income": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Estimated annual coupon income (nominal x coupon rate).",
+            "examples": [
+              "425.00"
+            ],
+            "title": "Annual Income"
+          },
+          "asof": {
+            "description": "Timestamp of the price the estimate is based on.",
+            "format": "date-time",
+            "title": "Asof",
+            "type": "string"
+          },
+          "fees": {
+            "description": "Estimated order fees.",
+            "examples": [
+              "1.00"
+            ],
+            "title": "Fees",
+            "type": "string"
+          },
+          "net_cash_amount": {
+            "description": "Cash invested after fees.",
+            "examples": [
+              "9999.00"
+            ],
+            "title": "Net Cash Amount",
+            "type": "string"
+          },
+          "price": {
+            "description": "Latest price per unit.",
+            "examples": [
+              "99.9281"
+            ],
+            "title": "Price",
+            "type": "string"
+          },
+          "quantity": {
+            "description": "Estimated units the order would acquire; for fixed income this is the nominal redeemed at par at maturity.",
+            "examples": [
+              "10000"
+            ],
+            "title": "Quantity",
+            "type": "string"
+          },
+          "yield": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Annualised yield (yield to maturity for fixed income). Percent, e.g. 2.25 = 2.25%.",
+            "examples": [
+              "2.25"
+            ],
+            "title": "Yield"
+          }
+        },
+        "required": [
+          "price",
+          "asof",
+          "quantity",
+          "net_cash_amount",
+          "fees"
+        ],
+        "title": "BondFixedCouponMarketCashEstimate",
+        "type": "object"
+      },
+      "BondFixedCouponMarketCashQuote": {
+        "properties": {
+          "cash_amount": {
+            "description": "Cash the user chose to invest (before fees).",
+            "examples": [
+              "10000.00"
+            ],
+            "title": "Cash Amount",
+            "type": "string"
+          },
+          "created_at": {
+            "description": "When the quote was issued.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Currency"
+              }
+            ],
+            "description": "The currency every cash amount in this quote is given in."
+          },
+          "estimate": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BondFixedCouponMarketCashEstimate"
+              }
+            ],
+            "description": "Estimated economics at the latest price."
+          },
+          "expires_at": {
+            "description": "When the quote expires.",
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "description": "Quote ID, redeemable via `quote_id` at order placement.",
+            "title": "Id",
+            "type": "string"
+          },
+          "instrument": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Bill"
+              },
+              {
+                "$ref": "#/components/schemas/CurrencyPair"
+              },
+              {
+                "$ref": "#/components/schemas/Bond"
+              },
+              {
+                "$ref": "#/components/schemas/MoneyMarketFund"
+              },
+              {
+                "$ref": "#/components/schemas/AMC"
+              },
+              {
+                "$ref": "#/components/schemas/ETF"
+              }
+            ],
+            "description": "The full instrument being quoted.",
+            "title": "Instrument"
+          },
+          "is_binding": {
+            "description": "Whether the quoted price is binding at execution. Always false for security quotes; binding FX quotes are issued via /order-quotes/fx.",
+            "title": "Is Binding",
+            "type": "boolean"
+          },
+          "order_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderType"
+              }
+            ],
+            "description": "Market or limit."
+          },
+          "quote_type": {
+            "const": "bond_fixed_coupon_market_cash",
+            "default": "bond_fixed_coupon_market_cash",
+            "description": "The kind of order quote returned, which determines the set of fields present in this response.",
+            "title": "Quote Type"
+          },
+          "reservation": {
+            "$ref": "#/components/schemas/OrderQuoteReservation"
+          },
+          "side": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderSide"
+              }
+            ],
+            "description": "Buy or sell."
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "expires_at",
+          "is_binding",
+          "instrument",
+          "side",
+          "order_type",
+          "currency",
+          "reservation",
+          "cash_amount",
+          "estimate"
+        ],
+        "title": "BondFixedCouponMarketCashQuote",
+        "type": "object"
+      },
+      "BondZeroCouponMarketCashEstimate": {
+        "properties": {
+          "asof": {
+            "description": "Timestamp of the price the estimate is based on.",
+            "format": "date-time",
+            "title": "Asof",
+            "type": "string"
+          },
+          "fees": {
+            "description": "Estimated order fees.",
+            "examples": [
+              "1.00"
+            ],
+            "title": "Fees",
+            "type": "string"
+          },
+          "net_cash_amount": {
+            "description": "Cash invested after fees.",
+            "examples": [
+              "9999.00"
+            ],
+            "title": "Net Cash Amount",
+            "type": "string"
+          },
+          "price": {
+            "description": "Latest price per unit.",
+            "examples": [
+              "99.9281"
+            ],
+            "title": "Price",
+            "type": "string"
+          },
+          "quantity": {
+            "description": "Estimated units the order would acquire; for fixed income this is the nominal redeemed at par at maturity.",
+            "examples": [
+              "10000"
+            ],
+            "title": "Quantity",
+            "type": "string"
+          },
+          "yield": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Annualised yield (yield to maturity for fixed income). Percent, e.g. 2.25 = 2.25%.",
+            "examples": [
+              "2.25"
+            ],
+            "title": "Yield"
+          }
+        },
+        "required": [
+          "price",
+          "asof",
+          "quantity",
+          "net_cash_amount",
+          "fees"
+        ],
+        "title": "BondZeroCouponMarketCashEstimate",
+        "type": "object"
+      },
+      "BondZeroCouponMarketCashQuote": {
+        "properties": {
+          "cash_amount": {
+            "description": "Cash the user chose to invest (before fees).",
+            "examples": [
+              "10000.00"
+            ],
+            "title": "Cash Amount",
+            "type": "string"
+          },
+          "created_at": {
+            "description": "When the quote was issued.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Currency"
+              }
+            ],
+            "description": "The currency every cash amount in this quote is given in."
+          },
+          "estimate": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BondZeroCouponMarketCashEstimate"
+              }
+            ],
+            "description": "Estimated economics at the latest price."
+          },
+          "expires_at": {
+            "description": "When the quote expires.",
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "description": "Quote ID, redeemable via `quote_id` at order placement.",
+            "title": "Id",
+            "type": "string"
+          },
+          "instrument": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Bill"
+              },
+              {
+                "$ref": "#/components/schemas/CurrencyPair"
+              },
+              {
+                "$ref": "#/components/schemas/Bond"
+              },
+              {
+                "$ref": "#/components/schemas/MoneyMarketFund"
+              },
+              {
+                "$ref": "#/components/schemas/AMC"
+              },
+              {
+                "$ref": "#/components/schemas/ETF"
+              }
+            ],
+            "description": "The full instrument being quoted.",
+            "title": "Instrument"
+          },
+          "is_binding": {
+            "description": "Whether the quoted price is binding at execution. Always false for security quotes; binding FX quotes are issued via /order-quotes/fx.",
+            "title": "Is Binding",
+            "type": "boolean"
+          },
+          "order_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderType"
+              }
+            ],
+            "description": "Market or limit."
+          },
+          "quote_type": {
+            "const": "bond_zero_coupon_market_cash",
+            "default": "bond_zero_coupon_market_cash",
+            "description": "The kind of order quote returned, which determines the set of fields present in this response.",
+            "title": "Quote Type"
+          },
+          "reservation": {
+            "$ref": "#/components/schemas/OrderQuoteReservation"
+          },
+          "side": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderSide"
+              }
+            ],
+            "description": "Buy or sell."
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "expires_at",
+          "is_binding",
+          "instrument",
+          "side",
+          "order_type",
+          "currency",
+          "reservation",
+          "cash_amount",
+          "estimate"
+        ],
+        "title": "BondZeroCouponMarketCashQuote",
+        "type": "object"
       },
       "BusinessCustomer": {
         "properties": {
@@ -4511,6 +5246,679 @@
           "code"
         ],
         "title": "Error",
+        "type": "object"
+      },
+      "EtfLimitCashEstimate": {
+        "properties": {
+          "fees": {
+            "description": "Estimated order fees.",
+            "examples": [
+              "1.00"
+            ],
+            "title": "Fees",
+            "type": "string"
+          },
+          "max_cost": {
+            "description": "Worst-case cash the order can consume at the limit.",
+            "examples": [
+              "9976.00"
+            ],
+            "title": "Max Cost",
+            "type": "string"
+          },
+          "net_cash_amount": {
+            "description": "Cash invested after fees.",
+            "examples": [
+              "9999.00"
+            ],
+            "title": "Net Cash Amount",
+            "type": "string"
+          },
+          "quantity": {
+            "description": "Estimated units affordable at the limit within the budget.",
+            "examples": [
+              "116"
+            ],
+            "title": "Quantity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "quantity",
+          "net_cash_amount",
+          "max_cost",
+          "fees"
+        ],
+        "title": "EtfLimitCashEstimate",
+        "type": "object"
+      },
+      "EtfLimitCashQuote": {
+        "properties": {
+          "cash_amount": {
+            "description": "Cash the user chose to invest (before fees).",
+            "examples": [
+              "10000.00"
+            ],
+            "title": "Cash Amount",
+            "type": "string"
+          },
+          "created_at": {
+            "description": "When the quote was issued.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Currency"
+              }
+            ],
+            "description": "The currency every cash amount in this quote is given in."
+          },
+          "estimate": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EtfLimitCashEstimate"
+              }
+            ],
+            "description": "Estimated economics at the limit price."
+          },
+          "expires_at": {
+            "description": "When the quote expires.",
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "description": "Quote ID, redeemable via `quote_id` at order placement.",
+            "title": "Id",
+            "type": "string"
+          },
+          "instrument": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Bill"
+              },
+              {
+                "$ref": "#/components/schemas/CurrencyPair"
+              },
+              {
+                "$ref": "#/components/schemas/Bond"
+              },
+              {
+                "$ref": "#/components/schemas/MoneyMarketFund"
+              },
+              {
+                "$ref": "#/components/schemas/AMC"
+              },
+              {
+                "$ref": "#/components/schemas/ETF"
+              }
+            ],
+            "description": "The full instrument being quoted.",
+            "title": "Instrument"
+          },
+          "is_binding": {
+            "description": "Whether the quoted price is binding at execution. Always false for security quotes; binding FX quotes are issued via /order-quotes/fx.",
+            "title": "Is Binding",
+            "type": "boolean"
+          },
+          "limit_price": {
+            "description": "Worst-case price per unit the order is bounded by.",
+            "examples": [
+              "700.0000"
+            ],
+            "title": "Limit Price",
+            "type": "string"
+          },
+          "order_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderType"
+              }
+            ],
+            "description": "Market or limit."
+          },
+          "quote_type": {
+            "const": "etf_limit_cash",
+            "default": "etf_limit_cash",
+            "description": "The kind of order quote returned, which determines the set of fields present in this response.",
+            "title": "Quote Type"
+          },
+          "reservation": {
+            "$ref": "#/components/schemas/OrderQuoteReservation"
+          },
+          "side": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderSide"
+              }
+            ],
+            "description": "Buy or sell."
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "expires_at",
+          "is_binding",
+          "instrument",
+          "side",
+          "order_type",
+          "currency",
+          "reservation",
+          "cash_amount",
+          "limit_price",
+          "estimate"
+        ],
+        "title": "EtfLimitCashQuote",
+        "type": "object"
+      },
+      "EtfLimitQuantityEstimate": {
+        "properties": {
+          "cost": {
+            "description": "All-in cost at the limit price (notional + fees).",
+            "examples": [
+              "1207.45"
+            ],
+            "title": "Cost",
+            "type": "string"
+          },
+          "fees": {
+            "description": "Estimated order fees.",
+            "examples": [
+              "1.00"
+            ],
+            "title": "Fees",
+            "type": "string"
+          },
+          "max_cost": {
+            "description": "Worst-case cash the order can consume at the limit.",
+            "examples": [
+              "1207.45"
+            ],
+            "title": "Max Cost",
+            "type": "string"
+          },
+          "notional": {
+            "description": "Traded value at the limit price (limit x quantity).",
+            "examples": [
+              "1206.45"
+            ],
+            "title": "Notional",
+            "type": "string"
+          }
+        },
+        "required": [
+          "notional",
+          "cost",
+          "max_cost",
+          "fees"
+        ],
+        "title": "EtfLimitQuantityEstimate",
+        "type": "object"
+      },
+      "EtfLimitQuantityQuote": {
+        "properties": {
+          "created_at": {
+            "description": "When the quote was issued.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Currency"
+              }
+            ],
+            "description": "The currency every cash amount in this quote is given in."
+          },
+          "estimate": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EtfLimitQuantityEstimate"
+              }
+            ],
+            "description": "Estimated economics at the limit price."
+          },
+          "expires_at": {
+            "description": "When the quote expires.",
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "description": "Quote ID, redeemable via `quote_id` at order placement.",
+            "title": "Id",
+            "type": "string"
+          },
+          "instrument": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Bill"
+              },
+              {
+                "$ref": "#/components/schemas/CurrencyPair"
+              },
+              {
+                "$ref": "#/components/schemas/Bond"
+              },
+              {
+                "$ref": "#/components/schemas/MoneyMarketFund"
+              },
+              {
+                "$ref": "#/components/schemas/AMC"
+              },
+              {
+                "$ref": "#/components/schemas/ETF"
+              }
+            ],
+            "description": "The full instrument being quoted.",
+            "title": "Instrument"
+          },
+          "is_binding": {
+            "description": "Whether the quoted price is binding at execution. Always false for security quotes; binding FX quotes are issued via /order-quotes/fx.",
+            "title": "Is Binding",
+            "type": "boolean"
+          },
+          "limit_price": {
+            "description": "Worst-case price per unit the order is bounded by.",
+            "examples": [
+              "86.1750"
+            ],
+            "title": "Limit Price",
+            "type": "string"
+          },
+          "order_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderType"
+              }
+            ],
+            "description": "Market or limit."
+          },
+          "quantity": {
+            "description": "Units the user chose to buy.",
+            "examples": [
+              "14"
+            ],
+            "title": "Quantity",
+            "type": "string"
+          },
+          "quote_type": {
+            "const": "etf_limit_quantity",
+            "default": "etf_limit_quantity",
+            "description": "The kind of order quote returned, which determines the set of fields present in this response.",
+            "title": "Quote Type"
+          },
+          "reservation": {
+            "$ref": "#/components/schemas/OrderQuoteReservation"
+          },
+          "side": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderSide"
+              }
+            ],
+            "description": "Buy or sell."
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "expires_at",
+          "is_binding",
+          "instrument",
+          "side",
+          "order_type",
+          "currency",
+          "reservation",
+          "quantity",
+          "limit_price",
+          "estimate"
+        ],
+        "title": "EtfLimitQuantityQuote",
+        "type": "object"
+      },
+      "EtfMarketCashEstimate": {
+        "properties": {
+          "asof": {
+            "description": "Timestamp of the price the estimate is based on.",
+            "format": "date-time",
+            "title": "Asof",
+            "type": "string"
+          },
+          "fees": {
+            "description": "Estimated order fees.",
+            "examples": [
+              "1.00"
+            ],
+            "title": "Fees",
+            "type": "string"
+          },
+          "net_cash_amount": {
+            "description": "Cash invested after fees.",
+            "examples": [
+              "9999.00"
+            ],
+            "title": "Net Cash Amount",
+            "type": "string"
+          },
+          "price": {
+            "description": "Latest market price per unit.",
+            "examples": [
+              "703.40"
+            ],
+            "title": "Price",
+            "type": "string"
+          },
+          "quantity": {
+            "description": "Estimated units the order would acquire.",
+            "examples": [
+              "14"
+            ],
+            "title": "Quantity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "price",
+          "asof",
+          "quantity",
+          "net_cash_amount",
+          "fees"
+        ],
+        "title": "EtfMarketCashEstimate",
+        "type": "object"
+      },
+      "EtfMarketCashQuote": {
+        "properties": {
+          "cash_amount": {
+            "description": "Cash the user chose to invest (before fees).",
+            "examples": [
+              "10000.00"
+            ],
+            "title": "Cash Amount",
+            "type": "string"
+          },
+          "created_at": {
+            "description": "When the quote was issued.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Currency"
+              }
+            ],
+            "description": "The currency every cash amount in this quote is given in."
+          },
+          "estimate": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EtfMarketCashEstimate"
+              }
+            ],
+            "description": "Estimated economics at the latest price."
+          },
+          "expires_at": {
+            "description": "When the quote expires.",
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "description": "Quote ID, redeemable via `quote_id` at order placement.",
+            "title": "Id",
+            "type": "string"
+          },
+          "instrument": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Bill"
+              },
+              {
+                "$ref": "#/components/schemas/CurrencyPair"
+              },
+              {
+                "$ref": "#/components/schemas/Bond"
+              },
+              {
+                "$ref": "#/components/schemas/MoneyMarketFund"
+              },
+              {
+                "$ref": "#/components/schemas/AMC"
+              },
+              {
+                "$ref": "#/components/schemas/ETF"
+              }
+            ],
+            "description": "The full instrument being quoted.",
+            "title": "Instrument"
+          },
+          "is_binding": {
+            "description": "Whether the quoted price is binding at execution. Always false for security quotes; binding FX quotes are issued via /order-quotes/fx.",
+            "title": "Is Binding",
+            "type": "boolean"
+          },
+          "order_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderType"
+              }
+            ],
+            "description": "Market or limit."
+          },
+          "quote_type": {
+            "const": "etf_market_cash",
+            "default": "etf_market_cash",
+            "description": "The kind of order quote returned, which determines the set of fields present in this response.",
+            "title": "Quote Type"
+          },
+          "reservation": {
+            "$ref": "#/components/schemas/OrderQuoteReservation"
+          },
+          "side": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderSide"
+              }
+            ],
+            "description": "Buy or sell."
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "expires_at",
+          "is_binding",
+          "instrument",
+          "side",
+          "order_type",
+          "currency",
+          "reservation",
+          "cash_amount",
+          "estimate"
+        ],
+        "title": "EtfMarketCashQuote",
+        "type": "object"
+      },
+      "EtfMarketQuantityEstimate": {
+        "properties": {
+          "asof": {
+            "description": "Timestamp of the price the estimate is based on.",
+            "format": "date-time",
+            "title": "Asof",
+            "type": "string"
+          },
+          "cost": {
+            "description": "Estimated all-in cost (notional + fees).",
+            "examples": [
+              "1034.04"
+            ],
+            "title": "Cost",
+            "type": "string"
+          },
+          "fees": {
+            "description": "Estimated order fees.",
+            "examples": [
+              "0.00"
+            ],
+            "title": "Fees",
+            "type": "string"
+          },
+          "notional": {
+            "description": "Estimated traded value (price x quantity).",
+            "examples": [
+              "1034.04"
+            ],
+            "title": "Notional",
+            "type": "string"
+          },
+          "price": {
+            "description": "Latest market price per unit.",
+            "examples": [
+              "86.17"
+            ],
+            "title": "Price",
+            "type": "string"
+          },
+          "price_buffer_percentage": {
+            "description": "Fraction added on top of the cost when sizing the cash reservation, to absorb price movement before execution (0.02 = 2%). The gap between `cost` and `reservation.amount` is this buffer.",
+            "examples": [
+              "0.0200"
+            ],
+            "title": "Price Buffer Percentage",
+            "type": "string"
+          }
+        },
+        "required": [
+          "price",
+          "asof",
+          "notional",
+          "cost",
+          "price_buffer_percentage",
+          "fees"
+        ],
+        "title": "EtfMarketQuantityEstimate",
+        "type": "object"
+      },
+      "EtfMarketQuantityQuote": {
+        "properties": {
+          "created_at": {
+            "description": "When the quote was issued.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Currency"
+              }
+            ],
+            "description": "The currency every cash amount in this quote is given in."
+          },
+          "estimate": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EtfMarketQuantityEstimate"
+              }
+            ],
+            "description": "Estimated economics at the latest price."
+          },
+          "expires_at": {
+            "description": "When the quote expires.",
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "description": "Quote ID, redeemable via `quote_id` at order placement.",
+            "title": "Id",
+            "type": "string"
+          },
+          "instrument": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Bill"
+              },
+              {
+                "$ref": "#/components/schemas/CurrencyPair"
+              },
+              {
+                "$ref": "#/components/schemas/Bond"
+              },
+              {
+                "$ref": "#/components/schemas/MoneyMarketFund"
+              },
+              {
+                "$ref": "#/components/schemas/AMC"
+              },
+              {
+                "$ref": "#/components/schemas/ETF"
+              }
+            ],
+            "description": "The full instrument being quoted.",
+            "title": "Instrument"
+          },
+          "is_binding": {
+            "description": "Whether the quoted price is binding at execution. Always false for security quotes; binding FX quotes are issued via /order-quotes/fx.",
+            "title": "Is Binding",
+            "type": "boolean"
+          },
+          "order_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderType"
+              }
+            ],
+            "description": "Market or limit."
+          },
+          "quantity": {
+            "description": "Units the user chose to buy.",
+            "examples": [
+              "12"
+            ],
+            "title": "Quantity",
+            "type": "string"
+          },
+          "quote_type": {
+            "const": "etf_market_quantity",
+            "default": "etf_market_quantity",
+            "description": "The kind of order quote returned, which determines the set of fields present in this response.",
+            "title": "Quote Type"
+          },
+          "reservation": {
+            "$ref": "#/components/schemas/OrderQuoteReservation"
+          },
+          "side": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderSide"
+              }
+            ],
+            "description": "Buy or sell."
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "expires_at",
+          "is_binding",
+          "instrument",
+          "side",
+          "order_type",
+          "currency",
+          "reservation",
+          "quantity",
+          "estimate"
+        ],
+        "title": "EtfMarketQuantityQuote",
         "type": "object"
       },
       "EurAmountBand": {
@@ -7412,6 +8820,186 @@
         "title": "LeiPersonClaimSummary",
         "type": "object"
       },
+      "MmfMarketCashEstimate": {
+        "properties": {
+          "asof": {
+            "description": "Timestamp of the price the estimate is based on.",
+            "format": "date-time",
+            "title": "Asof",
+            "type": "string"
+          },
+          "fees": {
+            "description": "Estimated order fees.",
+            "examples": [
+              "1.00"
+            ],
+            "title": "Fees",
+            "type": "string"
+          },
+          "net_cash_amount": {
+            "description": "Cash invested after fees.",
+            "examples": [
+              "9999.00"
+            ],
+            "title": "Net Cash Amount",
+            "type": "string"
+          },
+          "price": {
+            "description": "Latest price per unit.",
+            "examples": [
+              "99.9281"
+            ],
+            "title": "Price",
+            "type": "string"
+          },
+          "quantity": {
+            "description": "Estimated units the order would acquire; for fixed income this is the nominal redeemed at par at maturity.",
+            "examples": [
+              "10000"
+            ],
+            "title": "Quantity",
+            "type": "string"
+          },
+          "yield": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Annualised yield (yield to maturity for fixed income). Percent, e.g. 2.25 = 2.25%.",
+            "examples": [
+              "2.25"
+            ],
+            "title": "Yield"
+          }
+        },
+        "required": [
+          "price",
+          "asof",
+          "quantity",
+          "net_cash_amount",
+          "fees"
+        ],
+        "title": "MmfMarketCashEstimate",
+        "type": "object"
+      },
+      "MmfMarketCashQuote": {
+        "properties": {
+          "cash_amount": {
+            "description": "Cash the user chose to invest (before fees).",
+            "examples": [
+              "1000.00"
+            ],
+            "title": "Cash Amount",
+            "type": "string"
+          },
+          "created_at": {
+            "description": "When the quote was issued.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Currency"
+              }
+            ],
+            "description": "The currency every cash amount in this quote is given in."
+          },
+          "estimate": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MmfMarketCashEstimate"
+              }
+            ],
+            "description": "Estimated economics at the latest NAV."
+          },
+          "expires_at": {
+            "description": "When the quote expires.",
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "description": "Quote ID, redeemable via `quote_id` at order placement.",
+            "title": "Id",
+            "type": "string"
+          },
+          "instrument": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Bill"
+              },
+              {
+                "$ref": "#/components/schemas/CurrencyPair"
+              },
+              {
+                "$ref": "#/components/schemas/Bond"
+              },
+              {
+                "$ref": "#/components/schemas/MoneyMarketFund"
+              },
+              {
+                "$ref": "#/components/schemas/AMC"
+              },
+              {
+                "$ref": "#/components/schemas/ETF"
+              }
+            ],
+            "description": "The full instrument being quoted.",
+            "title": "Instrument"
+          },
+          "is_binding": {
+            "description": "Whether the quoted price is binding at execution. Always false for security quotes; binding FX quotes are issued via /order-quotes/fx.",
+            "title": "Is Binding",
+            "type": "boolean"
+          },
+          "order_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderType"
+              }
+            ],
+            "description": "Market or limit."
+          },
+          "quote_type": {
+            "const": "mmf_market_cash",
+            "default": "mmf_market_cash",
+            "description": "The kind of order quote returned, which determines the set of fields present in this response.",
+            "title": "Quote Type"
+          },
+          "reservation": {
+            "$ref": "#/components/schemas/OrderQuoteReservation"
+          },
+          "side": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderSide"
+              }
+            ],
+            "description": "Buy or sell."
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "expires_at",
+          "is_binding",
+          "instrument",
+          "side",
+          "order_type",
+          "currency",
+          "reservation",
+          "cash_amount",
+          "estimate"
+        ],
+        "title": "MmfMarketCashQuote",
+        "type": "object"
+      },
       "MoneyMarketFund": {
         "properties": {
           "about": {
@@ -9010,208 +10598,6 @@
         "title": "OrderPurpose",
         "type": "string"
       },
-      "OrderQuote": {
-        "description": "Quote returned by `/order-quotes`. Security quotes are persisted and\ncarry an `id` and `expires_at` so they can be referenced via `quote_id`\nat order placement; they are non-binding references to the previewed\nterms. Currency-pair quotes issued through this endpoint are id-less\npreviews.",
-        "properties": {
-          "cash_amount": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The gross cash amount (before fees). Set for buys.",
-            "examples": [
-              "1000.00"
-            ],
-            "title": "Cash Amount"
-          },
-          "estimated_cash": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The estimated cash value.",
-            "examples": [
-              "998.55"
-            ],
-            "title": "Estimated Cash"
-          },
-          "estimated_price": {
-            "description": "The estimated price per unit.",
-            "examples": [
-              "95.10"
-            ],
-            "title": "Estimated Price",
-            "type": "string"
-          },
-          "estimated_quantity": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Estimated unit quantity that would be traded.",
-            "examples": [
-              "10.5"
-            ],
-            "title": "Estimated Quantity"
-          },
-          "expires_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "When the quote expires. Null only for currency-pair previews.",
-            "examples": [
-              "2026-07-14T09:35:00Z"
-            ],
-            "title": "Expires At"
-          },
-          "fees": {
-            "description": "The estimated fees.",
-            "examples": [
-              "1.50"
-            ],
-            "title": "Fees",
-            "type": "string"
-          },
-          "id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The quote ID, redeemable via `quote_id` at order placement. Null only for currency-pair previews.",
-            "title": "Id"
-          },
-          "instrument": {
-            "description": "The ID of the instrument being quoted.",
-            "title": "Instrument",
-            "type": "string"
-          },
-          "is_binding": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Whether the quote's price is binding at execution.",
-            "title": "Is Binding"
-          },
-          "limit_price": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The worst-case limit price the quote is bounded by. Set on limit quotes; a placement referencing the quote must use the same limit.",
-            "examples": [
-              "95.1000"
-            ],
-            "title": "Limit Price"
-          },
-          "max_cost": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Maximum cash a limit buy can consume; set on limit buy quotes.",
-            "examples": [
-              "1000.00"
-            ],
-            "title": "Max Cost"
-          },
-          "min_proceeds": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Minimum proceeds a limit sell yields; set on limit sell quotes.",
-            "examples": [
-              "950.00"
-            ],
-            "title": "Min Proceeds"
-          },
-          "net_cash_amount": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The net cash amount (after fees).",
-            "examples": [
-              "998.50"
-            ],
-            "title": "Net Cash Amount"
-          },
-          "quantity": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The unit quantity. Set for sells.",
-            "examples": [
-              "10.5"
-            ],
-            "title": "Quantity"
-          },
-          "side": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderSide"
-              }
-            ],
-            "description": "Buy or sell."
-          }
-        },
-        "required": [
-          "instrument",
-          "side",
-          "fees",
-          "estimated_price"
-        ],
-        "title": "OrderQuote",
-        "type": "object"
-      },
       "OrderQuoteRequest": {
         "properties": {
           "cash_amount": {
@@ -9298,6 +10684,33 @@
           "side"
         ],
         "title": "OrderQuoteRequest",
+        "type": "object"
+      },
+      "OrderQuoteReservation": {
+        "description": "What a placement referencing this quote would set aside.",
+        "properties": {
+          "amount": {
+            "description": "Amount a placement would reserve: a cash amount on a buy, a unit quantity on a sell — see `denomination`.",
+            "examples": [
+              "1000.00"
+            ],
+            "title": "Amount",
+            "type": "string"
+          },
+          "denomination": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReservedDenomination"
+              }
+            ],
+            "description": "Whether `amount` is a cash amount or a unit quantity."
+          }
+        },
+        "required": [
+          "amount",
+          "denomination"
+        ],
+        "title": "OrderQuoteReservation",
         "type": "object"
       },
       "OrderSide": {
@@ -12123,6 +13536,15 @@
         "title": "RelationshipsPersonClaimSummary",
         "type": "object"
       },
+      "ReservedDenomination": {
+        "enum": [
+          "cash",
+          "units"
+        ],
+        "properties": {},
+        "title": "ReservedDenomination",
+        "type": "string"
+      },
       "ResidenceClaimSpec": {
         "additionalProperties": false,
         "description": "Spec for residence claim data (aligned with Address).",
@@ -12458,6 +13880,211 @@
         "properties": {},
         "title": "ReturnsFlag",
         "type": "string"
+      },
+      "SellEstimate": {
+        "properties": {
+          "asof": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Timestamp of the price the estimate is based on; set on market sells.",
+            "title": "Asof"
+          },
+          "cash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Estimated proceeds after fees; set on market sells.",
+            "examples": [
+              "965.30"
+            ],
+            "title": "Cash"
+          },
+          "fees": {
+            "description": "Estimated order fees.",
+            "examples": [
+              "0.00"
+            ],
+            "title": "Fees",
+            "type": "string"
+          },
+          "min_proceeds": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Worst-case proceeds at the limit; set on limit sells.",
+            "examples": [
+              "950.00"
+            ],
+            "title": "Min Proceeds"
+          },
+          "price": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Latest market price per unit; set on market sells.",
+            "examples": [
+              "96.53"
+            ],
+            "title": "Price"
+          }
+        },
+        "required": [
+          "fees"
+        ],
+        "title": "SellEstimate",
+        "type": "object"
+      },
+      "SellQuote": {
+        "description": "One shape for every sell, across instrument types. Market sells carry\n`estimate.price` / `asof` / `cash`; limit sells carry `estimate.min_proceeds`\nand a top-level `limit_price`.",
+        "properties": {
+          "created_at": {
+            "description": "When the quote was issued.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Currency"
+              }
+            ],
+            "description": "The currency every cash amount in this quote is given in."
+          },
+          "estimate": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SellEstimate"
+              }
+            ],
+            "description": "Estimated proceeds."
+          },
+          "expires_at": {
+            "description": "When the quote expires.",
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "description": "Quote ID, redeemable via `quote_id` at order placement.",
+            "title": "Id",
+            "type": "string"
+          },
+          "instrument": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Bill"
+              },
+              {
+                "$ref": "#/components/schemas/CurrencyPair"
+              },
+              {
+                "$ref": "#/components/schemas/Bond"
+              },
+              {
+                "$ref": "#/components/schemas/MoneyMarketFund"
+              },
+              {
+                "$ref": "#/components/schemas/AMC"
+              },
+              {
+                "$ref": "#/components/schemas/ETF"
+              }
+            ],
+            "description": "The full instrument being quoted.",
+            "title": "Instrument"
+          },
+          "is_binding": {
+            "description": "Whether the quoted price is binding at execution. Always false for security quotes; binding FX quotes are issued via /order-quotes/fx.",
+            "title": "Is Binding",
+            "type": "boolean"
+          },
+          "limit_price": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Worst-case price per unit; set on limit sells.",
+            "examples": [
+              "96.0000"
+            ],
+            "title": "Limit Price"
+          },
+          "order_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderType"
+              }
+            ],
+            "description": "Market or limit."
+          },
+          "quantity": {
+            "description": "Units the user chose to sell.",
+            "examples": [
+              "1000"
+            ],
+            "title": "Quantity",
+            "type": "string"
+          },
+          "quote_type": {
+            "const": "sell",
+            "default": "sell",
+            "description": "The kind of order quote returned, which determines the set of fields present in this response.",
+            "title": "Quote Type"
+          },
+          "reservation": {
+            "$ref": "#/components/schemas/OrderQuoteReservation"
+          },
+          "side": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderSide"
+              }
+            ],
+            "description": "Buy or sell."
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "expires_at",
+          "is_binding",
+          "instrument",
+          "side",
+          "order_type",
+          "currency",
+          "reservation",
+          "quantity",
+          "estimate"
+        ],
+        "title": "SellQuote",
+        "type": "object"
       },
       "SeriesPoint": {
         "maxItems": 2,
@@ -14289,11 +15916,58 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrderQuote"
+                  "discriminator": {
+                    "mapping": {
+                      "amc_market_cash": "#/components/schemas/AmcMarketCashQuote",
+                      "bill_market_cash": "#/components/schemas/BillMarketCashQuote",
+                      "bond_fixed_coupon_market_cash": "#/components/schemas/BondFixedCouponMarketCashQuote",
+                      "bond_zero_coupon_market_cash": "#/components/schemas/BondZeroCouponMarketCashQuote",
+                      "etf_limit_cash": "#/components/schemas/EtfLimitCashQuote",
+                      "etf_limit_quantity": "#/components/schemas/EtfLimitQuantityQuote",
+                      "etf_market_cash": "#/components/schemas/EtfMarketCashQuote",
+                      "etf_market_quantity": "#/components/schemas/EtfMarketQuantityQuote",
+                      "mmf_market_cash": "#/components/schemas/MmfMarketCashQuote",
+                      "sell": "#/components/schemas/SellQuote"
+                    },
+                    "propertyName": "quote_type"
+                  },
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/EtfMarketCashQuote"
+                    },
+                    {
+                      "$ref": "#/components/schemas/EtfLimitCashQuote"
+                    },
+                    {
+                      "$ref": "#/components/schemas/EtfMarketQuantityQuote"
+                    },
+                    {
+                      "$ref": "#/components/schemas/EtfLimitQuantityQuote"
+                    },
+                    {
+                      "$ref": "#/components/schemas/BillMarketCashQuote"
+                    },
+                    {
+                      "$ref": "#/components/schemas/BondZeroCouponMarketCashQuote"
+                    },
+                    {
+                      "$ref": "#/components/schemas/BondFixedCouponMarketCashQuote"
+                    },
+                    {
+                      "$ref": "#/components/schemas/MmfMarketCashQuote"
+                    },
+                    {
+                      "$ref": "#/components/schemas/AmcMarketCashQuote"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SellQuote"
+                    }
+                  ],
+                  "title": "Response 200 Create Order Quote Accounts  Account Id  Order Quotes Post"
                 }
               }
             },
-            "description": "OK"
+            "description": "Successful Response"
           },
           "400": {
             "content": {
