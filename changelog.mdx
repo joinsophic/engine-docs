@@ -8,6 +8,20 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="September 2, 2026" description="2026-09-02">
+  ## Instrument-specific order quotes
+
+  <Info>New API version `2026-09-02`. See [Versioning](/api-reference/versioning) to migrate.</Info>
+
+  We now return instrument-specific quote types from the [Get an order quote](/api-reference/trading/get-an-order-quote) endpoint, replacing the generic `OrderQuote` response with type-specific details.
+
+  **Breaking**
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) response is now a discriminated union (`quote_type` field determines the schema). Responses are now one of: `AmcMarketCashQuote`, `BillMarketCashQuote`, `BondFixedCouponMarketCashQuote`, `BondZeroCouponMarketCashQuote`, `EtfLimitCashQuote`, `EtfLimitQuantityQuote`, `EtfMarketCashQuote`, `EtfMarketQuantityQuote`, `MmfMarketCashQuote`, or `SellQuote`. Clients expecting the old generic `OrderQuote` structure will need to handle these specific types instead.
+
+  **Added**
+  - `quote_type` field on all order quote responses to discriminate between instrument types and order sides.
+</Update>
+
 <Update label="August 31, 2026" description="additions">
   ## Enhanced idempotency key error handling
 
