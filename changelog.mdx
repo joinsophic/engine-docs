@@ -9,15 +9,23 @@ Track what's new and what's changed in our API. We publish an entry for every us
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
 <Update label="September 2, 2026" description="2026-09-02">
-  ## Instrument-specific order quote types
+  ## Redesigned order quote responses
 
   <Info>New API version `2026-09-02`. See [Versioning](/api-reference/versioning) to migrate.</Info>
 
-  We now discriminate order quote responses by instrument type and order type, giving you structured fields tailored to each quote variant. Every quote type includes an estimate breakdown with pricing, quantities, and fees.
+  We've reshaped the [Get an order quote](/api-reference/trading/get-an-order-quote) response. Instead of one generic object for every quote, you now get a variant specific to the instrument and order mode you asked about, carrying only the economics that apply to that combination.
 
   **Breaking**
-  - [Get an order quote](/api-reference/trading/get-an-order-quote) response is now a discriminated union indexed by `quote_type`. Each quote type returns only the fields relevant to that instrument and order combination. See the endpoint docs for the full set of quote types (e.g., `amc_market_cash`, `etf_limit_quantity`, `bond_zero_coupon_market_cash`, `sell`).
-  - We now return an `estimate` object on all quote types with `price`, `quantity`, `fees`, `net_cash_amount`, and `asof` fields, giving you a structured view of economics at the latest price.
+  - `POST /accounts/{account_id}/order-quotes` no longer returns a single generic `OrderQuote` object. It returns a union discriminated on `quote_type`, with one variant per instrument and order mode: `amc_market_cash`, `bill_market_cash`, `bond_fixed_coupon_market_cash`, `bond_zero_coupon_market_cash`, `etf_market_cash`, `etf_limit_cash`, `etf_market_quantity`, `etf_limit_quantity`, `mmf_market_cash`, or `sell`. Switch on `quote_type` before reading a quote.
+  - The flat economics fields moved under an `estimate` object and dropped the `estimated_` prefix: `estimated_price`, `estimated_quantity`, and `estimated_cash` are now `estimate.price`, `estimate.quantity`, and `estimate.cash`. `fees`, `net_cash_amount`, `max_cost`, and `min_proceeds` moved under `estimate` too. Each variant only carries the fields that apply to it.
+  - `instrument` is now the full instrument object instead of an ID string.
+
+  **Added**
+  - `order_type` on every variant, indicating whether the quote is for a market or limit order.
+  - `currency` on every variant.
+  - Instrument-specific economics in `estimate`: `yield`, `annual_income`, and `accrued_interest` for fixed income, plus `notional`, `cost`, `price_buffer_percentage`, and `asof` where they apply.
+  - `reservation` object on every variant with what a placement would set aside: a cash amount vs a unit quantity (`amount`, `denomination`).
+  - `created_at` on every variant.
 </Update>
 
 <Update label="August 31, 2026" description="additions">
