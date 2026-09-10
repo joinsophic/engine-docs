@@ -158,6 +158,10 @@ export const errorCodes = [
     "detail": "The Person-Id header value exceeds the maximum length."
   },
   {
+    "code": "portfolio_requires_portfolio_order",
+    "detail": "This portfolio is governed by a target allocation and only trades through portfolio orders."
+  },
+  {
     "code": "position_not_open",
     "detail": "The position is no longer open and cannot be updated."
   },
