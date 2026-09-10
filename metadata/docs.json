@@ -158,6 +158,10 @@
       "detail": "The Person-Id header value exceeds the maximum length."
     },
     {
+      "code": "portfolio_requires_portfolio_order",
+      "detail": "This portfolio is governed by a target allocation and only trades through portfolio orders."
+    },
+    {
       "code": "position_not_open",
       "detail": "The position is no longer open and cannot be updated."
     },
@@ -202,7 +206,7 @@
       "detail": "Withdrawals are not enabled for this account."
     }
   ],
-  "openapi_sha256": "f439d69bfb9e32f52107c425ecf9343152b771e83866f3bdcdf610d421995dc9",
+  "openapi_sha256": "dfa20cfd44be3a070ed83153f13ebaddc9123c8cff2b76062a75a9cd91ffc4c5",
   "schema_version": 1,
   "webhook_events": [
     {
