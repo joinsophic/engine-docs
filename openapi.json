@@ -18,6 +18,21 @@
             ],
             "title": "About"
           },
+          "asset_class": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AssetClassAllocation"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "How the instrument splits across asset classes, one entry per class, weights summing to 1. A single-class instrument carries one entry at a weight of 1. Null when the instrument carries no classification at all.",
+            "title": "Asset Class"
+          },
           "dealing_deadline": {
             "description": "Daily cutoff time for placing orders.",
             "examples": [
@@ -1049,6 +1064,48 @@
         "title": "AmcMarketCashQuote",
         "type": "object"
       },
+      "AssetClass": {
+        "enum": [
+          "equity",
+          "fixed_income",
+          "cash",
+          "alternatives",
+          "uninvested"
+        ],
+        "properties": {},
+        "title": "AssetClass",
+        "type": "string"
+      },
+      "AssetClassAllocation": {
+        "description": "One class within an instrument's asset-class composition.",
+        "properties": {
+          "asset_class": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AssetClass"
+              }
+            ],
+            "description": "The asset class.",
+            "examples": [
+              "equity"
+            ]
+          },
+          "weight": {
+            "description": "Share of the instrument sitting in this class.",
+            "examples": [
+              "0.48640000"
+            ],
+            "title": "Weight",
+            "type": "string"
+          }
+        },
+        "required": [
+          "asset_class",
+          "weight"
+        ],
+        "title": "AssetClassAllocation",
+        "type": "object"
+      },
       "AttestationType": {
         "const": "data_accuracy",
         "description": "Self-declarations a person can make about a specific action or submission.\n\nAn attestation is always recorded against a target resource (see\n`ConsentTargetType`) — for example, asserting data accuracy for an\nonboarding application the person is submitting. It does not\nreference a `LegalDocumentVersion`; the wording is implicit in the\nsurrounding flow.",
@@ -1093,6 +1150,21 @@
               "Common stock listed on the Nasdaq Global Select Market."
             ],
             "title": "About"
+          },
+          "asset_class": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AssetClassAllocation"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "How the instrument splits across asset classes, one entry per class, weights summing to 1. A single-class instrument carries one entry at a weight of 1. Null when the instrument carries no classification at all.",
+            "title": "Asset Class"
           },
           "days_to_maturity": {
             "description": "Calendar days remaining until maturity.",
@@ -1599,6 +1671,21 @@
               "Common stock listed on the Nasdaq Global Select Market."
             ],
             "title": "About"
+          },
+          "asset_class": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AssetClassAllocation"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "How the instrument splits across asset classes, one entry per class, weights summing to 1. A single-class instrument carries one entry at a weight of 1. Null when the instrument carries no classification at all.",
+            "title": "Asset Class"
           },
           "coupon": {
             "description": "Annual coupon rate as a percentage.",
@@ -3742,6 +3829,21 @@
             ],
             "title": "About"
           },
+          "asset_class": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AssetClassAllocation"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "How the instrument splits across asset classes, one entry per class, weights summing to 1. A single-class instrument carries one entry at a weight of 1. Null when the instrument carries no classification at all.",
+            "title": "Asset Class"
+          },
           "base_currency": {
             "allOf": [
               {
@@ -4282,6 +4384,21 @@
               "Common stock listed on the Nasdaq Global Select Market."
             ],
             "title": "About"
+          },
+          "asset_class": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AssetClassAllocation"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "How the instrument splits across asset classes, one entry per class, weights summing to 1. A single-class instrument carries one entry at a weight of 1. Null when the instrument carries no classification at all.",
+            "title": "Asset Class"
           },
           "currency_sentence": {
             "anyOf": [
@@ -9016,6 +9133,21 @@
               "Common stock listed on the Nasdaq Global Select Market."
             ],
             "title": "About"
+          },
+          "asset_class": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AssetClassAllocation"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "How the instrument splits across asset classes, one entry per class, weights summing to 1. A single-class instrument carries one entry at a weight of 1. Null when the instrument carries no classification at all.",
+            "title": "Asset Class"
           },
           "benchmark": {
             "anyOf": [
