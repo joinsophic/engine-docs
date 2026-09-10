@@ -8,6 +8,17 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="September 10, 2026" description="additions">
+  ## Instrument asset class allocation
+
+  We now return asset class allocation data for all instruments, showing how they split across equity, fixed income, cash, alternatives, or uninvested categories. You'll use this to understand the composition of complex instruments and build more precise portfolio models.
+
+  **Added**
+  - `asset_class` field on [Retrieve an instrument](/api-reference/catalog/retrieve-an-instrument) and [List instruments](/api-reference/catalog/list-instruments). Returns an optional array of allocations, with each entry showing an asset class and its weight. Null when an instrument carries no classification.
+  - `AssetClass` enum with values: `equity`, `fixed_income`, `cash`, `alternatives`, `uninvested`.
+  - `AssetClassAllocation` object with `asset_class` and `weight` fields to represent each class's share of the instrument.
+</Update>
+
 <Update label="September 2, 2026" description="2026-09-02">
   ## Redesigned order quote responses
 
