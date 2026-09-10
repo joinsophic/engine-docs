@@ -8,6 +8,20 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="September 10, 2026" description="additions">
+  ## Asset class classification and coupon precision
+
+  Instruments now include asset class breakdowns, and fixed-income descriptions clarify precision for coupon calculations.
+
+  **Added**
+  - `asset_class` field on all instrument responses. This is an array of asset class allocations (equity, fixed_income, cash, alternatives, or uninvested) with weights summing to 1.0, or null if the instrument carries no classification. See the instrument responses for usage.
+  - `portfolio_requires_portfolio_order` error code when you attempt to trade a portfolio that's governed by a target allocation and only trades through portfolio orders.
+
+  **Changed**
+  - `coupon` field descriptions on fixed-income instruments now clarify they have four decimal places (since coupons are quoted in eighths and sixteenths).
+  - `upcoming_coupon_amount_per_unit` field descriptions now clarify they have eight decimal places for rounding accuracy.
+</Update>
+
 <Update label="September 2, 2026" description="2026-09-02">
   ## Redesigned order quote responses
 
