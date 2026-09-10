@@ -26,6 +26,8 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - Instrument-specific economics in `estimate`: `yield`, `annual_income`, and `accrued_interest` for fixed income, plus `notional`, `cost`, `price_buffer_percentage`, and `asof` where they apply.
   - `reservation` object on every variant with what a placement would set aside: a cash amount vs a unit quantity (`amount`, `denomination`).
   - `created_at` on every variant.
+  - `asset_class` on [instrument](/api-reference/catalog/retrieve-an-instrument) responses, showing how the instrument splits across asset classes (equity, fixed income, cash, alternatives, uninvested) with the weight in each class.
+  - `portfolio_requires_portfolio_order` error code when a portfolio is governed by a target allocation and only trades through portfolio orders.
 </Update>
 
 <Update label="August 31, 2026" description="additions">
