@@ -4234,7 +4234,11 @@
       "DepositStatus": {
         "enum": [
           "open",
-          "completed"
+          "held",
+          "returning",
+          "completed",
+          "returned",
+          "cancelled"
         ],
         "properties": {},
         "title": "DepositStatus",
