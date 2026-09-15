@@ -8,6 +8,15 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="September 15, 2026" description="additions">
+  ## Expanded deposit status tracking
+
+  Deposits now track more states throughout their lifecycle, giving you better visibility into the flow of funds moving through accounts.
+
+  **Added**
+  - New `DepositStatus` enum values on [Retrieve a deposit](/api-reference/payments/retrieve-a-deposit) responses: `held` when a deposit is temporarily held, `returning` when funds are being returned, `returned` when a deposit has been fully returned, and `cancelled` when a deposit is cancelled. Previously deposits could only be `open` or `completed`.
+</Update>
+
 <Update label="September 10, 2026" description="additions">
   ## Instrument asset class allocation
 
