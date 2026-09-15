@@ -35,6 +35,13 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - Instrument-specific economics in `estimate`: `yield`, `annual_income`, and `accrued_interest` for fixed income, plus `notional`, `cost`, `price_buffer_percentage`, and `asof` where they apply.
   - `reservation` object on every variant with what a placement would set aside: a cash amount vs a unit quantity (`amount`, `denomination`).
   - `created_at` on every variant.
+
+  ## Expanded deposit statuses
+
+  We've added new status values for deposits to better track their lifecycle, from the moment they're held to when they're returned or cancelled.
+
+  **Added**
+  - New `DepositStatus` enum values: `held`, `returning`, `returned`, and `cancelled`. These status values expand deposit tracking beyond the initial `open` and `completed` states. See [Retrieve a deposit](/api-reference/payments/retrieve-a-deposit).
 </Update>
 
 <Update label="August 31, 2026" description="additions">
