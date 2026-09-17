@@ -295,6 +295,14 @@
             "title": "Symbol",
             "type": "string"
           },
+          "target_client_categories": {
+            "description": "MiFID II client categories this instrument is intended for.",
+            "items": {
+              "$ref": "#/components/schemas/ClientCategory"
+            },
+            "title": "Target Client Categories",
+            "type": "array"
+          },
           "ticker": {
             "anyOf": [
               {
@@ -349,6 +357,7 @@
           "decimal_precision",
           "pro_traders_only",
           "price_type",
+          "target_client_categories",
           "isin",
           "issuer",
           "issuer_country",
@@ -1401,6 +1410,14 @@
             "title": "Symbol",
             "type": "string"
           },
+          "target_client_categories": {
+            "description": "MiFID II client categories this instrument is intended for.",
+            "items": {
+              "$ref": "#/components/schemas/ClientCategory"
+            },
+            "title": "Target Client Categories",
+            "type": "array"
+          },
           "ticker": {
             "anyOf": [
               {
@@ -1455,6 +1472,7 @@
           "decimal_precision",
           "pro_traders_only",
           "price_type",
+          "target_client_categories",
           "isin",
           "issuer",
           "issuer_country",
@@ -2007,6 +2025,14 @@
             "title": "Symbol",
             "type": "string"
           },
+          "target_client_categories": {
+            "description": "MiFID II client categories this instrument is intended for.",
+            "items": {
+              "$ref": "#/components/schemas/ClientCategory"
+            },
+            "title": "Target Client Categories",
+            "type": "array"
+          },
           "ticker": {
             "anyOf": [
               {
@@ -2076,6 +2102,7 @@
           "decimal_precision",
           "pro_traders_only",
           "price_type",
+          "target_client_categories",
           "isin",
           "issuer",
           "issuer_country",
@@ -3310,6 +3337,16 @@
         "title": "ClaimWealthSource",
         "type": "string"
       },
+      "ClientCategory": {
+        "enum": [
+          "retail",
+          "professional_per_se",
+          "professional_on_request"
+        ],
+        "properties": {},
+        "title": "ClientCategory",
+        "type": "string"
+      },
       "ClientCredentialsForm": {
         "description": "Form for the `client_credentials` grant type.",
         "properties": {
@@ -3954,6 +3991,14 @@
             "title": "Symbol",
             "type": "string"
           },
+          "target_client_categories": {
+            "description": "MiFID II client categories this instrument is intended for.",
+            "items": {
+              "$ref": "#/components/schemas/ClientCategory"
+            },
+            "title": "Target Client Categories",
+            "type": "array"
+          },
           "trading_increment": {
             "description": "Smallest quantity increment accepted for orders.",
             "examples": [
@@ -3982,6 +4027,7 @@
           "decimal_precision",
           "pro_traders_only",
           "price_type",
+          "target_client_categories",
           "base_currency",
           "quote_currency"
         ],
@@ -4234,7 +4280,11 @@
       "DepositStatus": {
         "enum": [
           "open",
-          "completed"
+          "held",
+          "returning",
+          "completed",
+          "returned",
+          "cancelled"
         ],
         "properties": {},
         "title": "DepositStatus",
@@ -4778,6 +4828,14 @@
             "title": "Symbol",
             "type": "string"
           },
+          "target_client_categories": {
+            "description": "MiFID II client categories this instrument is intended for.",
+            "items": {
+              "$ref": "#/components/schemas/ClientCategory"
+            },
+            "title": "Target Client Categories",
+            "type": "array"
+          },
           "ticker": {
             "description": "Ticker symbol of the ETF listing.",
             "examples": [
@@ -4840,6 +4898,7 @@
           "decimal_precision",
           "pro_traders_only",
           "price_type",
+          "target_client_categories",
           "isin",
           "ticker",
           "issuer",
@@ -7954,7 +8013,8 @@
         "enum": [
           "ga",
           "beta",
-          "provisional"
+          "provisional",
+          "restricted"
         ],
         "properties": {},
         "title": "InstrumentRolloutStage",
@@ -9387,6 +9447,14 @@
             "title": "Symbol",
             "type": "string"
           },
+          "target_client_categories": {
+            "description": "MiFID II client categories this instrument is intended for.",
+            "items": {
+              "$ref": "#/components/schemas/ClientCategory"
+            },
+            "title": "Target Client Categories",
+            "type": "array"
+          },
           "ticker": {
             "anyOf": [
               {
@@ -9441,6 +9509,7 @@
           "decimal_precision",
           "pro_traders_only",
           "price_type",
+          "target_client_categories",
           "isin",
           "issuer",
           "issuer_country",
@@ -10411,6 +10480,18 @@
       },
       "Order": {
         "properties": {
+          "accepted_appropriateness_warning": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Whether the customer accepted the appropriateness warning for this instrument. Null on orders placed before the field existed.",
+            "title": "Accepted Appropriateness Warning"
+          },
           "account": {
             "anyOf": [
               {
@@ -11764,6 +11845,12 @@
       },
       "PlaceOrderRequest": {
         "properties": {
+          "accepted_appropriateness_warning": {
+            "default": false,
+            "description": "When true, records that the person accepted the appropriateness warning shown for this instrument. False is a no-op.",
+            "title": "Accepted Appropriateness Warning",
+            "type": "boolean"
+          },
           "automatic_rollover": {
             "anyOf": [
               {
