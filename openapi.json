@@ -295,6 +295,21 @@
             "title": "Symbol",
             "type": "string"
           },
+          "target_client_categories": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ClientCategory"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "MiFID II client categories this instrument is intended for.",
+            "title": "Target Client Categories"
+          },
           "ticker": {
             "anyOf": [
               {
@@ -1401,6 +1416,21 @@
             "title": "Symbol",
             "type": "string"
           },
+          "target_client_categories": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ClientCategory"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "MiFID II client categories this instrument is intended for.",
+            "title": "Target Client Categories"
+          },
           "ticker": {
             "anyOf": [
               {
@@ -2006,6 +2036,21 @@
             ],
             "title": "Symbol",
             "type": "string"
+          },
+          "target_client_categories": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ClientCategory"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "MiFID II client categories this instrument is intended for.",
+            "title": "Target Client Categories"
           },
           "ticker": {
             "anyOf": [
@@ -3310,6 +3355,16 @@
         "title": "ClaimWealthSource",
         "type": "string"
       },
+      "ClientCategory": {
+        "enum": [
+          "retail",
+          "professional_per_se",
+          "professional_on_request"
+        ],
+        "properties": {},
+        "title": "ClientCategory",
+        "type": "string"
+      },
       "ClientCredentialsForm": {
         "description": "Form for the `client_credentials` grant type.",
         "properties": {
@@ -3954,6 +4009,21 @@
             "title": "Symbol",
             "type": "string"
           },
+          "target_client_categories": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ClientCategory"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "MiFID II client categories this instrument is intended for.",
+            "title": "Target Client Categories"
+          },
           "trading_increment": {
             "description": "Smallest quantity increment accepted for orders.",
             "examples": [
@@ -4234,7 +4304,11 @@
       "DepositStatus": {
         "enum": [
           "open",
-          "completed"
+          "held",
+          "returning",
+          "completed",
+          "returned",
+          "cancelled"
         ],
         "properties": {},
         "title": "DepositStatus",
@@ -4777,6 +4851,21 @@
             ],
             "title": "Symbol",
             "type": "string"
+          },
+          "target_client_categories": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ClientCategory"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "MiFID II client categories this instrument is intended for.",
+            "title": "Target Client Categories"
           },
           "ticker": {
             "description": "Ticker symbol of the ETF listing.",
@@ -9386,6 +9475,21 @@
             ],
             "title": "Symbol",
             "type": "string"
+          },
+          "target_client_categories": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ClientCategory"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "MiFID II client categories this instrument is intended for.",
+            "title": "Target Client Categories"
           },
           "ticker": {
             "anyOf": [
