@@ -206,7 +206,7 @@
       "detail": "Withdrawals are not enabled for this account."
     }
   ],
-  "openapi_sha256": "4234d66c54849157db0c7471f46e9107229b668df7762c14f716f7277907943a",
+  "openapi_sha256": "a0ac563667dd49c10a6b7e9ff4a4865312da93880d254b0e550fcf28f0c0bb5d",
   "schema_version": 1,
   "webhook_events": [
     {
