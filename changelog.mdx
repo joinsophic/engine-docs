@@ -8,6 +8,16 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="September 18, 2026" description="additions">
+  ## MiFID II client category classification for instruments
+
+  We now classify instruments by their intended MiFID II client categories,
+  so you can determine which instruments are available to different customer types.
+
+  **Added**
+  - `target_client_categories` on [Retrieve an instrument](/api-reference/catalog/retrieve-an-instrument) and [List instruments](/api-reference/catalog/list-instruments) responses. Contains an array of client category classifications: `retail`, `professional_per_se`, or `professional_on_request`.
+</Update>
+
 <Update label="September 10, 2026" description="additions">
   ## Instrument asset class allocation
 
