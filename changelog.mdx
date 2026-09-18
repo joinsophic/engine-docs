@@ -15,6 +15,10 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
 
   **Added**
   - `asset_class` on [instrument](/api-reference/catalog/retrieve-an-instrument) responses, showing how the instrument splits across asset classes (equity, fixed income, cash, alternatives, uninvested) with the weight in each class.
+  - `target_client_categories` on all [instrument](/api-reference/catalog/retrieve-an-instrument) responses, showing which MiFID II client categories (retail, professional per se, or professional on request) the instrument is intended for.
+  - `restricted` enum value on `InstrumentRolloutStage` to indicate instruments that are restricted from general availability.
+  - New `DepositStatus` values: `held`, `returning`, `returned`, and `cancelled` on [deposit](/api-reference/payments/retrieve-a-deposit) responses, giving finer-grained tracking of deposit states.
+  - `accepted_appropriateness_warning` on [orders](/api-reference/trading/place-an-order) to track whether the customer accepted the appropriateness warning for an instrument. When [placing an order](/api-reference/trading/place-an-order), set this to `true` to acknowledge that you've shown the customer the warning.
 </Update>
 
 <Update label="September 2, 2026" description="2026-09-02">
