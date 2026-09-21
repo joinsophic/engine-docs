@@ -8,6 +8,19 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="September 21, 2026" description="additions">
+  ## MiFID II client categorization and order compliance tracking
+
+  We've added support for MiFID II client categorization on instruments and are now tracking appropriateness warnings on orders. Deposit and instrument rollout status tracking is more granular to reflect additional states in these lifecycles.
+
+  **Added**
+  - `target_client_categories` on [instrument](/api-reference/catalog/retrieve-an-instrument) responses, showing which MiFID II client categories (`retail`, `professional_per_se`, `professional_on_request`) the instrument is intended for.
+  - `ClientCategory` enum with values `retail`, `professional_per_se`, and `professional_on_request`.
+  - `accepted_appropriateness_warning` on [order](/api-reference/trading/place-an-order) responses, recording whether the person accepted the appropriateness warning shown for the instrument (default: `false`).
+  - New `DepositStatus` enum values: `held`, `returning`, `returned`, and `cancelled`. Deposits now track intermediate states during the return lifecycle.
+  - `restricted` enum value on `InstrumentRolloutStage` for instruments in restricted rollout.
+</Update>
+
 <Update label="September 10, 2026" description="additions">
   ## Instrument asset class allocation
 
