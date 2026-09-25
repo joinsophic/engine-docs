@@ -4316,6 +4316,7 @@
       "DepositStatus": {
         "enum": [
           "open",
+          "pending",
           "held",
           "returning",
           "completed",
