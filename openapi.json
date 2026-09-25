@@ -916,6 +916,14 @@
             "title": "Asof",
             "type": "string"
           },
+          "fee_breakdown": {
+            "description": "Itemised `fees`: one line per charge, in a stable order. The line amounts sum to `fees` exactly. Empty when nothing is charged.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteFeeLine"
+            },
+            "title": "Fee Breakdown",
+            "type": "array"
+          },
           "fees": {
             "description": "Estimated order fees.",
             "examples": [
@@ -954,7 +962,8 @@
           "asof",
           "quantity",
           "net_cash_amount",
-          "fees"
+          "fees",
+          "fee_breakdown"
         ],
         "title": "AmcMarketCashEstimate",
         "type": "object"
@@ -1501,6 +1510,14 @@
             "title": "Asof",
             "type": "string"
           },
+          "fee_breakdown": {
+            "description": "Itemised `fees`: one line per charge, in a stable order. The line amounts sum to `fees` exactly. Empty when nothing is charged.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteFeeLine"
+            },
+            "title": "Fee Breakdown",
+            "type": "array"
+          },
           "fees": {
             "description": "Estimated order fees.",
             "examples": [
@@ -1554,7 +1571,8 @@
           "asof",
           "quantity",
           "net_cash_amount",
-          "fees"
+          "fees",
+          "fee_breakdown"
         ],
         "title": "BillMarketCashEstimate",
         "type": "object"
@@ -2192,6 +2210,14 @@
             "title": "Asof",
             "type": "string"
           },
+          "fee_breakdown": {
+            "description": "Itemised `fees`: one line per charge, in a stable order. The line amounts sum to `fees` exactly. Empty when nothing is charged.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteFeeLine"
+            },
+            "title": "Fee Breakdown",
+            "type": "array"
+          },
           "fees": {
             "description": "Estimated order fees.",
             "examples": [
@@ -2245,7 +2271,8 @@
           "asof",
           "quantity",
           "net_cash_amount",
-          "fees"
+          "fees",
+          "fee_breakdown"
         ],
         "title": "BondFixedCouponMarketCashEstimate",
         "type": "object"
@@ -2372,6 +2399,14 @@
             "title": "Asof",
             "type": "string"
           },
+          "fee_breakdown": {
+            "description": "Itemised `fees`: one line per charge, in a stable order. The line amounts sum to `fees` exactly. Empty when nothing is charged.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteFeeLine"
+            },
+            "title": "Fee Breakdown",
+            "type": "array"
+          },
           "fees": {
             "description": "Estimated order fees.",
             "examples": [
@@ -2425,7 +2460,8 @@
           "asof",
           "quantity",
           "net_cash_amount",
-          "fees"
+          "fees",
+          "fee_breakdown"
         ],
         "title": "BondZeroCouponMarketCashEstimate",
         "type": "object"
@@ -5426,6 +5462,14 @@
       },
       "EtfLimitCashEstimate": {
         "properties": {
+          "fee_breakdown": {
+            "description": "Itemised `fees`: one line per charge, in a stable order. The line amounts sum to `fees` exactly. Empty when nothing is charged.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteFeeLine"
+            },
+            "title": "Fee Breakdown",
+            "type": "array"
+          },
           "fees": {
             "description": "Estimated order fees.",
             "examples": [
@@ -5463,7 +5507,8 @@
           "quantity",
           "net_cash_amount",
           "max_cost",
-          "fees"
+          "fees",
+          "fee_breakdown"
         ],
         "title": "EtfLimitCashEstimate",
         "type": "object"
@@ -5601,6 +5646,14 @@
             "title": "Cost",
             "type": "string"
           },
+          "fee_breakdown": {
+            "description": "Itemised `fees`: one line per charge, in a stable order. The line amounts sum to `fees` exactly. Empty when nothing is charged.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteFeeLine"
+            },
+            "title": "Fee Breakdown",
+            "type": "array"
+          },
           "fees": {
             "description": "Estimated order fees.",
             "examples": [
@@ -5630,7 +5683,8 @@
           "notional",
           "cost",
           "max_cost",
-          "fees"
+          "fees",
+          "fee_breakdown"
         ],
         "title": "EtfLimitQuantityEstimate",
         "type": "object"
@@ -5766,6 +5820,14 @@
             "title": "Asof",
             "type": "string"
           },
+          "fee_breakdown": {
+            "description": "Itemised `fees`: one line per charge, in a stable order. The line amounts sum to `fees` exactly. Empty when nothing is charged.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteFeeLine"
+            },
+            "title": "Fee Breakdown",
+            "type": "array"
+          },
           "fees": {
             "description": "Estimated order fees.",
             "examples": [
@@ -5804,7 +5866,8 @@
           "asof",
           "quantity",
           "net_cash_amount",
-          "fees"
+          "fees",
+          "fee_breakdown"
         ],
         "title": "EtfMarketCashEstimate",
         "type": "object"
@@ -5939,6 +6002,14 @@
             "title": "Cost",
             "type": "string"
           },
+          "fee_breakdown": {
+            "description": "Itemised `fees`: one line per charge, in a stable order. The line amounts sum to `fees` exactly. Empty when nothing is charged.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteFeeLine"
+            },
+            "title": "Fee Breakdown",
+            "type": "array"
+          },
           "fees": {
             "description": "Estimated order fees.",
             "examples": [
@@ -5978,7 +6049,8 @@
           "notional",
           "cost",
           "price_buffer_percentage",
-          "fees"
+          "fees",
+          "fee_breakdown"
         ],
         "title": "EtfMarketQuantityEstimate",
         "type": "object"
@@ -9005,6 +9077,14 @@
             "title": "Asof",
             "type": "string"
           },
+          "fee_breakdown": {
+            "description": "Itemised `fees`: one line per charge, in a stable order. The line amounts sum to `fees` exactly. Empty when nothing is charged.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteFeeLine"
+            },
+            "title": "Fee Breakdown",
+            "type": "array"
+          },
           "fees": {
             "description": "Estimated order fees.",
             "examples": [
@@ -9058,7 +9138,8 @@
           "asof",
           "quantity",
           "net_cash_amount",
-          "fees"
+          "fees",
+          "fee_breakdown"
         ],
         "title": "MmfMarketCashEstimate",
         "type": "object"
@@ -10811,6 +10892,43 @@
         "properties": {},
         "title": "OrderPurpose",
         "type": "string"
+      },
+      "OrderQuoteFeeLine": {
+        "description": "One line of an estimate's itemised `fees`.",
+        "properties": {
+          "amount": {
+            "description": "The fee including its tax, in the quote's `currency`.",
+            "examples": [
+              "1.00"
+            ],
+            "title": "Amount",
+            "type": "string"
+          },
+          "display_name": {
+            "description": "The fee's name, for display.",
+            "examples": [
+              "Settlement Fee"
+            ],
+            "title": "Display Name",
+            "type": "string"
+          },
+          "label": {
+            "description": "What the fee is for, as the resulting order's fee row will label it. Open-ended: new labels can appear as fees are added, so render unknown values by `display_name`.",
+            "examples": [
+              "settlement_fee",
+              "execution_commission"
+            ],
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "display_name",
+          "amount"
+        ],
+        "title": "OrderQuoteFeeLine",
+        "type": "object"
       },
       "OrderQuoteRequest": {
         "properties": {
@@ -14131,6 +14249,14 @@
             ],
             "title": "Cash"
           },
+          "fee_breakdown": {
+            "description": "Itemised `fees`: one line per charge, in a stable order. The line amounts sum to `fees` exactly. Empty when nothing is charged.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteFeeLine"
+            },
+            "title": "Fee Breakdown",
+            "type": "array"
+          },
           "fees": {
             "description": "Estimated order fees.",
             "examples": [
@@ -14171,7 +14297,8 @@
           }
         },
         "required": [
-          "fees"
+          "fees",
+          "fee_breakdown"
         ],
         "title": "SellEstimate",
         "type": "object"
