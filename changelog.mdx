@@ -49,6 +49,7 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - Instrument-specific economics in `estimate`: `yield`, `annual_income`, and `accrued_interest` for fixed income, plus `notional`, `cost`, `price_buffer_percentage`, and `asof` where they apply.
   - `reservation` object on every variant with what a placement would set aside: a cash amount vs a unit quantity (`amount`, `denomination`).
   - `created_at` on every variant.
+  - `fee_breakdown` on every estimate, providing an itemized list of fees. Each line includes a `label` (the fee category), `display_name` (a human-readable name), and `amount` (the fee value in the quote's currency). The line amounts sum to the total `fees` exactly.
 </Update>
 
 <Update label="August 31, 2026" description="additions">
