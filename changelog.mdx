@@ -9,15 +9,41 @@ Track what's new and what's changed in our API. We publish an entry for every us
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
 <Update label="September 28, 2026" description="2026-09-28">
-  ## Simplified earnings reporting
+  ## Redesigned earnings responses
 
   <Info>New API version `2026-09-28`. See [Versioning](/api-reference/versioning) to migrate.</Info>
 
-  We've restructured the earnings endpoints to consolidate reporting into a clearer model. Instead of separate fields for capital, income, realized, and unrealized earnings, you now get an aggregate `gross` (before fees) and `net` (after fees) with a detailed breakdown of where earnings came from.
+  We've reshaped earnings (P&L) responses to provide a clearer picture of how earnings are distributed between market gains and FX currency movements, for accounts that hold investments or cash in currencies other than the account's base currency. Requests pinned to `2026-09-02` or earlier keep the previous flat field layout, without this breakdown.
 
   **Breaking**
-  - `GET /accounts/{account_id}/earnings` now returns `AccountEarningsV2` instead of `AccountEarnings`. The new schema consolidates earnings into top-level `gross`, `net`, `fees`, with detailed breakdowns under `positions` and `cash`. Removed fields: `gross_capital`, `gross_income`, `gross_realized`, `gross_total`, `gross_unrealized`, `net_realized`, `net_total`, `net_unrealized`, `realized_capital`, `realized_income`, `unrealized_capital`, `unrealized_income`, and `position_earnings`. See [Retrieve account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p-l) for the new response shape.
-  - `GET /positions/{position_id}/earnings` now returns `PositionEarningsV2` instead of `PositionEarnings`. The new schema splits earnings into `trading` (in the instrument's currency) and `reporting` (in the account's base currency), each with a breakdown of investment effects and currency effects. See [Retrieve position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p-l) for the new response shape.
+  - [Retrieve account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l) returns `gross`, `fees`, and `net` at the top level, plus a `positions` block and a `cash` block. The flat `gross_*`, `net_*`, `realized_*`, and `unrealized_*` fields are gone. `net` is `gross` minus `fees`. `gross` is `positions.gross` plus `cash.gross`.
+  - The realized/unrealized and capital/income split moved under `positions.attribution`, which separates an `investment` effect (price changes and income, with exchange-rate movements stripped out) from a `currency` effect (exchange-rate movements on the money invested in positions). Each effect carries `total`, `realized.capital`, `realized.income`, `unrealized.capital`, and `unrealized.income`, all in the account's currency. The `currency` effect is zero when everything is in the account's currency.
+  - `position_earnings` is removed from the account response. Call [Retrieve position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l) per position instead.
+  - The position response returns two views instead of one flat grid: `trading`, in the instrument's own currency, and `reporting`, in the account's base currency. `currency`, `cost_basis`, and `gross` now live inside each view rather than at the top level, and `gross_unrealized_percentage` is now `trading.unrealized_percentage`.
+  - `trading.attribution` holds only an `investment` effect, since exchange rates play no part in the instrument's own currency. `reporting.attribution` holds both `investment` and `currency` effects, with each leg converted at the exchange rate of the day it happened rather than a single period-end rate. Summed over all positions, the `reporting` figures give the account's `positions` figures.
+
+  To migrate a position response, map the old flat fields onto the `trading` view:
+
+  | Before `2026-09-28` | From `2026-09-28` |
+  |---|---|
+  | `gross_total` | `trading.gross` |
+  | `realized_capital`, `realized_income` | `trading.attribution.investment.realized.capital`, `.income` |
+  | `unrealized_capital`, `unrealized_income` | `trading.attribution.investment.unrealized.capital`, `.income` |
+  | `gross_realized` | `realized.capital + realized.income` |
+  | `gross_unrealized` | `unrealized.capital + unrealized.income` |
+  | `gross_capital` | `realized.capital + unrealized.capital` |
+  | `gross_income` | `realized.income + unrealized.income` |
+  | `cost_basis`, `currency` | `trading.cost_basis`, `trading.currency` |
+  | `gross_unrealized_percentage` | `trading.unrealized_percentage` |
+
+  The account response follows the same pattern, with `gross_total` becoming `gross`, `net_total` becoming `net`, and the four buckets living under `positions.attribution.investment` and `positions.attribution.currency`.
+
+  **Added**
+  - `account` on position earnings responses (from `2026-09-28`), the ID of the account holding the position.
+  - `cash` on account earnings responses (from `2026-09-28`): what uninvested foreign-currency cash gained or lost from exchange-rate movements, as `cash.gross` and `cash.attribution.currency.total`. It isn't split into realized and unrealized.
+
+  **Changed**
+  - Account earnings totals now include exchange-rate gains and losses on uninvested foreign-currency cash, on every API version. On `2026-09-02` and earlier this means `gross_total` and `net_total` can differ from `gross_realized` plus `gross_unrealized` by that cash currency effect.
 </Update>
 
 <Update label="September 22, 2026" description="additions">
