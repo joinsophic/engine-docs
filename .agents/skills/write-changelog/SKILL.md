@@ -182,8 +182,10 @@ Group bullets under bold labels, in this order (omit empty ones):
 5. Write benefit-first prose in `AGENTS.md` voice. Apply `lint-docs-tone`.
 6. Cross-link new endpoints/fields. Derive each URL from `openapi.json`:
    `/api-reference/{tag}/{summary-slug}` where `tag` is the operation's first
-   OpenAPI tag and `summary-slug` is the slugified `summary` field (lowercase,
-   non-alphanumerics to `-`). Never invent slugs from the HTTP path (e.g.
+   OpenAPI tag and `summary-slug` is the slugified `summary` field (lowercase;
+   runs of anything other than letters, digits, and `&` become one `-`; `&` is
+   kept, so `Retrieve account earnings (P&L)` is
+   `retrieve-account-earnings-p&l`). Never invent slugs from the HTTP path (e.g.
    `/me/permissions` is not `me-permissions`; use the summary, such as
    `list-current-actor-permissions`). Never guess tag names (`auth`, not
    `authentication`).

@@ -45,6 +45,18 @@ test("slugify lowercases and hyphenates summaries", () => {
   assert.equal(slugify("Update Position"), "update-position");
 });
 
+test("slugify keeps ampersands and collapses other punctuation like Mintlify", () => {
+  assert.equal(
+    slugify("Retrieve account earnings (P&L)"),
+    "retrieve-account-earnings-p&l",
+  );
+  assert.equal(
+    slugify("Retrieve Account Returns (MWRR / TWRR)"),
+    "retrieve-account-returns-mwrr-twrr",
+  );
+  assert.equal(slugify("List on-the-run bills"), "list-on-the-run-bills");
+});
+
 test("buildEndpointIndex uses tag and summary slugs", () => {
   const index = buildEndpointIndex(sampleOpenApi);
 
