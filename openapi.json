@@ -507,12 +507,43 @@
         "title": "Account",
         "type": "object"
       },
-      "AccountEarnings": {
+      "AccountCashEarnings": {
+        "properties": {
+          "attribution": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CashEarningsAttribution"
+              }
+            ],
+            "description": "Breakdown of the cash earnings. Cash only gains or loses value through exchange rates, so this holds a single currency component."
+          },
+          "gross": {
+            "description": "How much uninvested foreign-currency cash gained or lost from exchange-rate movements.",
+            "title": "Gross",
+            "type": "string"
+          }
+        },
+        "required": [
+          "gross",
+          "attribution"
+        ],
+        "title": "AccountCashEarnings",
+        "type": "object"
+      },
+      "AccountEarningsV2": {
         "properties": {
           "account": {
             "description": "ID of the account the earnings were computed for.",
             "title": "Account",
             "type": "string"
+          },
+          "cash": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AccountCashEarnings"
+              }
+            ],
+            "description": "What uninvested foreign-currency cash gained or lost from exchange-rate movements."
           },
           "currency": {
             "allOf": [
@@ -520,78 +551,21 @@
                 "$ref": "#/components/schemas/Currency"
               }
             ],
-            "description": "Currency of the earnings amounts."
+            "description": "Reporting currency of the earnings amounts."
           },
           "fees": {
             "description": "Fees deducted from gross earnings.",
-            "examples": [
-              "7.25"
-            ],
             "title": "Fees",
             "type": "string"
           },
-          "gross_capital": {
-            "description": "Capital earnings before fees and taxes.",
-            "examples": [
-              "175.00"
-            ],
-            "title": "Gross Capital",
+          "gross": {
+            "description": "Everything the account earned before fees: today's value minus the net money paid in, with fees added back. Also equals the positions' gross plus the cash gross.",
+            "title": "Gross",
             "type": "string"
           },
-          "gross_income": {
-            "description": "Income earnings before fees and taxes.",
-            "examples": [
-              "34.75"
-            ],
-            "title": "Gross Income",
-            "type": "string"
-          },
-          "gross_realized": {
-            "description": "Realized earnings before fees and taxes.",
-            "examples": [
-              "125.50"
-            ],
-            "title": "Gross Realized",
-            "type": "string"
-          },
-          "gross_total": {
-            "description": "Total realized and unrealized gross earnings.",
-            "examples": [
-              "209.75"
-            ],
-            "title": "Gross Total",
-            "type": "string"
-          },
-          "gross_unrealized": {
-            "description": "Unrealized earnings before fees and taxes.",
-            "examples": [
-              "84.25"
-            ],
-            "title": "Gross Unrealized",
-            "type": "string"
-          },
-          "net_realized": {
-            "description": "Realized earnings after fees and taxes.",
-            "examples": [
-              "118.25"
-            ],
-            "title": "Net Realized",
-            "type": "string"
-          },
-          "net_total": {
-            "description": "Total realized and unrealized net earnings.",
-            "examples": [
-              "202.50"
-            ],
-            "title": "Net Total",
-            "type": "string"
-          },
-          "net_unrealized": {
-            "description": "Unrealized earnings after fees and taxes.",
-            "examples": [
-              "84.25"
-            ],
-            "title": "Net Unrealized",
+          "net": {
+            "description": "Everything the account earned after fees: gross minus fees.",
+            "title": "Net",
             "type": "string"
           },
           "period_end": {
@@ -612,68 +586,27 @@
             "title": "Period Start",
             "type": "string"
           },
-          "position_earnings": {
-            "description": "Earnings for the account's individual positions.",
-            "items": {
-              "$ref": "#/components/schemas/PositionEarnings"
-            },
-            "title": "Position Earnings",
-            "type": "array"
-          },
-          "realized_capital": {
-            "description": "Realized earnings from capital appreciation.",
-            "examples": [
-              "100.00"
+          "positions": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AccountPositionsEarnings"
+              }
             ],
-            "title": "Realized Capital",
-            "type": "string"
-          },
-          "realized_income": {
-            "description": "Realized earnings from income.",
-            "examples": [
-              "25.50"
-            ],
-            "title": "Realized Income",
-            "type": "string"
-          },
-          "unrealized_capital": {
-            "description": "Unrealized earnings from capital appreciation.",
-            "examples": [
-              "75.00"
-            ],
-            "title": "Unrealized Capital",
-            "type": "string"
-          },
-          "unrealized_income": {
-            "description": "Unrealized earnings from income.",
-            "examples": [
-              "9.25"
-            ],
-            "title": "Unrealized Income",
-            "type": "string"
+            "description": "What the account's positions earned, with a breakdown of where it came from."
           }
         },
         "required": [
           "account",
-          "gross_realized",
-          "gross_unrealized",
-          "gross_total",
-          "gross_capital",
-          "gross_income",
-          "realized_capital",
-          "realized_income",
-          "unrealized_capital",
-          "unrealized_income",
-          "net_realized",
-          "net_unrealized",
-          "net_total",
-          "fees",
           "currency",
           "period_start",
           "period_end",
-          "position_earnings"
+          "gross",
+          "fees",
+          "net",
+          "positions",
+          "cash"
         ],
-        "title": "AccountEarnings",
+        "title": "AccountEarningsV2",
         "type": "object"
       },
       "AccountHistoryResolution": {
@@ -740,6 +673,29 @@
           "account"
         ],
         "title": "AccountOwnership",
+        "type": "object"
+      },
+      "AccountPositionsEarnings": {
+        "properties": {
+          "attribution": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EarningsAttribution"
+              }
+            ],
+            "description": "Breakdown of the positions' earnings into how much came from the investments themselves and how much from exchange-rate movements."
+          },
+          "gross": {
+            "description": "Total the positions earned before fees, in the account's currency. Equals the investment effect plus the currency effect.",
+            "title": "Gross",
+            "type": "string"
+          }
+        },
+        "required": [
+          "gross",
+          "attribution"
+        ],
+        "title": "AccountPositionsEarnings",
         "type": "object"
       },
       "AccountReturns": {
@@ -3166,6 +3122,37 @@
         "title": "CashBalance",
         "type": "object"
       },
+      "CashCurrencyEffect": {
+        "properties": {
+          "total": {
+            "description": "How much exchange-rate movements changed the value of foreign-currency cash while it sat uninvested. Not split into realized and unrealized.",
+            "title": "Total",
+            "type": "string"
+          }
+        },
+        "required": [
+          "total"
+        ],
+        "title": "CashCurrencyEffect",
+        "type": "object"
+      },
+      "CashEarningsAttribution": {
+        "properties": {
+          "currency": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CashCurrencyEffect"
+              }
+            ],
+            "description": "Gains or losses from exchange-rate movements on uninvested foreign-currency cash. This is the only way cash earns or loses value."
+          }
+        },
+        "required": [
+          "currency"
+        ],
+        "title": "CashEarningsAttribution",
+        "type": "object"
+      },
       "CashValuation": {
         "properties": {
           "asof": {
@@ -4316,6 +4303,7 @@
       "DepositStatus": {
         "enum": [
           "open",
+          "pending",
           "held",
           "returning",
           "completed",
@@ -4993,6 +4981,64 @@
         "properties": {},
         "title": "ETFReplicationMethod",
         "type": "string"
+      },
+      "EarningsAttribution": {
+        "properties": {
+          "currency": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EarningsEffect"
+              }
+            ],
+            "description": "How much came from exchange-rate movements on the money invested in positions, between the day it was invested and either the day it was sold or today. Zero when everything is in the account's currency."
+          },
+          "investment": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EarningsEffect"
+              }
+            ],
+            "description": "How much came from the investments themselves, that is price changes and income, with the effect of exchange-rate movements stripped out."
+          }
+        },
+        "required": [
+          "investment",
+          "currency"
+        ],
+        "title": "EarningsAttribution",
+        "type": "object"
+      },
+      "EarningsEffect": {
+        "properties": {
+          "realized": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RealizedEarningsSplit"
+              }
+            ],
+            "description": "Earnings already locked in: from units sold and income paid out, each converted at the exchange rate of the day it happened."
+          },
+          "total": {
+            "description": "Realized plus unrealized.",
+            "title": "Total",
+            "type": "string"
+          },
+          "unrealized": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UnrealizedEarningsSplit"
+              }
+            ],
+            "description": "Earnings not yet locked in: from units still held and interest accrued but not yet paid, converted at the current exchange rate."
+          }
+        },
+        "required": [
+          "total",
+          "realized",
+          "unrealized"
+        ],
+        "title": "EarningsEffect",
+        "type": "object"
       },
       "EducationLevelClaimSpec": {
         "additionalProperties": false,
@@ -12324,70 +12370,11 @@
         "title": "Position",
         "type": "object"
       },
-      "PositionEarnings": {
+      "PositionEarningsV2": {
         "properties": {
-          "cost_basis": {
-            "description": "Total acquisition cost of the position.",
-            "examples": [
-              "2000.00"
-            ],
-            "title": "Cost Basis",
-            "type": "string"
-          },
-          "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
-            "description": "Currency of the earnings amounts."
-          },
-          "gross_capital": {
-            "description": "Capital earnings before fees and taxes.",
-            "examples": [
-              "175.00"
-            ],
-            "title": "Gross Capital",
-            "type": "string"
-          },
-          "gross_income": {
-            "description": "Income earnings before fees and taxes.",
-            "examples": [
-              "34.75"
-            ],
-            "title": "Gross Income",
-            "type": "string"
-          },
-          "gross_realized": {
-            "description": "Realized earnings before fees and taxes.",
-            "examples": [
-              "125.50"
-            ],
-            "title": "Gross Realized",
-            "type": "string"
-          },
-          "gross_total": {
-            "description": "Total realized and unrealized gross earnings.",
-            "examples": [
-              "209.75"
-            ],
-            "title": "Gross Total",
-            "type": "string"
-          },
-          "gross_unrealized": {
-            "description": "Unrealized earnings before fees and taxes.",
-            "examples": [
-              "84.25"
-            ],
-            "title": "Gross Unrealized",
-            "type": "string"
-          },
-          "gross_unrealized_percentage": {
-            "description": "Unrealized gross earnings as a proportion of cost basis.",
-            "examples": [
-              "0.0421"
-            ],
-            "title": "Gross Unrealized Percentage",
+          "account": {
+            "description": "ID of the account holding the position.",
+            "title": "Account",
             "type": "string"
           },
           "period_end": {
@@ -12413,57 +12400,70 @@
             "title": "Position",
             "type": "string"
           },
-          "realized_capital": {
-            "description": "Realized earnings from capital appreciation.",
-            "examples": [
-              "100.00"
+          "reporting": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PositionReportingEarnings"
+              }
             ],
-            "title": "Realized Capital",
-            "type": "string"
+            "description": "The position's earnings in the account's base currency, with a breakdown into what the investment earned and what exchange-rate movements added or took away. Summed over all positions, these give the account's positions figures."
           },
-          "realized_income": {
-            "description": "Realized earnings from income.",
-            "examples": [
-              "25.50"
+          "trading": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PositionTradingEarnings"
+              }
             ],
-            "title": "Realized Income",
-            "type": "string"
-          },
-          "unrealized_capital": {
-            "description": "Unrealized earnings from capital appreciation.",
-            "examples": [
-              "75.00"
-            ],
-            "title": "Unrealized Capital",
-            "type": "string"
-          },
-          "unrealized_income": {
-            "description": "Unrealized earnings from income.",
-            "examples": [
-              "9.25"
-            ],
-            "title": "Unrealized Income",
-            "type": "string"
+            "description": "The position's earnings in the instrument's own currency."
           }
         },
         "required": [
           "position",
-          "gross_realized",
-          "gross_unrealized",
-          "gross_total",
-          "gross_capital",
-          "gross_income",
-          "gross_unrealized_percentage",
-          "realized_capital",
-          "realized_income",
-          "unrealized_capital",
-          "unrealized_income",
-          "cost_basis",
-          "currency",
+          "account",
           "period_start",
-          "period_end"
+          "period_end",
+          "trading",
+          "reporting"
         ],
-        "title": "PositionEarnings",
+        "title": "PositionEarningsV2",
+        "type": "object"
+      },
+      "PositionReportingEarnings": {
+        "properties": {
+          "attribution": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EarningsAttribution"
+              }
+            ],
+            "description": "Breakdown of the earnings into how much came from the investment itself and how much from exchange-rate movements."
+          },
+          "cost_basis": {
+            "description": "Acquisition cost of the units still held, converted at the exchange rates in force when they were bought.",
+            "title": "Cost Basis",
+            "type": "string"
+          },
+          "currency": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Currency"
+              }
+            ],
+            "description": "The account's base currency."
+          },
+          "gross": {
+            "description": "Total earnings before fees in the account's currency, each part converted at the exchange rate of the day it happened. Equals the investment effect plus the currency effect.",
+            "title": "Gross",
+            "type": "string"
+          }
+        },
+        "required": [
+          "currency",
+          "cost_basis",
+          "gross",
+          "attribution"
+        ],
+        "title": "PositionReportingEarnings",
         "type": "object"
       },
       "PositionReturns": {
@@ -12559,6 +12559,50 @@
         "properties": {},
         "title": "PositionStatus",
         "type": "string"
+      },
+      "PositionTradingEarnings": {
+        "properties": {
+          "attribution": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TradingEarningsAttribution"
+              }
+            ],
+            "description": "Breakdown of the earnings into realized and unrealized, and within each into price changes and income."
+          },
+          "cost_basis": {
+            "description": "Total acquisition cost of the units still held.",
+            "title": "Cost Basis",
+            "type": "string"
+          },
+          "currency": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Currency"
+              }
+            ],
+            "description": "The instrument's currency."
+          },
+          "gross": {
+            "description": "Total realized and unrealized earnings before fees and taxes.",
+            "title": "Gross",
+            "type": "string"
+          },
+          "unrealized_percentage": {
+            "description": "Unrealized earnings as a proportion of the cost basis.",
+            "title": "Unrealized Percentage",
+            "type": "string"
+          }
+        },
+        "required": [
+          "currency",
+          "cost_basis",
+          "gross",
+          "unrealized_percentage",
+          "attribution"
+        ],
+        "title": "PositionTradingEarnings",
+        "type": "object"
       },
       "PositionValuation": {
         "properties": {
@@ -12827,6 +12871,26 @@
         "properties": {},
         "title": "PriceType",
         "type": "string"
+      },
+      "RealizedEarningsSplit": {
+        "properties": {
+          "capital": {
+            "description": "The part that came from price changes on units sold.",
+            "title": "Capital",
+            "type": "string"
+          },
+          "income": {
+            "description": "The part that came from income paid out.",
+            "title": "Income",
+            "type": "string"
+          }
+        },
+        "required": [
+          "capital",
+          "income"
+        ],
+        "title": "RealizedEarningsSplit",
+        "type": "object"
       },
       "ReferenceType": {
         "enum": [
@@ -14805,6 +14869,23 @@
         "title": "TinExemptionReason",
         "type": "string"
       },
+      "TradingEarningsAttribution": {
+        "properties": {
+          "investment": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EarningsEffect"
+              }
+            ],
+            "description": "How much the position earned, measured in the instrument's own currency. Exchange rates play no part here, so there is no currency effect."
+          }
+        },
+        "required": [
+          "investment"
+        ],
+        "title": "TradingEarningsAttribution",
+        "type": "object"
+      },
       "Transaction": {
         "properties": {
           "accrued_interest": {
@@ -15042,6 +15123,26 @@
         "properties": {},
         "title": "TransactionType",
         "type": "string"
+      },
+      "UnrealizedEarningsSplit": {
+        "properties": {
+          "capital": {
+            "description": "The part that came from price changes on units still held.",
+            "title": "Capital",
+            "type": "string"
+          },
+          "income": {
+            "description": "The part that came from interest accrued but not yet paid.",
+            "title": "Income",
+            "type": "string"
+          }
+        },
+        "required": [
+          "capital",
+          "income"
+        ],
+        "title": "UnrealizedEarningsSplit",
+        "type": "object"
       },
       "UpdatePositionRequest": {
         "properties": {
@@ -16153,11 +16254,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AccountEarnings"
+                  "$ref": "#/components/schemas/AccountEarningsV2"
                 }
               }
             },
-            "description": "OK"
+            "description": "Successful Response"
           },
           "400": {
             "content": {
@@ -16175,7 +16276,7 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve earnings (P&L)",
+        "summary": "Retrieve account earnings (P&L)",
         "tags": [
           "performance"
         ]
@@ -19521,11 +19622,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PositionEarnings"
+                  "$ref": "#/components/schemas/PositionEarningsV2"
                 }
               }
             },
-            "description": "OK"
+            "description": "Successful Response"
           },
           "400": {
             "content": {
@@ -19543,7 +19644,7 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve earnings (P&L)",
+        "summary": "Retrieve position earnings (P&L)",
         "tags": [
           "performance"
         ]
