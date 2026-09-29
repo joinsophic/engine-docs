@@ -586,6 +586,15 @@
             "title": "Period Start",
             "type": "string"
           },
+          "position_earnings": {
+            "description": "Each of the account's positions' earnings over the same period, as `GET /positions/{id}/earnings` returns them. Only present when requested with `include_positions`.",
+            "items": {
+              "$ref": "#/components/schemas/PositionEarningsV2"
+            },
+            "title": "Position Earnings",
+            "type": "array",
+            "x-remove-null-from-type-union": true
+          },
           "positions": {
             "allOf": [
               {
@@ -10981,10 +10990,15 @@
           "cash_amount": {
             "anyOf": [
               {
-                "type": "number"
-              },
-              {
-                "type": "string"
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "gt": 0
               },
               {
                 "type": "null"
@@ -11027,10 +11041,15 @@
           "quantity": {
             "anyOf": [
               {
-                "type": "number"
-              },
-              {
-                "type": "string"
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "gt": 0
               },
               {
                 "type": "null"
