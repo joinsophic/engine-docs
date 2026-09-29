@@ -8,6 +8,18 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="September 28, 2026" description="2026-09-28">
+  ## Simplified earnings reporting
+
+  <Info>New API version `2026-09-28`. See [Versioning](/api-reference/versioning) to migrate.</Info>
+
+  We've restructured the earnings endpoints to consolidate reporting into a clearer model. Instead of separate fields for capital, income, realized, and unrealized earnings, you now get an aggregate `gross` (before fees) and `net` (after fees) with a detailed breakdown of where earnings came from.
+
+  **Breaking**
+  - `GET /accounts/{account_id}/earnings` now returns `AccountEarningsV2` instead of `AccountEarnings`. The new schema consolidates earnings into top-level `gross`, `net`, `fees`, with detailed breakdowns under `positions` and `cash`. Removed fields: `gross_capital`, `gross_income`, `gross_realized`, `gross_total`, `gross_unrealized`, `net_realized`, `net_total`, `net_unrealized`, `realized_capital`, `realized_income`, `unrealized_capital`, `unrealized_income`, and `position_earnings`. See [Retrieve account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p-l) for the new response shape.
+  - `GET /positions/{position_id}/earnings` now returns `PositionEarningsV2` instead of `PositionEarnings`. The new schema splits earnings into `trading` (in the instrument's currency) and `reporting` (in the account's base currency), each with a breakdown of investment effects and currency effects. See [Retrieve position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p-l) for the new response shape.
+</Update>
+
 <Update label="September 22, 2026" description="additions">
   ## Instrument client categories and deposit status tracking
 
