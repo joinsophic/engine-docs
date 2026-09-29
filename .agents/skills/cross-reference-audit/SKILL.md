@@ -48,7 +48,8 @@ pnpm audit-links
 
 5. **Fix OpenAPI endpoint links.** Links to API endpoint pages use
    `/api-reference/{tag}/{summary-slug}` where `tag` is the operation's first
-   OpenAPI tag and `summary-slug` is the slugified `summary` field. Do **not**
+   OpenAPI tag and `summary-slug` is the slugified `summary` field (lowercase,
+   punctuation runs to one `-`, but `&` is kept: `(P&L)` becomes `p&l`). Do **not**
    derive the slug from the HTTP path: `/me/permissions` is not
    `me-permissions`. Flat `/api-reference/{summary-slug}` paths 404. When
    `pnpm audit-links` suggests a replacement, use it. Confirm against

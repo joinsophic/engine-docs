@@ -9,7 +9,7 @@ based on the date when the API version was released. For example, the API versio
 
 ## Current version
 
-The current API version is **2026-09-02**.
+The current API version is **2026-09-28**.
 
 ## Specifying a version
 
@@ -18,8 +18,19 @@ Specify the API version using the `Api-Version` header:
 ```shell
 curl https://api.engine.usesophic.com/me \
   -H "Authorization: Bearer BEARER_TOKEN" \
-  -H "Api-Version: 2026-09-02"
+  -H "Api-Version: 2026-09-28"
 ```
+
+## Version history
+
+Each version is a dated entry in the [changelog](/changelog), with the breaking
+changes it introduced and how to migrate.
+
+| Version | Released | Summary |
+|---|---|---|
+| `2026-09-28` | September 28, 2026 | Earnings (P&L) responses attribute earnings to investment and currency effects. |
+| `2026-09-02` | September 2, 2026 | Order quote responses are variants discriminated on `quote_type`. |
+| `2026-01-01` | January 1, 2026 | Initial version. |
 
 ## Backwards compatible changes
 

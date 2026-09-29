@@ -21,11 +21,18 @@ export function extractApiReferenceLinks(content) {
   return [...hrefs];
 }
 
-/** @param {string} text */
+/**
+ * Mirrors the slug Mintlify generates for an OpenAPI operation summary: lowercase,
+ * runs of anything other than letters, digits and `&` collapse to one hyphen.
+ * `&` survives, so "Retrieve account earnings (P&L)" becomes
+ * `retrieve-account-earnings-p&l` and "(MWRR / TWRR)" becomes `mwrr-twrr`.
+ *
+ * @param {string} text
+ */
 export function slugify(text) {
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/[^a-z0-9&]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
 
