@@ -8,6 +8,20 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="September 29, 2026" description="additions">
+  ## Order validation and account earnings convenience
+
+  We've added new error codes to provide clearer feedback when orders conflict with instrument trading restrictions, and restored a convenience field on account earnings responses for clients that need position-level details inline.
+
+  **Added**
+  - `position_earnings` on [Retrieve account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l) responses (when requested with `include_positions`), containing each position's earnings for the period. This mirrors the data from [Retrieve position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l) for convenience.
+  - `instrument_buy_only` error code when you attempt to sell an instrument that only accepts buy orders.
+  - `instrument_sell_only` error code when you attempt to buy an instrument that only accepts sell orders.
+
+  **Changed**
+  - `cash_amount` and `quantity` fields now enforce minimum values greater than zero, rejecting zero or negative amounts with clearer validation errors.
+</Update>
+
 <Update label="September 28, 2026" description="2026-09-28">
   ## Redesigned earnings responses
 
