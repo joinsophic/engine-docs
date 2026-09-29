@@ -19,7 +19,8 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - `instrument_sell_only` error code when you attempt to buy an instrument that only accepts sell orders.
 
   **Changed**
-  - `cash_amount` and `quantity` fields now enforce minimum values greater than zero, rejecting zero or negative amounts with clearer validation errors.
+  - `insufficient_units` errors report `context.available` as an exact decimal string (for example `"0.5"`) instead of a number rounded down to whole units.
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) errors for a cash buy that misses the instrument's minimum initial investment or cash increment now point at `body.cash_amount` instead of `body.quantity`.
 </Update>
 
 <Update label="September 28, 2026" description="2026-09-28">

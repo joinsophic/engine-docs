@@ -20,10 +20,12 @@ These errors are returned synchronously when you place the order. The order is *
 |---|---|---|---|
 | `not_found` | 400 | The instrument doesn't exist. | Double-check the instrument ID via the [instruments endpoint](/api-reference/catalog/list-instruments). |
 | `instrument_not_trading` | 400 | The instrument isn't currently tradable (e.g. market is closed or the instrument is suspended). | Retry later, or check the instrument's status via the [catalog](/api-reference/catalog/retrieve-an-instrument). |
+| `instrument_buy_only` | 400 | The instrument only accepts buy orders, so it can't be sold right now. | Check the instrument's `trading_status` via the [catalog](/api-reference/catalog/retrieve-an-instrument). |
+| `instrument_sell_only` | 400 | The instrument only accepts sell orders, so it can't be bought right now. | Check the instrument's `trading_status` via the [catalog](/api-reference/catalog/retrieve-an-instrument). |
 | `invalid_param` | 400 | A request parameter is invalid; for example, a negative `cash_amount`, a zero `quantity`, or an invalid `order_type`. | Check the request body against the [expected schema](/docs/orders/overview#request-body). |
 | `currency_not_supported` | 400 | The instrument can't be traded in the requested currency. | Check which currencies the instrument supports. |
 | `insufficient_funds` | 400 | The account doesn't have enough cash to cover the buy order. | Check the account's [cash balance](/api-reference/holdings/list-cash-balances) before placing the order. |
-| `insufficient_units` | 400 | The account doesn't hold enough units to sell. | Check the account's [positions](/api-reference/holdings/list-positions) before placing the order. |
+| `insufficient_units` | 400 | The account doesn't hold enough units to sell. `context.available` gives the units available to sell as a decimal string. | Check the account's [positions](/api-reference/holdings/list-positions) before placing the order. |
 
 ## Permission errors
 
