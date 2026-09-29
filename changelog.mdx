@@ -8,6 +8,20 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="September 29, 2026" description="additions">
+  ## Order validation error codes
+
+  We've added new error codes to provide clearer feedback when orders conflict with instrument trading restrictions.
+
+  **Added**
+  - `instrument_buy_only` error code when you attempt to sell an instrument that only accepts buy orders.
+  - `instrument_sell_only` error code when you attempt to buy an instrument that only accepts sell orders.
+
+  **Changed**
+  - `insufficient_units` errors report `context.available` as an exact decimal string (for example `"0.5"`) instead of a number rounded down to whole units.
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) errors for a cash buy that misses the instrument's minimum initial investment or cash increment now point at `body.cash_amount` instead of `body.quantity`.
+</Update>
+
 <Update label="September 28, 2026" description="2026-09-28">
   ## Redesigned earnings responses
 
@@ -18,7 +32,7 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   **Breaking**
   - [Retrieve account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l) returns `gross`, `fees`, and `net` at the top level, plus a `positions` block and a `cash` block. The flat `gross_*`, `net_*`, `realized_*`, and `unrealized_*` fields are gone. `net` is `gross` minus `fees`. `gross` is `positions.gross` plus `cash.gross`.
   - The realized/unrealized and capital/income split moved under `positions.attribution`, which separates an `investment` effect (price changes and income, with exchange-rate movements stripped out) from a `currency` effect (exchange-rate movements on the money invested in positions). Each effect carries `total`, `realized.capital`, `realized.income`, `unrealized.capital`, and `unrealized.income`, all in the account's currency. The `currency` effect is zero when everything is in the account's currency.
-  - `position_earnings` is removed from the account response. Call [Retrieve position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l) per position instead.
+  - `position_earnings` is no longer included in the account response by default. Pass `include_positions` to get each position's earnings inline, as [Retrieve position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l) returns them.
   - The position response returns two views instead of one flat grid: `trading`, in the instrument's own currency, and `reporting`, in the account's base currency. `currency`, `cost_basis`, and `gross` now live inside each view rather than at the top level, and `gross_unrealized_percentage` is now `trading.unrealized_percentage`.
   - `trading.attribution` holds only an `investment` effect, since exchange rates play no part in the instrument's own currency. `reporting.attribution` holds both `investment` and `currency` effects, with each leg converted at the exchange rate of the day it happened rather than a single period-end rate. Summed over all positions, the `reporting` figures give the account's `positions` figures.
 

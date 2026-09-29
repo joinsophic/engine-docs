@@ -78,8 +78,16 @@ export const errorCodes = [
     "detail": "The Idempotency-Key header value exceeds the maximum length."
   },
   {
+    "code": "instrument_buy_only",
+    "detail": "The instrument only accepts buy orders."
+  },
+  {
     "code": "instrument_not_trading",
     "detail": "The instrument is not currently tradable."
+  },
+  {
+    "code": "instrument_sell_only",
+    "detail": "The instrument only accepts sell orders."
   },
   {
     "code": "instrument_too_close_to_maturity",

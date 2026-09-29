@@ -78,8 +78,16 @@
       "detail": "The Idempotency-Key header value exceeds the maximum length."
     },
     {
+      "code": "instrument_buy_only",
+      "detail": "The instrument only accepts buy orders."
+    },
+    {
       "code": "instrument_not_trading",
       "detail": "The instrument is not currently tradable."
+    },
+    {
+      "code": "instrument_sell_only",
+      "detail": "The instrument only accepts sell orders."
     },
     {
       "code": "instrument_too_close_to_maturity",
@@ -206,7 +214,7 @@
       "detail": "Withdrawals are not enabled for this account."
     }
   ],
-  "openapi_sha256": "c25cc7d421bc43fb452a953d6a38b040dccf951b731423b5c4431f7178abe9b6",
+  "openapi_sha256": "fa72314af7c88418eca239c832377310d262afc93b127cf27f094b4678d06814",
   "schema_version": 1,
   "webhook_events": [
     {
