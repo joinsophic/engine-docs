@@ -332,7 +332,7 @@
           "trading_increment": {
             "description": "Smallest quantity increment accepted for orders.",
             "examples": [
-              "0.01"
+              "0.00010000"
             ],
             "title": "Trading Increment",
             "type": "string"
@@ -1421,7 +1421,7 @@
           "trading_increment": {
             "description": "Smallest quantity increment accepted for orders.",
             "examples": [
-              "0.01"
+              "0.00010000"
             ],
             "title": "Trading Increment",
             "type": "string"
@@ -2045,7 +2045,7 @@
           "trading_increment": {
             "description": "Smallest quantity increment accepted for orders.",
             "examples": [
-              "0.01"
+              "0.00010000"
             ],
             "title": "Trading Increment",
             "type": "string"
@@ -4034,7 +4034,7 @@
           "trading_increment": {
             "description": "Smallest quantity increment accepted for orders.",
             "examples": [
-              "0.01"
+              "0.00010000"
             ],
             "title": "Trading Increment",
             "type": "string"
@@ -4906,7 +4906,7 @@
           "trading_increment": {
             "description": "Smallest quantity increment accepted for orders.",
             "examples": [
-              "0.01"
+              "0.00010000"
             ],
             "title": "Trading Increment",
             "type": "string"
@@ -9620,7 +9620,7 @@
           "trading_increment": {
             "description": "Smallest quantity increment accepted for orders.",
             "examples": [
-              "0.01"
+              "0.00010000"
             ],
             "title": "Trading Increment",
             "type": "string"
