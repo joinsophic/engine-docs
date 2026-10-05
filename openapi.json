@@ -59,7 +59,8 @@
             "type": "integer"
           },
           "enforce_trading_rules": {
-            "description": "Whether order amounts must satisfy the instrument trading rules.",
+            "description": "Deprecated: use `trading_configuration`. Always false; the server enforces the trading rules.",
+            "readOnly": true,
             "title": "Enforce Trading Rules",
             "type": "boolean"
           },
@@ -157,18 +158,14 @@
             "type": "string"
           },
           "minimum_initial_cash_investment": {
-            "description": "Minimum cash amount accepted for an initial investment.",
-            "examples": [
-              "1000.00"
-            ],
+            "description": "Deprecated: use `trading_configuration.buy.min_initial_cash_amount`. Zero when no minimum applies.",
+            "readOnly": true,
             "title": "Minimum Initial Cash Investment",
             "type": "string"
           },
           "minimum_trading_quantity": {
-            "description": "Smallest quantity accepted for an order.",
-            "examples": [
-              "1.00"
-            ],
+            "description": "Deprecated: use `trading_configuration.buy`. The cash a buy must invest: `min_initial_cash_amount`, else `min_cash_amount`, else the trading increment when no minimum applies.",
+            "readOnly": true,
             "title": "Minimum Trading Quantity",
             "type": "string"
           },
@@ -224,10 +221,8 @@
             "title": "Provider"
           },
           "required_cash_increment": {
-            "description": "Cash increment accepted above the minimum investment.",
-            "examples": [
-              100
-            ],
+            "description": "Deprecated: no longer enforced, always zero.",
+            "readOnly": true,
             "title": "Required Cash Increment",
             "type": "integer"
           },
@@ -318,6 +313,14 @@
             ],
             "title": "Ticker"
           },
+          "trading_configuration": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TradingConfiguration"
+              }
+            ],
+            "description": "How orders may be sized and the minimums they must meet, by side. Cash amounts are in the trading currency."
+          },
           "trading_currency": {
             "allOf": [
               {
@@ -332,7 +335,7 @@
           "trading_increment": {
             "description": "Smallest quantity increment accepted for orders.",
             "examples": [
-              "0.01"
+              "0.00010000"
             ],
             "title": "Trading Increment",
             "type": "string"
@@ -354,6 +357,7 @@
           "trading_status",
           "rollout_stage",
           "trading_increment",
+          "trading_configuration",
           "decimal_precision",
           "pro_traders_only",
           "price_type",
@@ -361,12 +365,8 @@
           "isin",
           "issuer",
           "issuer_country",
-          "minimum_trading_quantity",
           "trading_currency",
           "initial_issue_date",
-          "enforce_trading_rules",
-          "minimum_initial_cash_investment",
-          "required_cash_increment",
           "issuer_credit_rating",
           "dealing_deadline",
           "dealing_deadline_time_and_day",
@@ -375,7 +375,11 @@
           "risk_profile",
           "portfolio_manager",
           "share_class",
-          "provider"
+          "provider",
+          "minimum_trading_quantity",
+          "minimum_initial_cash_investment",
+          "required_cash_increment",
+          "enforce_trading_rules"
         ],
         "title": "AMC",
         "type": "object"
@@ -935,6 +939,14 @@
       },
       "AmcMarketCashQuote": {
         "properties": {
+          "blockers": {
+            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteBlocker"
+            },
+            "title": "Blockers",
+            "type": "array"
+          },
           "cash_amount": {
             "description": "Cash the user chose to invest (before fees).",
             "examples": [
@@ -1005,6 +1017,11 @@
             "title": "Is Binding",
             "type": "boolean"
           },
+          "is_placeable": {
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "title": "Is Placeable",
+            "type": "boolean"
+          },
           "order_type": {
             "allOf": [
               {
@@ -1032,6 +1049,8 @@
           }
         },
         "required": [
+          "is_placeable",
+          "blockers",
           "id",
           "created_at",
           "expires_at",
@@ -1166,7 +1185,8 @@
             "type": "integer"
           },
           "enforce_trading_rules": {
-            "description": "Whether order amounts must satisfy the instrument trading rules.",
+            "description": "Deprecated: use `trading_configuration`. Always false; the server enforces the trading rules.",
+            "readOnly": true,
             "title": "Enforce Trading Rules",
             "type": "boolean"
           },
@@ -1316,18 +1336,14 @@
             "type": "string"
           },
           "minimum_initial_cash_investment": {
-            "description": "Minimum cash amount accepted for an initial investment.",
-            "examples": [
-              "1000.00"
-            ],
+            "description": "Deprecated: use `trading_configuration.buy.min_initial_cash_amount`. Zero when no minimum applies.",
+            "readOnly": true,
             "title": "Minimum Initial Cash Investment",
             "type": "string"
           },
           "minimum_trading_quantity": {
-            "description": "Smallest quantity accepted for an order.",
-            "examples": [
-              "1.00"
-            ],
+            "description": "Deprecated: use `trading_configuration.buy`. The cash a buy must invest: `min_initial_cash_amount`, else `min_cash_amount`, else the trading increment when no minimum applies.",
+            "readOnly": true,
             "title": "Minimum Trading Quantity",
             "type": "string"
           },
@@ -1353,10 +1369,8 @@
             "type": "boolean"
           },
           "required_cash_increment": {
-            "description": "Cash increment accepted above the minimum investment.",
-            "examples": [
-              100
-            ],
+            "description": "Deprecated: no longer enforced, always zero.",
+            "readOnly": true,
             "title": "Required Cash Increment",
             "type": "integer"
           },
@@ -1407,6 +1421,14 @@
             ],
             "title": "Ticker"
           },
+          "trading_configuration": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TradingConfiguration"
+              }
+            ],
+            "description": "How orders may be sized and the minimums they must meet, by side. Cash amounts are in the trading currency."
+          },
           "trading_currency": {
             "allOf": [
               {
@@ -1421,7 +1443,7 @@
           "trading_increment": {
             "description": "Smallest quantity increment accepted for orders.",
             "examples": [
-              "0.01"
+              "0.00010000"
             ],
             "title": "Trading Increment",
             "type": "string"
@@ -1443,6 +1465,7 @@
           "trading_status",
           "rollout_stage",
           "trading_increment",
+          "trading_configuration",
           "decimal_precision",
           "pro_traders_only",
           "price_type",
@@ -1450,19 +1473,19 @@
           "isin",
           "issuer",
           "issuer_country",
-          "minimum_trading_quantity",
           "trading_currency",
           "initial_issue_date",
-          "enforce_trading_rules",
-          "minimum_initial_cash_investment",
-          "required_cash_increment",
           "maturity_date",
           "days_to_maturity",
           "supports_automatic_rollover",
           "issuer_credit_rating",
           "initial_auction_date",
           "latest_auction_date",
-          "latest_issue_date"
+          "latest_issue_date",
+          "minimum_trading_quantity",
+          "minimum_initial_cash_investment",
+          "required_cash_increment",
+          "enforce_trading_rules"
         ],
         "title": "Bill",
         "type": "object"
@@ -1544,6 +1567,14 @@
       },
       "BillMarketCashQuote": {
         "properties": {
+          "blockers": {
+            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteBlocker"
+            },
+            "title": "Blockers",
+            "type": "array"
+          },
           "cash_amount": {
             "description": "Cash the user chose to invest (before fees).",
             "examples": [
@@ -1614,6 +1645,11 @@
             "title": "Is Binding",
             "type": "boolean"
           },
+          "is_placeable": {
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "title": "Is Placeable",
+            "type": "boolean"
+          },
           "order_type": {
             "allOf": [
               {
@@ -1641,6 +1677,8 @@
           }
         },
         "required": [
+          "is_placeable",
+          "blockers",
           "id",
           "created_at",
           "expires_at",
@@ -1743,7 +1781,8 @@
             "type": "integer"
           },
           "enforce_trading_rules": {
-            "description": "Whether order amounts must satisfy the instrument trading rules.",
+            "description": "Deprecated: use `trading_configuration`. Always false; the server enforces the trading rules.",
+            "readOnly": true,
             "title": "Enforce Trading Rules",
             "type": "boolean"
           },
@@ -1909,18 +1948,14 @@
             "type": "string"
           },
           "minimum_initial_cash_investment": {
-            "description": "Minimum cash amount accepted for an initial investment.",
-            "examples": [
-              "1000.00"
-            ],
+            "description": "Deprecated: use `trading_configuration.buy.min_initial_cash_amount`. Zero when no minimum applies.",
+            "readOnly": true,
             "title": "Minimum Initial Cash Investment",
             "type": "string"
           },
           "minimum_trading_quantity": {
-            "description": "Smallest quantity accepted for an order.",
-            "examples": [
-              "1.00"
-            ],
+            "description": "Deprecated: use `trading_configuration.buy`. The cash a buy must invest: `min_initial_cash_amount`, else `min_cash_amount`, else the trading increment when no minimum applies.",
+            "readOnly": true,
             "title": "Minimum Trading Quantity",
             "type": "string"
           },
@@ -1977,10 +2012,8 @@
             "type": "boolean"
           },
           "required_cash_increment": {
-            "description": "Cash increment accepted above the minimum investment.",
-            "examples": [
-              100
-            ],
+            "description": "Deprecated: no longer enforced, always zero.",
+            "readOnly": true,
             "title": "Required Cash Increment",
             "type": "integer"
           },
@@ -2031,6 +2064,14 @@
             ],
             "title": "Ticker"
           },
+          "trading_configuration": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TradingConfiguration"
+              }
+            ],
+            "description": "How orders may be sized and the minimums they must meet, by side. Cash amounts are in the trading currency."
+          },
           "trading_currency": {
             "allOf": [
               {
@@ -2045,7 +2086,7 @@
           "trading_increment": {
             "description": "Smallest quantity increment accepted for orders.",
             "examples": [
-              "0.01"
+              "0.00010000"
             ],
             "title": "Trading Increment",
             "type": "string"
@@ -2082,6 +2123,7 @@
           "trading_status",
           "rollout_stage",
           "trading_increment",
+          "trading_configuration",
           "decimal_precision",
           "pro_traders_only",
           "price_type",
@@ -2089,12 +2131,8 @@
           "isin",
           "issuer",
           "issuer_country",
-          "minimum_trading_quantity",
           "trading_currency",
           "initial_issue_date",
-          "enforce_trading_rules",
-          "minimum_initial_cash_investment",
-          "required_cash_increment",
           "maturity_date",
           "days_to_maturity",
           "supports_automatic_rollover",
@@ -2105,7 +2143,11 @@
           "coupon_type",
           "coupon_frequency",
           "coupon",
-          "par_value"
+          "par_value",
+          "minimum_trading_quantity",
+          "minimum_initial_cash_investment",
+          "required_cash_increment",
+          "enforce_trading_rules"
         ],
         "title": "Bond",
         "type": "object"
@@ -2244,6 +2286,14 @@
       },
       "BondFixedCouponMarketCashQuote": {
         "properties": {
+          "blockers": {
+            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteBlocker"
+            },
+            "title": "Blockers",
+            "type": "array"
+          },
           "cash_amount": {
             "description": "Cash the user chose to invest (before fees).",
             "examples": [
@@ -2314,6 +2364,11 @@
             "title": "Is Binding",
             "type": "boolean"
           },
+          "is_placeable": {
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "title": "Is Placeable",
+            "type": "boolean"
+          },
           "order_type": {
             "allOf": [
               {
@@ -2341,6 +2396,8 @@
           }
         },
         "required": [
+          "is_placeable",
+          "blockers",
           "id",
           "created_at",
           "expires_at",
@@ -2433,6 +2490,14 @@
       },
       "BondZeroCouponMarketCashQuote": {
         "properties": {
+          "blockers": {
+            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteBlocker"
+            },
+            "title": "Blockers",
+            "type": "array"
+          },
           "cash_amount": {
             "description": "Cash the user chose to invest (before fees).",
             "examples": [
@@ -2503,6 +2568,11 @@
             "title": "Is Binding",
             "type": "boolean"
           },
+          "is_placeable": {
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "title": "Is Placeable",
+            "type": "boolean"
+          },
           "order_type": {
             "allOf": [
               {
@@ -2530,6 +2600,8 @@
           }
         },
         "required": [
+          "is_placeable",
+          "blockers",
           "id",
           "created_at",
           "expires_at",
@@ -3073,6 +3145,93 @@
           "status"
         ],
         "title": "BusinessNaturePersonClaimSummary",
+        "type": "object"
+      },
+      "BuyTradingConfiguration": {
+        "description": "How a buy may be sized and the minimums it must meet. A null minimum is not\napplied.",
+        "properties": {
+          "min_cash_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Cash every buy must invest, in the trading currency, excluding fees.",
+            "examples": [
+              "20000.00000000"
+            ],
+            "title": "Min Cash Amount"
+          },
+          "min_initial_cash_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Cash a first buy must invest, on top of `min_cash_amount`. A buy is first when the account holds no position in the instrument.",
+            "examples": [
+              "100000.00000000"
+            ],
+            "title": "Min Initial Cash Amount"
+          },
+          "min_initial_quantity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Units a first buy must buy, on top of `min_quantity`.",
+            "examples": [
+              "100.00000000"
+            ],
+            "title": "Min Initial Quantity"
+          },
+          "min_quantity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Units every buy must buy.",
+            "examples": [
+              "10.00000000"
+            ],
+            "title": "Min Quantity"
+          },
+          "modes": {
+            "description": "How a buy may be sized: `cash` (spend an amount) and/or `quantity` (buy a number of units).",
+            "examples": [
+              [
+                "cash"
+              ]
+            ],
+            "items": {
+              "$ref": "#/components/schemas/OrderMode"
+            },
+            "title": "Modes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "modes",
+          "min_cash_amount",
+          "min_initial_cash_amount",
+          "min_quantity",
+          "min_initial_quantity"
+        ],
+        "title": "BuyTradingConfiguration",
         "type": "object"
       },
       "CashBalance": {
@@ -4031,10 +4190,18 @@
             "title": "Target Client Categories",
             "type": "array"
           },
+          "trading_configuration": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TradingConfiguration"
+              }
+            ],
+            "description": "How orders may be sized and the minimums they must meet, by side. Cash amounts are in the trading currency."
+          },
           "trading_increment": {
             "description": "Smallest quantity increment accepted for orders.",
             "examples": [
-              "0.01"
+              "0.00010000"
             ],
             "title": "Trading Increment",
             "type": "string"
@@ -4056,6 +4223,7 @@
           "trading_status",
           "rollout_stage",
           "trading_increment",
+          "trading_configuration",
           "decimal_precision",
           "pro_traders_only",
           "price_type",
@@ -4544,7 +4712,8 @@
             "description": "Whether the fund accumulates or distributes its income."
           },
           "enforce_trading_rules": {
-            "description": "Whether order amounts must satisfy the instrument trading rules.",
+            "description": "Deprecated: use `trading_configuration`. Always false; the server enforces the trading rules.",
+            "readOnly": true,
             "title": "Enforce Trading Rules",
             "type": "boolean"
           },
@@ -4746,18 +4915,14 @@
             "title": "Issuer Country"
           },
           "minimum_initial_cash_investment": {
-            "description": "Minimum cash amount accepted for an initial investment.",
-            "examples": [
-              "1000.00"
-            ],
+            "description": "Deprecated: use `trading_configuration.buy.min_initial_cash_amount`. Zero when no minimum applies.",
+            "readOnly": true,
             "title": "Minimum Initial Cash Investment",
             "type": "string"
           },
           "minimum_trading_quantity": {
-            "description": "Smallest quantity accepted for an order.",
-            "examples": [
-              "1.00"
-            ],
+            "description": "Deprecated: use `trading_configuration.buy`. The cash a buy must invest: `min_initial_cash_amount`, else `min_cash_amount`, else the trading increment when no minimum applies.",
+            "readOnly": true,
             "title": "Minimum Trading Quantity",
             "type": "string"
           },
@@ -4809,10 +4974,8 @@
             "description": "How the fund replicates its tracking index."
           },
           "required_cash_increment": {
-            "description": "Cash increment accepted above the minimum investment.",
-            "examples": [
-              100
-            ],
+            "description": "Deprecated: no longer enforced, always zero.",
+            "readOnly": true,
             "title": "Required Cash Increment",
             "type": "integer"
           },
@@ -4892,6 +5055,14 @@
             ],
             "title": "Tracking Index"
           },
+          "trading_configuration": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TradingConfiguration"
+              }
+            ],
+            "description": "How orders may be sized and the minimums they must meet, by side. Cash amounts are in the trading currency."
+          },
           "trading_currency": {
             "allOf": [
               {
@@ -4906,7 +5077,7 @@
           "trading_increment": {
             "description": "Smallest quantity increment accepted for orders.",
             "examples": [
-              "0.01"
+              "0.00010000"
             ],
             "title": "Trading Increment",
             "type": "string"
@@ -4928,6 +5099,7 @@
           "trading_status",
           "rollout_stage",
           "trading_increment",
+          "trading_configuration",
           "decimal_precision",
           "pro_traders_only",
           "price_type",
@@ -4936,12 +5108,8 @@
           "ticker",
           "issuer",
           "issuer_country",
-          "minimum_trading_quantity",
           "trading_currency",
           "initial_issue_date",
-          "enforce_trading_rules",
-          "minimum_initial_cash_investment",
-          "required_cash_increment",
           "fund_management",
           "fund_category",
           "fund_domicile",
@@ -4956,7 +5124,11 @@
           "headline",
           "currency_sentence",
           "rhp_years",
-          "fund_base_currency"
+          "fund_base_currency",
+          "minimum_trading_quantity",
+          "minimum_initial_cash_investment",
+          "required_cash_increment",
+          "enforce_trading_rules"
         ],
         "title": "ETF",
         "type": "object"
@@ -5479,6 +5651,12 @@
                 },
                 {
                   "type": "integer"
+                },
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
                 }
               ]
             },
@@ -5570,6 +5748,14 @@
       },
       "EtfLimitCashQuote": {
         "properties": {
+          "blockers": {
+            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteBlocker"
+            },
+            "title": "Blockers",
+            "type": "array"
+          },
           "cash_amount": {
             "description": "Cash the user chose to invest (before fees).",
             "examples": [
@@ -5640,6 +5826,11 @@
             "title": "Is Binding",
             "type": "boolean"
           },
+          "is_placeable": {
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "title": "Is Placeable",
+            "type": "boolean"
+          },
           "limit_price": {
             "description": "Worst-case price per unit the order is bounded by.",
             "examples": [
@@ -5675,6 +5866,8 @@
           }
         },
         "required": [
+          "is_placeable",
+          "blockers",
           "id",
           "created_at",
           "expires_at",
@@ -5746,6 +5939,14 @@
       },
       "EtfLimitQuantityQuote": {
         "properties": {
+          "blockers": {
+            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteBlocker"
+            },
+            "title": "Blockers",
+            "type": "array"
+          },
           "created_at": {
             "description": "When the quote was issued.",
             "format": "date-time",
@@ -5808,6 +6009,11 @@
             "title": "Is Binding",
             "type": "boolean"
           },
+          "is_placeable": {
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "title": "Is Placeable",
+            "type": "boolean"
+          },
           "limit_price": {
             "description": "Worst-case price per unit the order is bounded by.",
             "examples": [
@@ -5851,6 +6057,8 @@
           }
         },
         "required": [
+          "is_placeable",
+          "blockers",
           "id",
           "created_at",
           "expires_at",
@@ -5929,6 +6137,14 @@
       },
       "EtfMarketCashQuote": {
         "properties": {
+          "blockers": {
+            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteBlocker"
+            },
+            "title": "Blockers",
+            "type": "array"
+          },
           "cash_amount": {
             "description": "Cash the user chose to invest (before fees).",
             "examples": [
@@ -5999,6 +6215,11 @@
             "title": "Is Binding",
             "type": "boolean"
           },
+          "is_placeable": {
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "title": "Is Placeable",
+            "type": "boolean"
+          },
           "order_type": {
             "allOf": [
               {
@@ -6026,6 +6247,8 @@
           }
         },
         "required": [
+          "is_placeable",
+          "blockers",
           "id",
           "created_at",
           "expires_at",
@@ -6112,6 +6335,14 @@
       },
       "EtfMarketQuantityQuote": {
         "properties": {
+          "blockers": {
+            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteBlocker"
+            },
+            "title": "Blockers",
+            "type": "array"
+          },
           "created_at": {
             "description": "When the quote was issued.",
             "format": "date-time",
@@ -6174,6 +6405,11 @@
             "title": "Is Binding",
             "type": "boolean"
           },
+          "is_placeable": {
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "title": "Is Placeable",
+            "type": "boolean"
+          },
           "order_type": {
             "allOf": [
               {
@@ -6209,6 +6445,8 @@
           }
         },
         "required": [
+          "is_placeable",
+          "blockers",
           "id",
           "created_at",
           "expires_at",
@@ -9201,6 +9439,14 @@
       },
       "MmfMarketCashQuote": {
         "properties": {
+          "blockers": {
+            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteBlocker"
+            },
+            "title": "Blockers",
+            "type": "array"
+          },
           "cash_amount": {
             "description": "Cash the user chose to invest (before fees).",
             "examples": [
@@ -9271,6 +9517,11 @@
             "title": "Is Binding",
             "type": "boolean"
           },
+          "is_placeable": {
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "title": "Is Placeable",
+            "type": "boolean"
+          },
           "order_type": {
             "allOf": [
               {
@@ -9298,6 +9549,8 @@
           }
         },
         "required": [
+          "is_placeable",
+          "blockers",
           "id",
           "created_at",
           "expires_at",
@@ -9386,7 +9639,8 @@
             "type": "integer"
           },
           "enforce_trading_rules": {
-            "description": "Whether order amounts must satisfy the instrument trading rules.",
+            "description": "Deprecated: use `trading_configuration`. Always false; the server enforces the trading rules.",
+            "readOnly": true,
             "title": "Enforce Trading Rules",
             "type": "boolean"
           },
@@ -9520,18 +9774,14 @@
             "type": "string"
           },
           "minimum_initial_cash_investment": {
-            "description": "Minimum cash amount accepted for an initial investment.",
-            "examples": [
-              "1000.00"
-            ],
+            "description": "Deprecated: use `trading_configuration.buy.min_initial_cash_amount`. Zero when no minimum applies.",
+            "readOnly": true,
             "title": "Minimum Initial Cash Investment",
             "type": "string"
           },
           "minimum_trading_quantity": {
-            "description": "Smallest quantity accepted for an order.",
-            "examples": [
-              "1.00"
-            ],
+            "description": "Deprecated: use `trading_configuration.buy`. The cash a buy must invest: `min_initial_cash_amount`, else `min_cash_amount`, else the trading increment when no minimum applies.",
+            "readOnly": true,
             "title": "Minimum Trading Quantity",
             "type": "string"
           },
@@ -9557,10 +9807,8 @@
             "type": "boolean"
           },
           "required_cash_increment": {
-            "description": "Cash increment accepted above the minimum investment.",
-            "examples": [
-              100
-            ],
+            "description": "Deprecated: no longer enforced, always zero.",
+            "readOnly": true,
             "title": "Required Cash Increment",
             "type": "integer"
           },
@@ -9606,6 +9854,14 @@
             ],
             "title": "Ticker"
           },
+          "trading_configuration": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TradingConfiguration"
+              }
+            ],
+            "description": "How orders may be sized and the minimums they must meet, by side. Cash amounts are in the trading currency."
+          },
           "trading_currency": {
             "allOf": [
               {
@@ -9620,7 +9876,7 @@
           "trading_increment": {
             "description": "Smallest quantity increment accepted for orders.",
             "examples": [
-              "0.01"
+              "0.00010000"
             ],
             "title": "Trading Increment",
             "type": "string"
@@ -9642,6 +9898,7 @@
           "trading_status",
           "rollout_stage",
           "trading_increment",
+          "trading_configuration",
           "decimal_precision",
           "pro_traders_only",
           "price_type",
@@ -9649,12 +9906,8 @@
           "isin",
           "issuer",
           "issuer_country",
-          "minimum_trading_quantity",
           "trading_currency",
           "initial_issue_date",
-          "enforce_trading_rules",
-          "minimum_initial_cash_investment",
-          "required_cash_increment",
           "issuer_credit_rating",
           "dealing_deadline",
           "dealing_deadline_time_and_day",
@@ -9663,7 +9916,11 @@
           "is_passed_dealing_deadline",
           "benchmark",
           "fund_ongoing_charges",
-          "is_qualifying_mmf"
+          "is_qualifying_mmf",
+          "minimum_trading_quantity",
+          "minimum_initial_cash_investment",
+          "required_cash_increment",
+          "enforce_trading_rules"
         ],
         "title": "MoneyMarketFund",
         "type": "object"
@@ -10936,6 +11193,15 @@
         "title": "Order",
         "type": "object"
       },
+      "OrderMode": {
+        "enum": [
+          "cash",
+          "quantity"
+        ],
+        "properties": {},
+        "title": "OrderMode",
+        "type": "string"
+      },
       "OrderPurpose": {
         "enum": [
           "user_request",
@@ -10947,6 +11213,104 @@
         "properties": {},
         "title": "OrderPurpose",
         "type": "string"
+      },
+      "OrderQuoteBlocker": {
+        "description": "A trading rule the quoted order breaks. Placing it as quoted fails with the\nsame `code` and `context`.",
+        "properties": {
+          "code": {
+            "description": "The error placement returns for this order.",
+            "examples": [
+              "trading_rule_violated"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "context": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrderQuoteBlockerContext"
+              }
+            ],
+            "description": "The rule broken."
+          },
+          "detail": {
+            "description": "A readable description of the violation.",
+            "examples": [
+              "Instrument AMC001 requires a minimum initial investment of 100000. Invested amount is 99950.00"
+            ],
+            "title": "Detail",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "detail",
+          "context"
+        ],
+        "title": "OrderQuoteBlocker",
+        "type": "object"
+      },
+      "OrderQuoteBlockerContext": {
+        "description": "The trading rule a blocker names, in the shape of the instrument's\n`trading_configuration`.",
+        "properties": {
+          "actual": {
+            "description": "What the order has: the cash it invests (net of fees) or raises, its units, or its mode.",
+            "examples": [
+              "99950.00"
+            ],
+            "title": "Actual",
+            "type": "string"
+          },
+          "required": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            ],
+            "description": "What the rule asks for: the minimum, the trading increment, or the allowed order modes.",
+            "examples": [
+              "100000"
+            ],
+            "title": "Required"
+          },
+          "required_cash_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "On a cash buy, the least `cash_amount`, fees included, that meets every buy rule checked in cash or units, so the client can say what to enter. Null on any other order.",
+            "examples": [
+              "100053.00"
+            ],
+            "title": "Required Cash Amount"
+          },
+          "rule": {
+            "description": "The rule path, e.g. `buy.min_initial_cash_amount`, or `trading_increment`.",
+            "examples": [
+              "buy.min_initial_cash_amount"
+            ],
+            "title": "Rule",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rule",
+          "required",
+          "actual",
+          "required_cash_amount"
+        ],
+        "title": "OrderQuoteBlockerContext",
+        "type": "object"
       },
       "OrderQuoteFeeLine": {
         "description": "One line of an estimate's itemised `fees`.",
@@ -14389,6 +14753,14 @@
       "SellQuote": {
         "description": "One shape for every sell, across instrument types. Market sells carry\n`estimate.price` / `asof` / `cash`; limit sells carry `estimate.min_proceeds`\nand a top-level `limit_price`.",
         "properties": {
+          "blockers": {
+            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "items": {
+              "$ref": "#/components/schemas/OrderQuoteBlocker"
+            },
+            "title": "Blockers",
+            "type": "array"
+          },
           "created_at": {
             "description": "When the quote was issued.",
             "format": "date-time",
@@ -14451,6 +14823,11 @@
             "title": "Is Binding",
             "type": "boolean"
           },
+          "is_placeable": {
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "title": "Is Placeable",
+            "type": "boolean"
+          },
           "limit_price": {
             "anyOf": [
               {
@@ -14501,6 +14878,8 @@
           }
         },
         "required": [
+          "is_placeable",
+          "blockers",
           "id",
           "created_at",
           "expires_at",
@@ -14514,6 +14893,61 @@
           "estimate"
         ],
         "title": "SellQuote",
+        "type": "object"
+      },
+      "SellTradingConfiguration": {
+        "description": "How a sell may be sized and the minimums it must meet. A null minimum is not\napplied, and a sell of the whole position is never blocked by one.",
+        "properties": {
+          "min_cash_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Cash every sell must raise, in the trading currency, before fees.",
+            "examples": [
+              "1000.00000000"
+            ],
+            "title": "Min Cash Amount"
+          },
+          "min_quantity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Units every sell must sell.",
+            "examples": [
+              "10.00000000"
+            ],
+            "title": "Min Quantity"
+          },
+          "modes": {
+            "description": "How a sell may be sized: `cash` (raise an amount) and/or `quantity` (sell a number of units).",
+            "examples": [
+              [
+                "quantity"
+              ]
+            ],
+            "items": {
+              "$ref": "#/components/schemas/OrderMode"
+            },
+            "title": "Modes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "modes",
+          "min_cash_amount",
+          "min_quantity"
+        ],
+        "title": "SellTradingConfiguration",
         "type": "object"
       },
       "SeriesPoint": {
@@ -14887,6 +15321,33 @@
         "properties": {},
         "title": "TinExemptionReason",
         "type": "string"
+      },
+      "TradingConfiguration": {
+        "description": "The order rules of an instrument, split by side.",
+        "properties": {
+          "buy": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BuyTradingConfiguration"
+              }
+            ],
+            "description": "Rules for buy orders."
+          },
+          "sell": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SellTradingConfiguration"
+              }
+            ],
+            "description": "Rules for sell orders."
+          }
+        },
+        "required": [
+          "buy",
+          "sell"
+        ],
+        "title": "TradingConfiguration",
+        "type": "object"
       },
       "TradingEarningsAttribution": {
         "properties": {
