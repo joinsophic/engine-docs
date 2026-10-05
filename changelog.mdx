@@ -8,6 +8,31 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 1, 2026" description="2026-10-01">
+  ## Trading configuration and order validation
+
+  <Info>New API version `2026-10-01`. See [Versioning](/api-reference/versioning) to migrate.</Info>
+
+  We've introduced a unified `trading_configuration` field on instruments that replaces the previous separate fields for minimum amounts and increments. This gives you a clearer, side-aware view of buy and sell rules. At the same time, order quotes now report whether they're placeable and what trading rules they violate, so you can show users exactly what's needed to fix an order.
+
+  **Breaking**
+
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) responses now include two new required fields:
+    - `is_placeable`: boolean indicating whether the quoted order would be accepted as-is.
+    - `blockers`: array of trading rule violations, empty when `is_placeable` is true. Each blocker names the rule, what it requires, and what the order has.
+  - The following fields on [instruments](/api-reference/catalog/retrieve-an-instrument) are now deprecated and readOnly. Use `trading_configuration` instead:
+    - `enforce_trading_rules`: always `false`; the server always enforces rules.
+    - `minimum_initial_cash_investment`: replaced by `trading_configuration.buy.min_initial_cash_amount`.
+    - `minimum_trading_quantity`: replaced by `trading_configuration.buy` (which includes per-side minimums and modes).
+    - `required_cash_increment`: no longer enforced; always `0`.
+
+  **Added**
+
+  - `trading_configuration` on [instruments](/api-reference/catalog/retrieve-an-instrument), describing how buy and sell orders may be sized and what minimums they must meet. Includes per-side rules for minimum amounts, initial amounts, quantities, and order modes (cash, quantity, or both).
+  - `trading_rule_violated` error code when an order breaks a rule in the instrument's `trading_configuration`. The error `context` names the specific rule, what it requires, and what the order has.
+
+</Update>
+
 <Update label="September 29, 2026" description="additions">
   ## Order validation error codes
 
