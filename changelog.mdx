@@ -8,6 +8,26 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 1, 2026" description="2026-10-01">
+  ## Instrument trading configuration rules
+
+  <Info>New API version `2026-10-01`. See [Versioning](/api-reference/versioning) to migrate.</Info>
+
+  We've redesigned how trading rules are described on instruments. The new `trading_configuration` field specifies size minimums and increments on each side separately (buy or sell), replacing the legacy flat fields. This gives you precise control over order sizing and clearer visibility into what's required for each side.
+
+  **Breaking**
+  - [Retrieve an instrument](/api-reference/catalog/retrieve-an-instrument) now returns `trading_configuration`, which specifies buy and sell side minimums (`min_cash_amount`, `min_initial_cash_amount`) and increments (`cash_increment`). The legacy `minimum_trading_quantity`, `minimum_initial_cash_investment`, `required_cash_increment`, and `enforce_trading_rules` fields are deprecated (marked read-only; their values are no longer enforced by the server). Requests pinned to `2026-09-28` and earlier see the old fields; `2026-10-01` and later requests see the new field with deprecated markers on the old ones.
+
+  **Added**
+  - `trading_configuration` object on [instruments](/api-reference/catalog/retrieve-an-instrument), specifying size minimums and increments for buy and sell sides separately. Cash amounts are in the instrument's trading currency.
+  - `blockers` array on [Get an order quote](/api-reference/trading/get-an-order-quote) responses, listing any trading rule the order violates (a minimum or increment). The quote's estimate is still computed, so you can show the order's cost alongside what it needs.
+  - `is_placeable` boolean on quote responses, indicating whether an order placed from this quote would be accepted as quoted.
+  - `trading_rule_violated` error code when an order violates a rule in the instrument's trading configuration.
+
+  **Deprecated**
+  - `minimum_trading_quantity`, `minimum_initial_cash_investment`, `required_cash_increment`, and `enforce_trading_rules` on [instruments](/api-reference/catalog/retrieve-an-instrument). Use `trading_configuration` instead. These fields remain on `2026-09-28` and earlier; requests on `2026-10-01` and later see them marked read-only.
+</Update>
+
 <Update label="September 29, 2026" description="additions">
   ## Order validation error codes
 
