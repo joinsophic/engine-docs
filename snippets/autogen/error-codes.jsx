@@ -206,6 +206,10 @@ export const errorCodes = [
     "detail": "The requested statement period is not valid for this account."
   },
   {
+    "code": "trading_rule_violated",
+    "detail": "The order breaks a rule in the instrument's `trading_configuration`. `context.rule` names it, with what it requires and what the order has."
+  },
+  {
     "code": "webhook_not_active",
     "detail": "The webhook is not active."
   },
