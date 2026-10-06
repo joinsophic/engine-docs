@@ -26,7 +26,7 @@ Send a `POST` request to `/accounts/{account_id}/orders`. The request body depen
 
 ### Buy orders
 
-Buy orders are **cash-based**: you specify how much money to invest, not how many units to buy. We calculate the quantity based on the current price.
+Buy orders are **cash-based**: you specify how much money to invest, not how many units to buy. We calculate the quantity based on the current price, rounded down to the instrument's `trading_increment`.
 
 <CodeGroup>
 ```python Python
@@ -260,12 +260,22 @@ var response = await client.PostAsJsonAsync(
 | `order_type` | string | Yes | The order type. Only `market` is supported. |
 | `side` | string | Yes | `buy` or `sell`. |
 | `cash_amount` | string | Buy orders | The amount to invest before fees. Buy orders are cash-based. Must be greater than 0. |
-| `quantity` | string | Sell orders | The number of units to sell. Sell orders are unit-based. Must be greater than 0. |
+| `quantity` | string | Sell orders | The number of units to sell. Sell orders are unit-based. Must be greater than 0 and a multiple of the instrument's `trading_increment`. |
 | `automatic_rollover` | boolean | No | If `true`, the resulting position will automatically [roll over](/docs/orders/rollovers) upon maturity. Only applicable to buy orders on instruments that support it. Defaults to `false`. |
 
 <Warning>
-Buy orders require `cash_amount`. Sell orders require `quantity`. At least one of the two must be provided, and the value must be greater than zero.
+Buy orders require `cash_amount`. Sell orders require `quantity`. Send exactly one of the two: we reject an order that sends both. The value must be greater than zero.
 </Warning>
+
+### Sizing rules
+
+Each instrument's `trading_configuration` sets the rules an order must meet, separately for `buy` and `sell`: the `modes` it can be sized in and the minimums it must reach. A first buy (when the account holds no position in the instrument) must also meet `min_initial_cash_amount` and `min_initial_quantity`. Cash minimums apply to the amount invested after fees. A `null` minimum isn't applied, and a sell minimum never blocks selling a whole position.
+
+An order that breaks one of these rules, or sends a `quantity` that isn't a multiple of `trading_increment`, fails with `trading_rule_violated` (`invalid_request` on API versions before `2026-10-01`). `context.rule` names the rule, with what it requires and what the order has.
+
+<Tip>
+[Get an order quote](/api-reference/trading/get-an-order-quote) first. A quote runs the same checks as placement, and when the order breaks a sizing rule it comes back with `is_placeable: false` and the rule in `blockers`. On a cash buy, `context.required_cash_amount` tells you the smallest `cash_amount` (fees included) that meets every buy rule.
+</Tip>
 
 ## The response
 
