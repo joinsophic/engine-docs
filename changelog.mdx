@@ -8,6 +8,39 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 1, 2026" description="2026-10-01">
+  ## Trading configuration and consistent order validation
+
+  <Info>New API version `2026-10-01`. See [Versioning](/api-reference/versioning) to migrate.</Info>
+
+  Instruments now describe their order rules in a single `trading_configuration` object, split into buy and sell. Quotes run the same checks as placement, so a quote fails exactly where the order it previews would. When a quoted order breaks a sizing rule, you get the quote back with the rule it breaks, so you can show your users what to change before they place it. Requests pinned to `2026-09-28` or earlier keep the legacy instrument fields and the previous error responses.
+
+  **Breaking**
+  - Instruments, wherever we return them (on their own or embedded in positions, orders, quotes, transactions, and valuations), no longer carry `minimum_trading_quantity`, `minimum_initial_cash_investment`, `required_cash_increment`, or `enforce_trading_rules`. Read the rules from `trading_configuration` instead:
+    - `minimum_initial_cash_investment` is `trading_configuration.buy.min_initial_cash_amount`.
+    - `minimum_trading_quantity` is `trading_configuration.buy.min_cash_amount`.
+    - `required_cash_increment` and `enforce_trading_rules` have no replacement. We use null in the trading configuration when no rule applies.
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) returns `200` instead of `400` for an order that breaks a sizing rule: a quantity off the trading increment, a cash amount that buys less than one trading increment, or a minimum in `trading_configuration`. The quote carries its `estimate` as usual, with `is_placeable: false` and the rule in `blockers`. Placing the order as quoted still fails with the same error.
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) and [Place an order](/api-reference/trading/place-an-order) return `trading_rule_violated` instead of `invalid_request` when an order breaks a rule in `trading_configuration`. `context.rule` names the rule (for example `buy.min_initial_cash_amount`), with `context.required` and `context.actual`. `params` still points at the field the order was sized by.
+
+  **Added**
+  - `trading_configuration` on [instruments](/api-reference/catalog/retrieve-an-instrument), on every API version. `buy` carries `modes`, `min_cash_amount`, `min_initial_cash_amount`, `min_quantity`, and `min_initial_quantity`; `sell` carries `modes`, `min_cash_amount`, and `min_quantity`. A `null` minimum isn't applied, and a sell minimum never blocks selling a whole position. Cash amounts are in the instrument's trading currency.
+  - `is_placeable` and `blockers` on every [order quote](/api-reference/trading/get-an-order-quote). Each blocker carries the `code` and `detail` placement would return, and a `context` with `rule`, `required`, `actual`, and `required_cash_amount`: on a cash buy, the smallest `cash_amount` (fees included) that meets every buy rule.
+  - `trading_rule_violated` error code.
+
+  **Changed**
+
+  These apply on every API version.
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) runs the same instrument and account checks as placement, so it can now return `instrument_not_trading`, `instrument_buy_only`, `instrument_sell_only`, `instrument_too_close_to_maturity`, `currency_not_supported`, `insufficient_units`, `buy_order_forbidden`, `sell_order_forbidden`, and `professional_trader_required`.
+  - A `quantity` must be a multiple of the instrument's `trading_increment`, on quotes and orders. We reject a quantity off the increment rather than trimming it.
+  - Cash buys are sized by rounding the quantity down to the instrument's `trading_increment` instead of to whole units. The quote's `estimate.quantity` now matches the quantity the order executes, including the price buffer we apply.
+  - Buy minimums apply to the cash the buy invests, net of fees. Quotes for limit cash buys now check them too. Rollover orders are exempt.
+  - We no longer enforce a cash increment on buys. On `2026-09-28` and earlier, `required_cash_increment` is always `0` and `enforce_trading_rules` is always `false`.
+  - An order that sends both `cash_amount` and `quantity` is rejected with `invalid_param` on `quantity`. Previously, `quantity` silently took precedence.
+  - Selling an instrument the account holds no position in returns `insufficient_units` with `context.available` of `"0"`.
+  - `trading_increment` on instruments is returned at full precision (for example `"0.00010000"`) instead of rounded to two decimal places.
+</Update>
+
 <Update label="September 29, 2026" description="additions">
   ## Order validation error codes
 

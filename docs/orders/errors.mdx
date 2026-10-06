@@ -14,7 +14,7 @@ When an order request fails, we return an error response with a machine-readable
 
 ## Validation errors
 
-These errors are returned synchronously when you place the order. The order is **not created**.
+These errors are returned synchronously when you place the order. The order is **not created**. [Get an order quote](/api-reference/trading/get-an-order-quote) runs the same checks, so a quote returns the same errors, except for sizing rule violations, which it reports in `blockers` instead (from API version `2026-10-01`).
 
 | Code | HTTP Status | Description | What to do |
 |---|---|---|---|
@@ -22,10 +22,12 @@ These errors are returned synchronously when you place the order. The order is *
 | `instrument_not_trading` | 400 | The instrument isn't currently tradable (e.g. market is closed or the instrument is suspended). | Retry later, or check the instrument's status via the [catalog](/api-reference/catalog/retrieve-an-instrument). |
 | `instrument_buy_only` | 400 | The instrument only accepts buy orders, so it can't be sold right now. | Check the instrument's `trading_status` via the [catalog](/api-reference/catalog/retrieve-an-instrument). |
 | `instrument_sell_only` | 400 | The instrument only accepts sell orders, so it can't be bought right now. | Check the instrument's `trading_status` via the [catalog](/api-reference/catalog/retrieve-an-instrument). |
-| `invalid_param` | 400 | A request parameter is invalid; for example, a negative `cash_amount`, a zero `quantity`, or an invalid `order_type`. | Check the request body against the [expected schema](/docs/orders/overview#request-body). |
+| `invalid_param` | 400 | A request parameter is invalid; for example, a negative `cash_amount`, a zero `quantity`, both `cash_amount` and `quantity` sent, or an invalid `order_type`. | Check the request body against the [expected schema](/docs/orders/overview#request-body). |
+| `trading_rule_violated` | 400 | The order breaks a rule in the instrument's `trading_configuration`, or its `quantity` isn't a multiple of `trading_increment`. `context.rule` names the rule, with `context.required` and `context.actual`. | Check the instrument's [sizing rules](/docs/orders/overview#sizing-rules), or [get a quote](/api-reference/trading/get-an-order-quote) to see what the order needs. |
+| `instrument_too_close_to_maturity` | 400 | The instrument matures too soon for a trade placed today to settle. | Choose an instrument with a later maturity. |
 | `currency_not_supported` | 400 | The instrument can't be traded in the requested currency. | Check which currencies the instrument supports. |
 | `insufficient_funds` | 400 | The account doesn't have enough cash to cover the buy order. | Check the account's [cash balance](/api-reference/holdings/list-cash-balances) before placing the order. |
-| `insufficient_units` | 400 | The account doesn't hold enough units to sell. `context.available` gives the units available to sell as a decimal string. | Check the account's [positions](/api-reference/holdings/list-positions) before placing the order. |
+| `insufficient_units` | 400 | The account doesn't hold enough units to sell, including when it holds no position in the instrument. `context.available` gives the units available to sell as a decimal string. | Check the account's [positions](/api-reference/holdings/list-positions) before placing the order. |
 
 ## Permission errors
 

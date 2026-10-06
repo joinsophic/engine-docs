@@ -19,6 +19,10 @@ Polling the order status endpoint in a tight loop wastes resources and may hit r
 
 Verify that the account has sufficient cash (for buys) or units (for sells) before submitting the order. This avoids unnecessary `insufficient_funds` and `insufficient_units` errors and gives you a chance to surface helpful messages to your users.
 
+### Quote before you place
+
+[Get an order quote](/api-reference/trading/get-an-order-quote) runs the same checks as placement. Quote first, and if `is_placeable` is `false`, show your users the rule in `blockers` before they submit. On a cash buy, `context.required_cash_amount` gives the smallest amount that would pass.
+
 ### Handle all terminal states
 
 Your integration should handle both `settled` and `cancelled` as terminal states. Don't assume every order will settle; always implement a path for cancellations, including system-initiated ones.

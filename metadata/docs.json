@@ -1,5 +1,5 @@
 {
-  "api_version": "2026-09-28",
+  "api_version": "2026-10-01",
   "error_codes": [
     {
       "code": "api_version_invalid",
@@ -206,6 +206,10 @@
       "detail": "The requested statement period is not valid for this account."
     },
     {
+      "code": "trading_rule_violated",
+      "detail": "The order breaks a rule in the instrument's `trading_configuration`. `context.rule` names it, with what it requires and what the order has."
+    },
+    {
       "code": "webhook_not_active",
       "detail": "The webhook is not active."
     },
@@ -214,7 +218,7 @@
       "detail": "Withdrawals are not enabled for this account."
     }
   ],
-  "openapi_sha256": "fa72314af7c88418eca239c832377310d262afc93b127cf27f094b4678d06814",
+  "openapi_sha256": "a651f59d929bfce7b0a13033f3cfc7f859832c780d0cf2d88f242a437e7174a4",
   "schema_version": 1,
   "webhook_events": [
     {
