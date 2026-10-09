@@ -940,7 +940,7 @@
       "AmcMarketCashQuote": {
         "properties": {
           "blockers": {
-            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "description": "Why the order cannot be placed as quoted, if it cannot: a trading rule it breaks (a minimum, or the trading increment), or the free cash or units it exceeds. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
             "items": {
               "$ref": "#/components/schemas/OrderQuoteBlocker"
             },
@@ -1018,7 +1018,7 @@
             "type": "boolean"
           },
           "is_placeable": {
-            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists why it would not.",
             "title": "Is Placeable",
             "type": "boolean"
           },
@@ -1568,7 +1568,7 @@
       "BillMarketCashQuote": {
         "properties": {
           "blockers": {
-            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "description": "Why the order cannot be placed as quoted, if it cannot: a trading rule it breaks (a minimum, or the trading increment), or the free cash or units it exceeds. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
             "items": {
               "$ref": "#/components/schemas/OrderQuoteBlocker"
             },
@@ -1646,7 +1646,7 @@
             "type": "boolean"
           },
           "is_placeable": {
-            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists why it would not.",
             "title": "Is Placeable",
             "type": "boolean"
           },
@@ -2287,7 +2287,7 @@
       "BondFixedCouponMarketCashQuote": {
         "properties": {
           "blockers": {
-            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "description": "Why the order cannot be placed as quoted, if it cannot: a trading rule it breaks (a minimum, or the trading increment), or the free cash or units it exceeds. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
             "items": {
               "$ref": "#/components/schemas/OrderQuoteBlocker"
             },
@@ -2365,7 +2365,7 @@
             "type": "boolean"
           },
           "is_placeable": {
-            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists why it would not.",
             "title": "Is Placeable",
             "type": "boolean"
           },
@@ -2491,7 +2491,7 @@
       "BondZeroCouponMarketCashQuote": {
         "properties": {
           "blockers": {
-            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "description": "Why the order cannot be placed as quoted, if it cannot: a trading rule it breaks (a minimum, or the trading increment), or the free cash or units it exceeds. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
             "items": {
               "$ref": "#/components/schemas/OrderQuoteBlocker"
             },
@@ -2569,7 +2569,7 @@
             "type": "boolean"
           },
           "is_placeable": {
-            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists why it would not.",
             "title": "Is Placeable",
             "type": "boolean"
           },
@@ -5749,7 +5749,7 @@
       "EtfLimitCashQuote": {
         "properties": {
           "blockers": {
-            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "description": "Why the order cannot be placed as quoted, if it cannot: a trading rule it breaks (a minimum, or the trading increment), or the free cash or units it exceeds. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
             "items": {
               "$ref": "#/components/schemas/OrderQuoteBlocker"
             },
@@ -5827,7 +5827,7 @@
             "type": "boolean"
           },
           "is_placeable": {
-            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists why it would not.",
             "title": "Is Placeable",
             "type": "boolean"
           },
@@ -5940,7 +5940,7 @@
       "EtfLimitQuantityQuote": {
         "properties": {
           "blockers": {
-            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "description": "Why the order cannot be placed as quoted, if it cannot: a trading rule it breaks (a minimum, or the trading increment), or the free cash or units it exceeds. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
             "items": {
               "$ref": "#/components/schemas/OrderQuoteBlocker"
             },
@@ -6010,7 +6010,7 @@
             "type": "boolean"
           },
           "is_placeable": {
-            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists why it would not.",
             "title": "Is Placeable",
             "type": "boolean"
           },
@@ -6138,7 +6138,7 @@
       "EtfMarketCashQuote": {
         "properties": {
           "blockers": {
-            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "description": "Why the order cannot be placed as quoted, if it cannot: a trading rule it breaks (a minimum, or the trading increment), or the free cash or units it exceeds. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
             "items": {
               "$ref": "#/components/schemas/OrderQuoteBlocker"
             },
@@ -6216,7 +6216,7 @@
             "type": "boolean"
           },
           "is_placeable": {
-            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists why it would not.",
             "title": "Is Placeable",
             "type": "boolean"
           },
@@ -6336,7 +6336,7 @@
       "EtfMarketQuantityQuote": {
         "properties": {
           "blockers": {
-            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "description": "Why the order cannot be placed as quoted, if it cannot: a trading rule it breaks (a minimum, or the trading increment), or the free cash or units it exceeds. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
             "items": {
               "$ref": "#/components/schemas/OrderQuoteBlocker"
             },
@@ -6406,7 +6406,7 @@
             "type": "boolean"
           },
           "is_placeable": {
-            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists why it would not.",
             "title": "Is Placeable",
             "type": "boolean"
           },
@@ -9440,7 +9440,7 @@
       "MmfMarketCashQuote": {
         "properties": {
           "blockers": {
-            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "description": "Why the order cannot be placed as quoted, if it cannot: a trading rule it breaks (a minimum, or the trading increment), or the free cash or units it exceeds. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
             "items": {
               "$ref": "#/components/schemas/OrderQuoteBlocker"
             },
@@ -9518,7 +9518,7 @@
             "type": "boolean"
           },
           "is_placeable": {
-            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists why it would not.",
             "title": "Is Placeable",
             "type": "boolean"
           },
@@ -11215,10 +11215,10 @@
         "type": "string"
       },
       "OrderQuoteBlocker": {
-        "description": "A trading rule the quoted order breaks. Placing it as quoted fails with the\nsame `code` and `context`.",
+        "description": "Why the quoted order cannot be placed as quoted: a trading rule it breaks, or a\nbalance it exceeds. Placing it as quoted fails with the same `code` and\n`context`.",
         "properties": {
           "code": {
-            "description": "The error placement returns for this order.",
+            "description": "The error placement returns for this order: `trading_rule_violated`, `insufficient_funds` or `insufficient_units`.",
             "examples": [
               "trading_rule_violated"
             ],
@@ -11226,12 +11226,19 @@
             "type": "string"
           },
           "context": {
-            "allOf": [
+            "anyOf": [
               {
                 "$ref": "#/components/schemas/OrderQuoteBlockerContext"
+              },
+              {
+                "$ref": "#/components/schemas/OrderQuoteFundsBlockerContext"
+              },
+              {
+                "$ref": "#/components/schemas/OrderQuoteUnitsBlockerContext"
               }
             ],
-            "description": "The rule broken."
+            "description": "The rule broken, or the balance exceeded, by `code`.",
+            "title": "Context"
           },
           "detail": {
             "description": "A readable description of the violation.",
@@ -11347,6 +11354,48 @@
           "amount"
         ],
         "title": "OrderQuoteFeeLine",
+        "type": "object"
+      },
+      "OrderQuoteFundsBlockerContext": {
+        "description": "The cash balance an `insufficient_funds` blocker names.",
+        "properties": {
+          "available": {
+            "description": "The free cash the account has for trading.",
+            "examples": [
+              "800.00"
+            ],
+            "title": "Available",
+            "type": "string"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Currency"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The cash balance's currency.",
+            "examples": [
+              "EUR"
+            ]
+          },
+          "requested": {
+            "description": "The cash the order would reserve.",
+            "examples": [
+              "1000.00"
+            ],
+            "title": "Requested",
+            "type": "string"
+          }
+        },
+        "required": [
+          "available",
+          "requested",
+          "currency"
+        ],
+        "title": "OrderQuoteFundsBlockerContext",
         "type": "object"
       },
       "OrderQuoteRequest": {
@@ -11472,6 +11521,33 @@
           "denomination"
         ],
         "title": "OrderQuoteReservation",
+        "type": "object"
+      },
+      "OrderQuoteUnitsBlockerContext": {
+        "description": "The position an `insufficient_units` blocker names.",
+        "properties": {
+          "available": {
+            "description": "The free units the position has for trading.",
+            "examples": [
+              "10"
+            ],
+            "title": "Available",
+            "type": "string"
+          },
+          "requested": {
+            "description": "The units the order would sell.",
+            "examples": [
+              "12"
+            ],
+            "title": "Requested",
+            "type": "string"
+          }
+        },
+        "required": [
+          "available",
+          "requested"
+        ],
+        "title": "OrderQuoteUnitsBlockerContext",
         "type": "object"
       },
       "OrderSide": {
@@ -14754,7 +14830,7 @@
         "description": "One shape for every sell, across instrument types. Market sells carry\n`estimate.price` / `asof` / `cash`; limit sells carry `estimate.min_proceeds`\nand a top-level `limit_price`.",
         "properties": {
           "blockers": {
-            "description": "The trading rule the order breaks, if any: a minimum, or the trading increment. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
+            "description": "Why the order cannot be placed as quoted, if it cannot: a trading rule it breaks (a minimum, or the trading increment), or the free cash or units it exceeds. The `estimate` is still computed, so the order's cost can be shown next to what it needs. At most one entry; empty when `is_placeable`.",
             "items": {
               "$ref": "#/components/schemas/OrderQuoteBlocker"
             },
@@ -14824,7 +14900,7 @@
             "type": "boolean"
           },
           "is_placeable": {
-            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists a trading rule it breaks.",
+            "description": "Whether an order placed from this quote would be accepted as quoted. False when `blockers` lists why it would not.",
             "title": "Is Placeable",
             "type": "boolean"
           },
