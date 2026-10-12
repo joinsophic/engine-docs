@@ -13361,8 +13361,7 @@
           "refund",
           "corporate_action",
           "position_migration_in",
-          "book_transfer",
-          "portfolio_transfer"
+          "book_transfer"
         ],
         "properties": {},
         "title": "ReferenceType",
@@ -15673,7 +15672,6 @@
           "fx",
           "position_migration_in",
           "book_transfer",
-          "portfolio_transfer",
           "write_off"
         ],
         "properties": {},
