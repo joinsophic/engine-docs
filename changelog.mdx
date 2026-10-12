@@ -8,6 +8,15 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 12, 2026" description="deprecations">
+  ## Removal of portfolio_transfer reference type
+
+  We've removed the `portfolio_transfer` enum value from transaction and reference types as we consolidate our transaction categorization. This value is no longer returned in any API responses.
+
+  **Changed**
+  - `portfolio_transfer` enum value removed from `ReferenceType` and `TransactionType`. If your code checks transaction types, remove any conditions that reference this value.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
