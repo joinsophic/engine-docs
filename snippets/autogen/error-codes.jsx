@@ -186,6 +186,10 @@ export const errorCodes = [
     "detail": "The referenced quote cannot be used. Please request a new one and retry."
   },
   {
+    "code": "rate_limited",
+    "detail": "Too many requests. Try again later."
+  },
+  {
     "code": "refund_exceeds_refundable_amount",
     "detail": "The requested refund amount exceeds the refundable amount."
   },
