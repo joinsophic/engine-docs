@@ -8,6 +8,19 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 13, 2026" description="additions">
+  ## User settings and improved order tracking
+
+  We've added a new endpoint to update user preferences, including portal choice and locale settings. Order responses now include average execution price tracking.
+
+  **Added**
+  - [Update current user](/api-reference/identity/update-current-user) endpoint to update user settings like portal preference, first name, and locale.
+  - `default_portal` field on the user profile to track which portal the user prefers. Values are `"classic"` or `"surf"`.
+  - `first_name` and `locale` fields on the user profile for better personalization.
+  - `average_traded_price` on all order responses (from [List orders](/api-reference/trading/list-orders), [Retrieve an order](/api-reference/trading/retrieve-an-order), and [List pending orders](/api-reference/trading/list-pending-orders)). This field shows the quantity-weighted average price of executed trades, rounded to 5 decimal places. For bonds, we use the clean price and exclude accrued interest. The field is `null` until the order's first trade executes.
+  - `rate_limited` error code. We'll return this when too many requests arrive in a short time window. Retry using exponential backoff.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
