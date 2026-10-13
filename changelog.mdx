@@ -29,6 +29,12 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - `trading_rule_violated` error code.
   - `insufficient_funds` and `insufficient_units` blocker codes on [order quotes](/api-reference/trading/get-an-order-quote). When a quote returns these blockers, the `context` tells you the balance check that failed: `available` and `requested` amounts, and the account `currency` (for funds) or the position's available units (for units). You can use this to prompt users to add funds or adjust their position size before placing the order.
 
+  **Added (continued)**
+  - `rate_limited` error code when too many requests are sent to the API.
+  - `average_traded_price` on [order](/api-reference/trading/place-an-order) responses: the quantity-weighted average price of executed trades, rounded to 5 decimal places. For bonds, this is the clean price excluding accrued interest. The field is `null` until the first trade executes.
+  - [Update current user](/api-reference/identity/update-current-user) endpoint to modify user preferences including `default_portal` (preferred landing portal), `first_name`, and `locale`.
+  - `default_portal` on [current actor](/api-reference/identity/retrieve-current-actor) responses to track the user's portal preference.
+
   **Changed**
 
   These apply on every API version.
