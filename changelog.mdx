@@ -8,6 +8,18 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 13, 2026" description="additions">
+  ## User preferences and improved order tracking
+
+  You can now update your profile to set a portal preference, and orders provide more detail on executed trades.
+
+  **Added**
+  - [Update current user](/api-reference/identity/update-current-user) endpoint to modify your profile, including name, locale, and preferred portal.
+  - `default_portal` preference on your user profile (retrieve via [Retrieve current actor](/api-reference/identity/retrieve-current-actor)) to indicate your preferred portal (classic or surf).
+  - `average_traded_price` on [order](/api-reference/trading/place-an-order) responses: the quantity-weighted average price of executed trades, rounded to 5 decimal places. It's `null` until the first trade executes.
+  - `rate_limited` error code when you've exceeded the rate limit.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
