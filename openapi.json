@@ -10909,6 +10909,21 @@
             "description": "Customer's automatic rollover preference; set only on eligible buy orders.",
             "title": "Automatic Rollover"
           },
+          "average_traded_price": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Quantity-weighted average price of the executed trades, rounded to 5 decimal places. Clean price for bonds (excludes accrued interest). `null` until the first trade executes.",
+            "examples": [
+              "95.08250"
+            ],
+            "title": "Average Traded Price"
+          },
           "cancelled_at": {
             "anyOf": [
               {
@@ -12597,6 +12612,15 @@
         ],
         "title": "PlaceOrderRequest",
         "type": "object"
+      },
+      "Portal": {
+        "enum": [
+          "classic",
+          "surf"
+        ],
+        "properties": {},
+        "title": "Portal",
+        "type": "string"
       },
       "Position": {
         "properties": {
@@ -15712,6 +15736,48 @@
         "title": "UpdatePositionRequest",
         "type": "object"
       },
+      "UpdateUserRequest": {
+        "properties": {
+          "default_portal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Portal"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The portal the user prefers to land on. Omit to leave unchanged; `null` clears the preference."
+          },
+          "first_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The user's first name.",
+            "title": "First Name"
+          },
+          "locale": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "en_GB",
+            "description": "User-selected locale.",
+            "title": "Locale"
+          }
+        },
+        "title": "UpdateUserRequest",
+        "type": "object"
+      },
       "UpdateWebhookRequest": {
         "properties": {
           "description": {
@@ -15746,6 +15812,17 @@
             "format": "date-time",
             "title": "Created At",
             "type": "string"
+          },
+          "default_portal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Portal"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The portal the user prefers to land on, or null if they have not chosen one."
           },
           "email": {
             "description": "The (verified) email address of the user.",
@@ -19123,6 +19200,51 @@
           }
         ],
         "summary": "Retrieve current actor",
+        "tags": [
+          "identity"
+        ]
+      },
+      "put": {
+        "description": "Updates the authenticated user. Equivalent to `PUT /users/{id}` with the caller's own ID; service actors have no user to update.",
+        "operationId": "update_me_me_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Bad Request"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update current user",
         "tags": [
           "identity"
         ]
