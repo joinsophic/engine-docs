@@ -8,6 +8,21 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 14, 2026" description="additions">
+  ## Performance metrics, user preferences, and enhanced order details
+
+  We've expanded earnings and returns with simple return calculations, added user portal preferences, and provided more granular order execution details.
+
+  **Added**
+  - `rate_limited` error code for rate limit violations on any endpoint.
+  - New fields on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l), [position earnings](/api-reference/performance/retrieve-position-earnings-p&l), and returns responses: `capital` (money invested over the period), `simple_return` (net earnings divided by capital), and `simple_return_annualised` (simple return annualized over the period).
+  - `annualised` boolean field on earnings and returns responses to clarify whether MWRR and TWRR are annual rates (true when the period is a year or longer).
+  - `average_traded_price` on [order](/api-reference/trading/retrieve-an-order) responses: quantity-weighted average price of executed trades, rounded to 5 decimal places, null until the first trade executes.
+  - `Portal` enum for user interface preferences, with values `classic` and `surf`.
+  - `default_portal` field on [user](/api-reference/identity/retrieve-current-actor) responses and [update current user](/api-reference/identity/update-current-user) requests to track the user's preferred interface.
+  - [Update current user](/api-reference/identity/update-current-user) endpoint (`PUT /me`) to modify authenticated user details including name, locale, and portal preference.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
