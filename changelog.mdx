@@ -28,6 +28,10 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - `is_placeable` and `blockers` on every [order quote](/api-reference/trading/get-an-order-quote). Each blocker carries the `code` and `detail` placement would return, and a `context` with `rule`, `required`, `actual`, and `required_cash_amount`: on a cash buy, the smallest `cash_amount` (fees included) that meets every buy rule.
   - `trading_rule_violated` error code.
   - `insufficient_funds` and `insufficient_units` blocker codes on [order quotes](/api-reference/trading/get-an-order-quote). When a quote returns these blockers, the `context` tells you the balance check that failed: `available` and `requested` amounts, and the account `currency` (for funds) or the position's available units (for units). You can use this to prompt users to add funds or adjust their position size before placing the order.
+  - `capital`, `simple_return`, and `simple_return_annualised` on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings](/api-reference/performance/retrieve-position-earnings-p&l) responses.
+  - `annualised` flag on [account returns](/api-reference/performance/retrieve-account-returns-mwrr-twrr) and [position returns](/api-reference/performance/retrieve-position-returns-mwrr-twrr) responses, indicating whether rate-of-return figures are annual rates or cumulative over the period.
+  - `average_traded_price` on [orders](/api-reference/trading/retrieve-an-order), showing the quantity-weighted average price of executed trades.
+  - `rate_limited` error code when the API receives too many requests from your account.
 
   **Changed**
 
