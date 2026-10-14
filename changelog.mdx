@@ -8,6 +8,23 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 14, 2026" description="additions">
+  ## Account earnings metrics and rate limiting
+
+  We've added fields to account earnings and position earnings responses that help you track capital contributions and performance metrics, plus a new rate limit error code.
+
+  **Added**
+  - `capital` on [Retrieve account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l): the total capital contributed to the account over the period, with each deposit converted at its exchange rate on the day it was made.
+  - `simple_return` on [Retrieve account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l): a decimal expressing earnings as a percentage of `capital`. Returns `null` when there was no capital.
+  - `simple_return_annualised` on [Retrieve account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l): `simple_return` annualised over the period. Returns `null` for periods shorter than a year or when `simple_return` is null.
+  - `annualised` boolean on [Retrieve position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l) indicating whether `mwrr` and `twrr` are annual rates (true for periods a year or longer, false for shorter periods).
+  - `rate_limited` error code when you've made too many requests. Retry after a brief delay.
+
+  **Changed**
+  - `mwrr` on [Retrieve position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l) is now annualised for periods a year or longer, and cumulative over the period for shorter periods. Check the `annualised` flag to see which applies.
+  - `twrr` on [Retrieve position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l) is now annualised for periods a year or longer, and cumulative over the period for shorter periods. Check the `annualised` flag to see which applies.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
