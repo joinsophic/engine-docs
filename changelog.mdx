@@ -40,6 +40,15 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - An order that sends both `cash_amount` and `quantity` is rejected with `invalid_param` on `quantity`. Previously, `quantity` silently took precedence.
   - Selling an instrument the account holds no position in returns `insufficient_units` with `context.available` of `"0"`.
   - `trading_increment` on instruments is returned at full precision (for example `"0.00010000"`) instead of rounded to two decimal places.
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) request body renamed `instrument_id` to `instrument` for consistency with quote responses.
+
+  **Added** (continued)
+  - `money_in` on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings](/api-reference/performance/retrieve-position-earnings-p&l): the money invested over the period, each converted at the exchange rate of the day it happened.
+  - `simple_return` on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings](/api-reference/performance/retrieve-position-earnings-p&l): `net` divided by `money_in`, showing total return before fees and currency effects.
+  - `simple_return_annualised` on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings](/api-reference/performance/retrieve-position-earnings-p&l): `simple_return` annualized over the period; `null` when the period is shorter than a year.
+  - `annualised` on [rate of return](/api-reference/performance/retrieve-account-earnings-p&l) responses to flag whether `mwrr` and `twrr` are annual rates (true for year-plus periods) or cumulative over the actual period.
+  - `average_traded_price` on [orders](/api-reference/trading/retrieve-an-order): the quantity-weighted average price of executed trades, rounded to 5 decimal places.
+  - `rate_limited` error code when you've sent too many requests. Wait before retrying.
 </Update>
 
 <Update label="September 29, 2026" description="additions">
