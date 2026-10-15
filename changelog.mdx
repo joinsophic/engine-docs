@@ -8,6 +8,24 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 15, 2026" description="additions">
+  ## Performance metrics, annualization, and user preferences
+
+  We've expanded earnings and returns responses with money-in and simple-return metrics, clarified annualization behavior on rates of return, added support for user portal preferences, and enhanced order details with average execution prices.
+
+  **Added**
+  - `money_in`, `simple_return`, and `simple_return_annualised` fields on [account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l) and position earnings responses. `money_in` shows the total invested over the period; `simple_return` is the net return divided by money invested; `simple_return_annualised` is the annualized form.
+  - `annualised` field on [account returns](/api-reference/performance/retrieve-account-returns-mwrr-twrr) and position returns responses, indicating whether `mwrr` and `twrr` are annual rates (true for periods a year or longer, false for shorter periods).
+  - [Update current user](/api-reference/identity/update-current-user) (`PUT /me`) endpoint to update your name, locale, and default portal preference.
+  - `Portal` enum with `classic` and `surf` values for user portal preferences.
+  - `default_portal` field on [retrieve current actor](/api-reference/identity/retrieve-current-actor) responses, showing your preferred portal or null if you haven't set one.
+  - `average_traded_price` on [order](/api-reference/trading/retrieve-an-order) responses: the quantity-weighted average price of executed trades, available once the first trade executes.
+
+  **Changed**
+  - Descriptions for `mwrr` and `twrr` on returns responses now clarify annualization behavior: they're annual rates when the period is a year or longer, cumulative over the period otherwise.
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) request now uses `instrument` instead of `instrument_id` as the field name.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
