@@ -186,6 +186,10 @@
       "detail": "The referenced quote cannot be used. Please request a new one and retry."
     },
     {
+      "code": "rate_limited",
+      "detail": "Too many requests. Try again later."
+    },
+    {
       "code": "refund_exceeds_refundable_amount",
       "detail": "The requested refund amount exceeds the refundable amount."
     },
@@ -218,7 +222,7 @@
       "detail": "Withdrawals are not enabled for this account."
     }
   ],
-  "openapi_sha256": "6b70d7547a2c759e0fddff93944c94ad27658d14d63cc965134d99ab8738163e",
+  "openapi_sha256": "71b788258aba824e31a736bb9ace4efc9197b1cee10ed194513de22bccab6e33",
   "schema_version": 1,
   "webhook_events": [
     {
