@@ -8,6 +8,25 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 15, 2026" description="additions">
+  ## Return metrics, user preferences, and improved order detail
+
+  We've expanded earnings and return calculations with capital and simple return metrics, clarified how returns are annualized, added support for user portal preferences, and improved order responses with execution pricing detail.
+
+  **Added**
+  - `capital`, `simple_return`, and `simple_return_annualised` fields on [Retrieve account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l) responses to break down how much you invested and what your simple return is.
+  - `capital`, `simple_return`, and `simple_return_annualised` fields on [Retrieve position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l) responses for position-level return calculations.
+  - `annualised` field on performance returns (available on account and position responses) to indicate whether `mwrr` and `twrr` are annualized rates or cumulative over the period.
+  - `average_traded_price` on [Place an order](/api-reference/trading/place-an-order) responses, showing the quantity-weighted average price of executed trades.
+  - `default_portal` on [Retrieve current actor](/api-reference/identity/retrieve-current-actor) responses for the user's preferred portal landing page.
+  - [Update current user](/api-reference/identity/update-current-user) endpoint (`PUT /me`) to set user preferences including portal preference, first name, and locale.
+  - `rate_limited` error code when too many requests are made in a short period.
+
+  **Changed**
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) now accepts `instrument` instead of `instrument_id` in the request body.
+  - Descriptions for `mwrr` and `twrr` fields now clarify that they are annualized when the reporting period is a year or longer, and cumulative otherwise. See the `annualised` field to determine which applies.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
