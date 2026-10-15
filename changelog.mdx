@@ -8,6 +8,29 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 15, 2026" description="additions">
+  ## Return metrics and order execution details
+
+  We've added `simple_return` to account and position earnings, and `mwrr` and `twrr` are now annualised for periods of a year or longer. Orders also report their average traded price, and users can set their preferred portal.
+
+  **Added**
+  - `money_in`, `simple_return`, and `simple_return_annualised` on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings](/api-reference/performance/retrieve-position-earnings-p&l).
+    - `money_in` is the value at the start of the period plus every deposit (accounts) or purchase (positions) during it. Withdrawals and sales aren't subtracted.
+    - `simple_return` is earnings divided by `money_in`: `net` on accounts, so after fees, and `gross` on positions, so before fees.
+    - `simple_return_annualised` is `null` for periods under a year.
+  - `annualised` on [account returns](/api-reference/performance/retrieve-account-returns-mwrr-twrr) and [position returns](/api-reference/performance/retrieve-position-returns-mwrr-twrr), `true` when `mwrr` and `twrr` are annual rates.
+  - `average_traded_price` on [orders](/api-reference/trading/retrieve-an-order): the quantity-weighted average price of executed trades, rounded to 5 decimal places. Clean price for bonds. `null` until the first trade executes.
+  - New endpoint to [update your user profile](/api-reference/identity/update-current-user), including portal preference, name, and locale.
+  - `default_portal` on users: the portal the user lands on, `classic` or `surf`. Don't include it in your request to leave the preference unchanged; pass `null` to clear it.
+  - `rate_limited` error code, returned with `429` when you've sent too many requests. Wait before retrying.
+
+  **Changed**
+
+  These apply on every API version.
+  - We now annualise `mwrr` and `twrr` for periods of a year or longer. Shorter periods stay cumulative.
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) takes the instrument ID as `instrument`, matching quote responses. We still accept `instrument_id`.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
