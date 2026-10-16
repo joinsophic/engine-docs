@@ -8,6 +8,21 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 16, 2026" description="additions">
+  ## Performance metrics, order execution details, and user portal preferences
+
+  We've expanded earnings and returns responses with computed return metrics, added execution details to orders, and introduced user portal preferences.
+
+  **Added**
+  - `money_in`, `simple_return`, `simple_return_annualised`, and `annualised` on [Retrieve account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l), [Retrieve Account Returns (MWRR / TWRR)](/api-reference/performance/retrieve-account-returns-mwrr-twrr), [Retrieve position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l), and [Retrieve Position Returns (MWRR / TWRR)](/api-reference/performance/retrieve-position-returns-mwrr-twrr). `money_in` is what you've put in; `simple_return` and `simple_return_annualised` are returns as a decimal; `annualised` tells you whether those returns are annualized (true for periods a year or longer, false otherwise).
+  - `average_traded_price` on [Retrieve an order](/api-reference/trading/retrieve-an-order), a quantity-weighted average of executed trades rounded to 5 decimal places, populated once the first trade executes.
+  - `default_portal` on user responses, the portal the user prefers to land on (`classic` or `surf`), or null if they haven't chosen one.
+  - `rate_limited` error code when you send too many requests in a short period.
+
+  **Changed**
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) request body now uses `instrument` instead of `instrument_id`.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
