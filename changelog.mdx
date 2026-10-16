@@ -40,6 +40,15 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - An order that sends both `cash_amount` and `quantity` is rejected with `invalid_param` on `quantity`. Previously, `quantity` silently took precedence.
   - Selling an instrument the account holds no position in returns `insufficient_units` with `context.available` of `"0"`.
   - `trading_increment` on instruments is returned at full precision (for example `"0.00010000"`) instead of rounded to two decimal places.
+  - `rate_limited` error code for when you've exceeded the rate limit.
+  - `money_in`, `simple_return`, and `simple_return_annualised` fields on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings](/api-reference/performance/retrieve-position-earnings-p&l) responses. `money_in` is the total capital deployed; `simple_return` is net divided by `money_in`; `simple_return_annualised` annualizes the simple return over the period. These fields are `null` when no capital was deployed.
+  - `annualised` boolean on rate-of-return responses, clarifying whether `mwrr` and `twrr` are annual rates (true for periods a year or longer, false for shorter periods).
+  - `average_traded_price` on [order](/api-reference/trading/place-an-order) responses: the quantity-weighted average price of executed trades, rounded to 5 decimal places.
+  - `Portal` enum for user portal preferences (`classic` or `surf`).
+
+  **Changed**
+  - The `instrument_id` parameter in [order quote requests](/api-reference/trading/get-an-order-quote) is now called `instrument`.
+  - Descriptions for `mwrr` and `twrr` on performance metrics clarify whether they're annualized (for periods a year or longer) or cumulative over the period. See [Retrieve account returns](/api-reference/performance/retrieve-account-returns-mwrr-twrr).
 </Update>
 
 <Update label="September 29, 2026" description="additions">
