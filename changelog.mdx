@@ -8,6 +8,20 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 19, 2026" description="additions">
+  ## Enhanced performance metrics and rate limiting
+
+  Performance endpoints now expose money-in tracking and simple return calculations, and we've added a rate limit error code for clearer feedback when you hit usage limits.
+
+  **Added**
+  - `money_in` on [Retrieve account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l), [Retrieve Position Returns (MWRR / TWRR)](/api-reference/performance/retrieve-position-returns-mwrr-twrr), showing the total deposited into the account or position over the period.
+  - `simple_return`, `simple_return_annualised`, and `annualised` on [Retrieve Account Returns (MWRR / TWRR)](/api-reference/performance/retrieve-account-returns-mwrr-twrr) and [Retrieve Position Returns (MWRR / TWRR)](/api-reference/performance/retrieve-position-returns-mwrr-twrr). `simple_return` is net divided by money in; `simple_return_annualised` annualises that figure. `annualised` tells you whether the returns are annualised (true for year-or-longer periods) or cumulative.
+  - `rate_limited` error code when you exceed request limits.
+
+  **Changed**
+  - [Retrieve Account Returns (MWRR / TWRR)](/api-reference/performance/retrieve-account-returns-mwrr-twrr) and [Retrieve Position Returns (MWRR / TWRR)](/api-reference/performance/retrieve-position-returns-mwrr-twrr) now clarify that `mwrr` and `twrr` are annualised for periods of a year or longer and cumulative otherwise.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
