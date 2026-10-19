@@ -8,6 +8,22 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 19, 2026" description="additions">
+  ## Returns and earnings analysis enhancements
+
+  We've added simple return calculations and clearer annualization indicators to help you analyze account and position performance over different time periods.
+
+  **Added**
+  - `money_in` on [Retrieve account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l) and [Retrieve position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l): the total amount deposited into the account or position over the period.
+  - `simple_return` and `simple_return_annualised` on earnings endpoints: simple return calculations (net or gross earnings divided by money in) with optional annualization over the period.
+  - `annualised` boolean on [Retrieve Account Returns (MWRR / TWRR)](/api-reference/performance/retrieve-account-returns-mwrr-twrr) and the position returns endpoint, indicating whether MWRR and TWRR are annual rates (true for periods a year or longer, false otherwise).
+  - `rate_limited` error code when a request exceeds rate limits.
+
+  **Changed**
+  - [Retrieve Account Returns (MWRR / TWRR)](/api-reference/performance/retrieve-account-returns-mwrr-twrr) and position returns endpoints now clarify in the `mwrr` and `twrr` descriptions whether the returned rates are annualized or cumulative, based on the period.
+
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
