@@ -42,6 +42,24 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - `trading_increment` on instruments is returned at full precision (for example `"0.00010000"`) instead of rounded to two decimal places.
 </Update>
 
+<Update label="October 19, 2026" description="additions">
+  ## Performance reporting and order execution improvements
+
+  We've expanded earnings (P&L) responses to include simple return metrics for easier performance analysis, clarified when return rates are annualized, and now surface the average execution price on traded orders.
+
+  **Added**
+  - `money_in` on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings](/api-reference/performance/retrieve-position-earnings-p&l): the total invested over the period, converting each deposit or purchase at its own day's exchange rate. Over an account's whole life, this is the total deposited.
+  - `simple_return` on [account](/api-reference/performance/retrieve-account-earnings-p&l) and [position](/api-reference/performance/retrieve-position-earnings-p&l) earnings: the simple return calculated as net divided by money in. For positions, the return includes the currency effect. Returns `null` when nothing was invested.
+  - `simple_return_annualised` on [account](/api-reference/performance/retrieve-account-earnings-p&l) and [position](/api-reference/performance/retrieve-position-earnings-p&l) earnings: simple return annualized over the reporting period using the formula `(1 + simple_return) ^ (365 / days) - 1`. Returns `null` for periods under a year or when simple return is `null`.
+  - `annualised` on [account returns](/api-reference/performance/retrieve-account-returns-mwrr-twrr): a boolean indicating whether `mwrr` and `twrr` are annual rates (true for periods a year or longer) or cumulative over the period (true for periods under a year).
+  - `average_traded_price` on [orders](/api-reference/trading/retrieve-an-order): the quantity-weighted average price of all executed trades, rounded to 5 decimal places. For bonds, this is the clean price excluding accrued interest. Returns `null` until the first trade executes.
+  - `rate_limited` error code when your request rate exceeds the API limit.
+
+  **Changed**
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) request parameter `instrument_id` is now `instrument`.
+
+</Update>
+
 <Update label="September 29, 2026" description="additions">
   ## Order validation error codes
 
