@@ -8,6 +8,24 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 19, 2026" description="additions">
+  ## Enhanced earnings reporting and order execution details
+
+  We've added performance metrics that break down earnings composition and show actual trade execution prices.
+
+  **Added**
+  - `rate_limited` error code when you exceed rate limits.
+  - `money_in` field on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings](/api-reference/performance/retrieve-position-earnings-p&l): the total deposited or invested over the reporting period.
+  - `simple_return` and `simple_return_annualised` fields on account and position earnings: calculated returns as a decimal, null when nothing was invested.
+  - `annualised` boolean on account and position returns: indicates whether `mwrr` and `twrr` rates are annualised (true when the period is a year or longer) or cumulative.
+  - `average_traded_price` on orders: the quantity-weighted average price of executed trades.
+  - `Portal` enum type with values `"classic"` and `"surf"`.
+
+  **Changed**
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) and [Place an order](/api-reference/trading/place-an-order) now expect `instrument` instead of `instrument_id` in request payloads.
+  - `mwrr` and `twrr` field descriptions now clarify that rates are annualised when the period is a year or longer, cumulative otherwise (see new `annualised` field).
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
