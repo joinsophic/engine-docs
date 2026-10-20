@@ -9,11 +9,11 @@ Track what's new and what's changed in our API. We publish an entry for every us
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
 <Update label="October 1, 2026" description="2026-10-01">
-  ## Trading configuration and consistent order validation
+  ## Trading configuration, order details, and performance metrics
 
   <Info>New API version `2026-10-01`. See [Versioning](/api-reference/versioning) to migrate.</Info>
 
-  Instruments now describe their order rules in a single `trading_configuration` object, split into buy and sell. Quotes run the same checks as placement, so a quote fails exactly where the order it previews would. When a quoted order breaks a sizing rule, you get the quote back with the rule it breaks, so you can show your users what to change before they place it. Requests pinned to `2026-09-28` or earlier keep the legacy instrument fields and the previous error responses.
+  Instruments now describe their order rules in a single `trading_configuration` object, split into buy and sell. Quotes run the same checks as placement, so a quote fails exactly where the order it previews would. When a quoted order breaks a sizing rule, you get the quote back with the rule it breaks, so you can show your users what to change before they place it. We've also added performance metrics and order execution details to give you better insight into portfolio performance and trade execution. Requests pinned to `2026-09-28` or earlier keep the legacy instrument fields and the previous error responses.
 
   **Breaking**
   - Instruments, wherever we return them (on their own or embedded in positions, orders, quotes, transactions, and valuations), no longer carry `minimum_trading_quantity`, `minimum_initial_cash_investment`, `required_cash_increment`, or `enforce_trading_rules`. Read the rules from `trading_configuration` instead:
@@ -22,12 +22,18 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
     - `required_cash_increment` and `enforce_trading_rules` have no replacement. We use null in the trading configuration when no rule applies.
   - [Get an order quote](/api-reference/trading/get-an-order-quote) returns `200` instead of `400` for an order that breaks a sizing rule: a quantity off the trading increment, a cash amount that buys less than one trading increment, or a minimum in `trading_configuration`. The quote carries its `estimate` as usual, with `is_placeable: false` and the rule in `blockers`. Placing the order as quoted still fails with the same error.
   - [Get an order quote](/api-reference/trading/get-an-order-quote) and [Place an order](/api-reference/trading/place-an-order) return `trading_rule_violated` instead of `invalid_request` when an order breaks a rule in `trading_configuration`. `context.rule` names the rule (for example `buy.min_initial_cash_amount`), with `context.required` and `context.actual`. `params` still points at the field the order was sized by.
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) request parameter `instrument_id` is now `instrument`.
 
   **Added**
   - `trading_configuration` on [instruments](/api-reference/catalog/retrieve-an-instrument), on every API version. `buy` carries `modes`, `min_cash_amount`, `min_initial_cash_amount`, `min_quantity`, and `min_initial_quantity`; `sell` carries `modes`, `min_cash_amount`, and `min_quantity`. A `null` minimum isn't applied, and a sell minimum never blocks selling a whole position. Cash amounts are in the instrument's trading currency.
   - `is_placeable` and `blockers` on every [order quote](/api-reference/trading/get-an-order-quote). Each blocker carries the `code` and `detail` placement would return, and a `context` with `rule`, `required`, `actual`, and `required_cash_amount`: on a cash buy, the smallest `cash_amount` (fees included) that meets every buy rule.
   - `trading_rule_violated` error code.
   - `insufficient_funds` and `insufficient_units` blocker codes on [order quotes](/api-reference/trading/get-an-order-quote). When a quote returns these blockers, the `context` tells you the balance check that failed: `available` and `requested` amounts, and the account `currency` (for funds) or the position's available units (for units). You can use this to prompt users to add funds or adjust their position size before placing the order.
+  - `money_in` on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings](/api-reference/performance/retrieve-position-earnings-p&l) responses: the cash invested over the period, each converted at the exchange rate of its own day.
+  - `simple_return` and `simple_return_annualised` on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings](/api-reference/performance/retrieve-position-earnings-p&l) responses: simple return (net or gross divided by money in) and annualized equivalent.
+  - `annualised` boolean on [account returns](/api-reference/performance/retrieve-account-returns-mwrr-twrr) and [position returns](/api-reference/performance/retrieve-position-returns-mwrr-twrr) responses indicating whether `mwrr` and `twrr` are annual rates.
+  - `average_traded_price` on [orders](/api-reference/trading/retrieve-an-order): the quantity-weighted average price of executed trades, rounded to 5 decimal places, null until the first trade executes.
+  - `rate_limited` error code when too many requests are made.
 
   **Changed**
 
@@ -40,6 +46,7 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - An order that sends both `cash_amount` and `quantity` is rejected with `invalid_param` on `quantity`. Previously, `quantity` silently took precedence.
   - Selling an instrument the account holds no position in returns `insufficient_units` with `context.available` of `"0"`.
   - `trading_increment` on instruments is returned at full precision (for example `"0.00010000"`) instead of rounded to two decimal places.
+  - `mwrr` and `twrr` on [account returns](/api-reference/performance/retrieve-account-returns-mwrr-twrr) and [position returns](/api-reference/performance/retrieve-position-returns-mwrr-twrr) responses are annualized when the period is a year or longer, or cumulative over shorter periods; see `annualised` field and [Versioning](/api-reference/versioning) for period semantics.
 </Update>
 
 <Update label="September 29, 2026" description="additions">
