@@ -8,6 +8,21 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 20, 2026" description="additions">
+  ## Enhanced performance metrics and rate limiting
+
+  We now return additional performance metrics to give you deeper insights into account and position returns, plus an explicit rate limit error code for better retry handling.
+
+  **Added**
+  - `money_in` on [Retrieve account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l) and [Retrieve position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l) responses, showing the total capital invested over the period.
+  - `simple_return` and `simple_return_annualised` on earnings responses, providing simple return calculations as a percentage (net earnings divided by money invested).
+  - `annualised` field on [Retrieve Account Returns (MWRR / TWRR)](/api-reference/performance/retrieve-account-returns-mwrr-twrr) responses, indicating whether the `mwrr` and `twrr` rates are annual rates or cumulative over the period.
+  - `rate_limited` error code when your requests exceed rate limits. We recommend implementing exponential backoff when you receive this error.
+
+  **Changed**
+  - Descriptions for `mwrr` and `twrr` on [Retrieve Account Returns (MWRR / TWRR)](/api-reference/performance/retrieve-account-returns-mwrr-twrr) now clarify whether rates are annualised or cumulative over the period, depending on the length of the performance period.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
