@@ -28,6 +28,10 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - `is_placeable` and `blockers` on every [order quote](/api-reference/trading/get-an-order-quote). Each blocker carries the `code` and `detail` placement would return, and a `context` with `rule`, `required`, `actual`, and `required_cash_amount`: on a cash buy, the smallest `cash_amount` (fees included) that meets every buy rule.
   - `trading_rule_violated` error code.
   - `insufficient_funds` and `insufficient_units` blocker codes on [order quotes](/api-reference/trading/get-an-order-quote). When a quote returns these blockers, the `context` tells you the balance check that failed: `available` and `requested` amounts, and the account `currency` (for funds) or the position's available units (for units). You can use this to prompt users to add funds or adjust their position size before placing the order.
+  - `money_in` field on [Retrieve account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l): the total amount deposited into the account over the period.
+  - `simple_return` and `simple_return_annualised` fields on account earnings: the simple return (net divided by money_in) and its annualized form.
+  - `annualised` field on [Retrieve Account Returns (MWRR / TWRR)](/api-reference/performance/retrieve-account-returns-mwrr-twrr) to indicate whether the returns are annual rates or cumulative over the period.
+  - `rate_limited` error code returned when too many requests are made in a short time.
 
   **Changed**
 
@@ -40,6 +44,7 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - An order that sends both `cash_amount` and `quantity` is rejected with `invalid_param` on `quantity`. Previously, `quantity` silently took precedence.
   - Selling an instrument the account holds no position in returns `insufficient_units` with `context.available` of `"0"`.
   - `trading_increment` on instruments is returned at full precision (for example `"0.00010000"`) instead of rounded to two decimal places.
+  - `mwrr` and `twrr` on [returns](/api-reference/performance/retrieve-account-returns-mwrr-twrr) now clarify whether they're annualised: annual rates for periods a year or longer, cumulative otherwise. Check the `annualised` field to distinguish between them.
 </Update>
 
 <Update label="September 29, 2026" description="additions">
