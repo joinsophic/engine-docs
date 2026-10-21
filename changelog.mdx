@@ -8,6 +8,18 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 21, 2026" description="additions">
+  ## Performance metrics and rate limiting
+
+  We've added simple return metrics to earnings and returns responses, and a new rate limit error code to help you handle traffic constraints.
+
+  **Added**
+  - `money_in`, `simple_return`, and `simple_return_annualised` on [Retrieve account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l). `money_in` is the total amount invested (deposits and starting balance); `simple_return` is net earnings divided by that amount; `simple_return_annualised` scales the return for a full year. When nothing was invested, both returns are `null`.
+  - `annualised` flag on [Retrieve account returns (MWRR / TWRR)](/api-reference/performance/retrieve-account-returns-mwrr-twrr) and [Retrieve position returns (MWRR / TWRR)](/api-reference/performance/retrieve-position-returns-mwrr-twrr) to clarify whether `mwrr` and `twrr` are annual rates (true for periods of a year or longer) or cumulative over the period (false for shorter periods).
+  - `rate_limited` error code when you exceed API rate limits. Your client should back off and retry with exponential delay.
+  - `default_portal` on [Retrieve current actor](/api-reference/identity/retrieve-current-actor). This is the portal the user prefers to land on, or `null` if they haven't chosen one.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
