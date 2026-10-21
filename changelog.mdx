@@ -8,6 +8,24 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 21, 2026" description="additions">
+  ## Performance analytics and order execution details
+
+  Performance responses now include simple return metrics, deposit tracking, and return annualization info. Order responses include average execution price, and we've added a rate-limit error code.
+
+  **Added**
+  - `money_in` on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings](/api-reference/performance/retrieve-position-earnings-p&l) responses, tracking total capital invested.
+  - `simple_return` and `simple_return_annualised` on earnings responses, showing return as a decimal.
+  - `annualised` on [account](/api-reference/performance/retrieve-account-returns-mwrr-twrr) and [position](/api-reference/performance/retrieve-position-returns-mwrr-twrr) returns, indicating whether `mwrr` and `twrr` are annualized.
+  - `average_traded_price` on [order](/api-reference/trading/retrieve-an-order) responses, the quantity-weighted average price of executed trades.
+  - `rate_limited` error code for rate-limit responses.
+  - `Portal` enum with `classic` and `surf` values.
+
+  **Changed**
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) request now uses `instrument` instead of `instrument_id` in the request body.
+  - Descriptions for `mwrr` and `twrr` on [returns](/api-reference/performance/retrieve-account-returns-mwrr-twrr) endpoints clarified to note annualization behavior.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
