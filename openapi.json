@@ -567,6 +567,11 @@
             "title": "Gross",
             "type": "string"
           },
+          "money_in": {
+            "description": "The money put into the account over the period: its value at the start of the period plus every deposit during it, each converted at the exchange rate of its own day. Withdrawals are not subtracted. Over the account's whole life, this is the total deposited.",
+            "title": "Money In",
+            "type": "string"
+          },
           "net": {
             "description": "Everything the account earned after fees: gross minus fees.",
             "title": "Net",
@@ -606,6 +611,36 @@
               }
             ],
             "description": "What the account's positions earned, with a breakdown of where it came from."
+          },
+          "simple_return": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The simple return as a decimal: `net` divided by `money_in`. `null` when nothing was put in.",
+            "examples": [
+              "0.0307"
+            ],
+            "title": "Simple Return"
+          },
+          "simple_return_annualised": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "`simple_return` annualised over the period: (1 + `simple_return`) ^ (365 / days) - 1. `null` when the period is shorter than a year, which is never annualised, or when `simple_return` is.",
+            "examples": [
+              "0.0127"
+            ],
+            "title": "Simple Return Annualised"
           }
         },
         "required": [
@@ -616,6 +651,9 @@
           "gross",
           "fees",
           "net",
+          "money_in",
+          "simple_return",
+          "simple_return_annualised",
           "positions",
           "cash"
         ],
@@ -718,6 +756,11 @@
             "title": "Account",
             "type": "string"
           },
+          "annualised": {
+            "description": "Whether `mwrr` and `twrr` are annual rates. True when the period is a year or longer; a period under a year is never annualised.",
+            "title": "Annualised",
+            "type": "boolean"
+          },
           "flags": {
             "description": "Signals explaining clamps, missing data, or uncomputable rates.",
             "items": {
@@ -735,7 +778,7 @@
                 "type": "null"
               }
             ],
-            "description": "Cumulative money-weighted rate of return as a decimal; `null` when uncomputable.",
+            "description": "Money-weighted rate of return as a decimal: annualised when the period is a year or longer, cumulative over the period otherwise (see `annualised`); `null` when uncomputable.",
             "examples": [
               "0.0925"
             ],
@@ -776,7 +819,7 @@
                 "type": "null"
               }
             ],
-            "description": "Cumulative time-weighted rate of return as a decimal; `null` when uncomputable.",
+            "description": "Time-weighted rate of return as a decimal: annualised when the period is a year or longer, cumulative over the period otherwise (see `annualised`); `null` when uncomputable.",
             "examples": [
               "0.0875"
             ],
@@ -789,6 +832,7 @@
           "period_end",
           "mwrr",
           "twrr",
+          "annualised",
           "flags",
           "account"
         ],
@@ -10909,6 +10953,21 @@
             "description": "Customer's automatic rollover preference; set only on eligible buy orders.",
             "title": "Automatic Rollover"
           },
+          "average_traded_price": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Quantity-weighted average price of the executed trades, rounded to 5 decimal places. Clean price for bonds (excludes accrued interest). `null` until the first trade executes.",
+            "examples": [
+              "95.08250"
+            ],
+            "title": "Average Traded Price"
+          },
           "cancelled_at": {
             "anyOf": [
               {
@@ -11423,9 +11482,9 @@
             ],
             "title": "Cash Amount"
           },
-          "instrument_id": {
+          "instrument": {
             "description": "ID of the instrument to quote.",
-            "title": "Instrument Id",
+            "title": "Instrument",
             "type": "string"
           },
           "limit_price": {
@@ -11490,7 +11549,7 @@
           }
         },
         "required": [
-          "instrument_id",
+          "instrument",
           "side"
         ],
         "title": "OrderQuoteRequest",
@@ -12598,6 +12657,15 @@
         "title": "PlaceOrderRequest",
         "type": "object"
       },
+      "Portal": {
+        "enum": [
+          "classic",
+          "surf"
+        ],
+        "properties": {},
+        "title": "Portal",
+        "type": "string"
+      },
       "Position": {
         "properties": {
           "account": {
@@ -12914,12 +12982,50 @@
             "description": "Total earnings before fees in the account's currency, each part converted at the exchange rate of the day it happened. Equals the investment effect plus the currency effect.",
             "title": "Gross",
             "type": "string"
+          },
+          "money_in": {
+            "description": "The money put into the position over the period, in the account's currency: the value of the units held at the start of the period plus the cost of every purchase during it, each converted at the exchange rate of its own day. Sales are not subtracted.",
+            "title": "Money In",
+            "type": "string"
+          },
+          "simple_return": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The simple return as a decimal: `gross` divided by `money_in`, so it includes the currency effect. Before fees, which are charged to the account rather than to a position. `null` when nothing was put in.",
+            "examples": [
+              "0.0307"
+            ],
+            "title": "Simple Return"
+          },
+          "simple_return_annualised": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "`simple_return` annualised over the period: (1 + `simple_return`) ^ (365 / days) - 1. `null` when the period is shorter than a year, which is never annualised, or when `simple_return` is.",
+            "examples": [
+              "0.0127"
+            ],
+            "title": "Simple Return Annualised"
           }
         },
         "required": [
           "currency",
           "cost_basis",
           "gross",
+          "money_in",
+          "simple_return",
+          "simple_return_annualised",
           "attribution"
         ],
         "title": "PositionReportingEarnings",
@@ -12927,6 +13033,11 @@
       },
       "PositionReturns": {
         "properties": {
+          "annualised": {
+            "description": "Whether `mwrr` and `twrr` are annual rates. True when the period is a year or longer; a period under a year is never annualised.",
+            "title": "Annualised",
+            "type": "boolean"
+          },
           "flags": {
             "description": "Signals explaining clamps, missing data, or uncomputable rates.",
             "items": {
@@ -12944,7 +13055,7 @@
                 "type": "null"
               }
             ],
-            "description": "Cumulative money-weighted rate of return as a decimal; `null` when uncomputable.",
+            "description": "Money-weighted rate of return as a decimal: annualised when the period is a year or longer, cumulative over the period otherwise (see `annualised`); `null` when uncomputable.",
             "examples": [
               "0.0925"
             ],
@@ -12990,7 +13101,7 @@
                 "type": "null"
               }
             ],
-            "description": "Cumulative time-weighted rate of return as a decimal; `null` when uncomputable.",
+            "description": "Time-weighted rate of return as a decimal: annualised when the period is a year or longer, cumulative over the period otherwise (see `annualised`); `null` when uncomputable.",
             "examples": [
               "0.0875"
             ],
@@ -13003,6 +13114,7 @@
           "period_end",
           "mwrr",
           "twrr",
+          "annualised",
           "flags",
           "position"
         ],
@@ -13047,6 +13159,41 @@
             "title": "Gross",
             "type": "string"
           },
+          "money_in": {
+            "description": "The money put into the position over the period: the value of the units held at the start of the period plus the cost of every purchase during it. Sales are not subtracted.",
+            "title": "Money In",
+            "type": "string"
+          },
+          "simple_return": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The simple return as a decimal: `gross` divided by `money_in`. Before fees, which are charged to the account rather than to a position. `null` when nothing was put in.",
+            "examples": [
+              "0.0307"
+            ],
+            "title": "Simple Return"
+          },
+          "simple_return_annualised": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "`simple_return` annualised over the period: (1 + `simple_return`) ^ (365 / days) - 1. `null` when the period is shorter than a year, which is never annualised, or when `simple_return` is.",
+            "examples": [
+              "0.0127"
+            ],
+            "title": "Simple Return Annualised"
+          },
           "unrealized_percentage": {
             "description": "Unrealized earnings as a proportion of the cost basis.",
             "title": "Unrealized Percentage",
@@ -13058,6 +13205,9 @@
           "cost_basis",
           "gross",
           "unrealized_percentage",
+          "money_in",
+          "simple_return",
+          "simple_return_annualised",
           "attribution"
         ],
         "title": "PositionTradingEarnings",
@@ -15746,6 +15896,17 @@
             "format": "date-time",
             "title": "Created At",
             "type": "string"
+          },
+          "default_portal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Portal"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The portal the user prefers to land on, or null if they have not chosen one."
           },
           "email": {
             "description": "The (verified) email address of the user.",
