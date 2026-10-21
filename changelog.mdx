@@ -8,6 +8,22 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 21, 2026" description="additions">
+  ## Account returns enhancements and rate limiting
+
+  We've added new return metrics to account and position endpoints to help you track investment performance, plus a rate limiting error code.
+
+  **Added**
+  - `money_in` on [account returns](/api-reference/performance/retrieve-account-returns-mwrr-twrr): the money put into the account over the period (deposits converted at their own-day exchange rate, withdrawals not subtracted).
+  - `simple_return` on account returns: net earnings divided by money_in as a decimal, or null when nothing was deposited.
+  - `simple_return_annualised` on account returns: simple_return annualised over the period, or null when the period is shorter than a year or when simple_return is null.
+  - `annualised` on [position returns](/api-reference/performance/retrieve-position-returns-mwrr-twrr): a boolean indicating whether `mwrr` and `twrr` are annual rates (true for periods a year or longer, false otherwise).
+  - `rate_limited` error code when a request exceeds rate limits.
+
+  **Changed**
+  - Descriptions for `mwrr` and `twrr` on position returns now clarify they're annualised when the period is a year or longer, and cumulative over the period otherwise.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
