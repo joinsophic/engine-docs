@@ -8,6 +8,24 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 21, 2026" description="additions">
+  ## Performance metrics and user portal preference
+
+  We're adding performance metrics for accounts and positions, including money invested and simple returns, alongside support for user portal preferences.
+
+  **Added**
+  - `money_in` on [account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l), showing the total capital invested over the period.
+  - `simple_return` and `simple_return_annualised` on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings](/api-reference/performance/retrieve-position-earnings-p&l), providing simple return as a decimal (net divided by money invested).
+  - `annualised` on [Account Returns (MWRR / TWRR)](/api-reference/performance/retrieve-account-returns-mwrr-twrr), a boolean indicating whether `mwrr` and `twrr` are annualised rates (true for periods a year or longer).
+  - `average_traded_price` on [orders](/api-reference/trading/retrieve-an-order), the quantity-weighted average price of executed trades, rounded to 5 decimal places.
+  - `default_portal` on [users](/api-reference/identity/list-current-actor-permissions), showing the preferred portal (`classic` or `surf`), or null if not set.
+
+  **Changed**
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) request parameter `instrument_id` is now `instrument`.
+  - Descriptions for `mwrr` and `twrr` on [Account Returns (MWRR / TWRR)](/api-reference/performance/retrieve-account-returns-mwrr-twrr) now clarify that they return annualised rates for periods a year or longer and cumulative returns otherwise.
+  - `rate_limited` error code returned when too many requests are sent to the API.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
