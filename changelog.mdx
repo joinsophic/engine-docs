@@ -8,6 +8,22 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 22, 2026" description="additions">
+  ## Performance metrics and order execution details
+
+  We've added new performance calculations and order tracking fields to give you deeper insight into returns and execution.
+
+  **Added**
+  - `money_in` on [account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l): the total amount invested or deposited over the period, useful for calculating returns relative to capital deployed.
+  - `simple_return` and `simple_return_annualised` on account and position earnings responses: calculated as net earnings divided by money invested, annualised where the period is a year or longer.
+  - `annualised` on [account returns (MWRR / TWRR)](/api-reference/performance/retrieve-account-returns-mwrr-twrr) and position returns responses: a boolean flag indicating whether the MWRR and TWRR figures are annualised rates (when the period is a year or longer) or cumulative returns over the period.
+  - `average_traded_price` on [order](/api-reference/trading/retrieve-an-order) and [pending order](/api-reference/trading/list-pending-orders) responses: the quantity-weighted average price of executed trades, rounded to 5 decimal places, giving you visibility into execution quality. It's `null` until the first trade executes.
+  - `rate_limited` error code for endpoints that decline requests due to rate limiting. Try again after a brief delay.
+
+  **Changed**
+  - The [Get an order quote](/api-reference/trading/get-an-order-quote) request parameter `instrument_id` is now `instrument`. Update your code to use the new parameter name.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
