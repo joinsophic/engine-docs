@@ -28,6 +28,9 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - `is_placeable` and `blockers` on every [order quote](/api-reference/trading/get-an-order-quote). Each blocker carries the `code` and `detail` placement would return, and a `context` with `rule`, `required`, `actual`, and `required_cash_amount`: on a cash buy, the smallest `cash_amount` (fees included) that meets every buy rule.
   - `trading_rule_violated` error code.
   - `insufficient_funds` and `insufficient_units` blocker codes on [order quotes](/api-reference/trading/get-an-order-quote). When a quote returns these blockers, the `context` tells you the balance check that failed: `available` and `requested` amounts, and the account `currency` (for funds) or the position's available units (for units). You can use this to prompt users to add funds or adjust their position size before placing the order.
+  - Performance metrics on earnings and returns: `money_in`, `simple_return`, and `simple_return_annualised` on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings](/api-reference/performance/retrieve-position-earnings-p&l) responses. `simple_return` is the return as a decimal (net over money_in for accounts, gross over money_in for positions), and `simple_return_annualised` annualizes it over the period. `annualised` boolean on [account returns](/api-reference/performance/retrieve-account-returns-mwrr-twrr) and [position returns](/api-reference/performance/retrieve-position-returns-mwrr-twrr) to indicate whether the rates are annual or cumulative.
+  - `average_traded_price` on [order](/api-reference/trading/retrieve-an-order) responses, the quantity-weighted average price of executed trades rounded to 5 decimal places. `null` until the first trade executes.
+  - `Portal` enum (`classic` or `surf`) for identifying portal types in responses.
 
   **Changed**
 
