@@ -8,6 +8,23 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 22, 2026" description="additions">
+  ## Performance metrics and rate limiting
+
+  We've added return metrics to help you analyze investment performance, expanded order data, and improved user profile information.
+
+  **Added**
+  - `money_in`, `simple_return`, and `simple_return_annualised` on [account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l). `money_in` shows total invested capital, `simple_return` is net divided by money in, and `simple_return_annualised` annualizes that return over the period.
+  - `annualised` boolean on rate of return responses, indicating whether `mwrr` and `twrr` are annual rates (true for periods a year or longer) or cumulative over the period.
+  - `average_traded_price` on order responses: the quantity-weighted average price of executed trades, rounded to 5 decimal places.
+  - `default_portal` on user profiles: your preferred portal landing page (either `classic` or `surf`), or `null` if you haven't chosen one.
+  - `rate_limited` error code when you've exceeded request limits.
+
+  **Changed**
+  - `instrument_id` parameter in [Get an order quote](/api-reference/trading/get-an-order-quote) requests is now named `instrument`.
+
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
