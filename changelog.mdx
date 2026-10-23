@@ -22,12 +22,18 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
     - `required_cash_increment` and `enforce_trading_rules` have no replacement. We use null in the trading configuration when no rule applies.
   - [Get an order quote](/api-reference/trading/get-an-order-quote) returns `200` instead of `400` for an order that breaks a sizing rule: a quantity off the trading increment, a cash amount that buys less than one trading increment, or a minimum in `trading_configuration`. The quote carries its `estimate` as usual, with `is_placeable: false` and the rule in `blockers`. Placing the order as quoted still fails with the same error.
   - [Get an order quote](/api-reference/trading/get-an-order-quote) and [Place an order](/api-reference/trading/place-an-order) return `trading_rule_violated` instead of `invalid_request` when an order breaks a rule in `trading_configuration`. `context.rule` names the rule (for example `buy.min_initial_cash_amount`), with `context.required` and `context.actual`. `params` still points at the field the order was sized by.
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) request parameter renamed from `instrument_id` to `instrument` to align with response semantics.
 
   **Added**
   - `trading_configuration` on [instruments](/api-reference/catalog/retrieve-an-instrument), on every API version. `buy` carries `modes`, `min_cash_amount`, `min_initial_cash_amount`, `min_quantity`, and `min_initial_quantity`; `sell` carries `modes`, `min_cash_amount`, and `min_quantity`. A `null` minimum isn't applied, and a sell minimum never blocks selling a whole position. Cash amounts are in the instrument's trading currency.
   - `is_placeable` and `blockers` on every [order quote](/api-reference/trading/get-an-order-quote). Each blocker carries the `code` and `detail` placement would return, and a `context` with `rule`, `required`, `actual`, and `required_cash_amount`: on a cash buy, the smallest `cash_amount` (fees included) that meets every buy rule.
   - `trading_rule_violated` error code.
   - `insufficient_funds` and `insufficient_units` blocker codes on [order quotes](/api-reference/trading/get-an-order-quote). When a quote returns these blockers, the `context` tells you the balance check that failed: `available` and `requested` amounts, and the account `currency` (for funds) or the position's available units (for units). You can use this to prompt users to add funds or adjust their position size before placing the order.
+  - `rate_limited` error code when you exceed the API's request rate limits.
+  - `money_in`, `simple_return`, and `simple_return_annualised` on account and position earnings responses, showing capital deployed and simple return calculations. `money_in` is the total deployed over the period; `simple_return` is `net` divided by `money_in`; `simple_return_annualised` annualizes it when the period is a year or longer.
+  - `annualised` boolean on earnings responses indicating whether `mwrr` and `twrr` are annualized (true for periods of a year or longer, false otherwise).
+  - `average_traded_price` on [orders](/api-reference/trading/list-orders) showing the quantity-weighted average execution price, rounded to five decimal places. Clean price for bonds (excludes accrued interest). Null until the first trade executes.
+  - `Portal` enum type supporting classic and surf portal variants.
 
   **Changed**
 
