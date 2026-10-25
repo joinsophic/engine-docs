@@ -8,6 +8,24 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 25, 2026" description="additions">
+  ## Performance metrics enhancements and rate limiting
+
+  We've expanded performance metrics with money-in tracking and simple returns, added transparency to order execution pricing, and improved error handling with rate limit feedback.
+
+  **Added**
+  - `rate_limited` error code when API rate limits are exceeded.
+  - `money_in`, `simple_return`, and `simple_return_annualised` fields on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings](/api-reference/performance/retrieve-position-earnings-p&l) responses.
+  - `annualised` boolean field on earnings responses indicating whether `mwrr` and `twrr` are annualized (true for periods of one year or longer).
+  - `average_traded_price` on [order](/api-reference/trading/place-an-order) responses showing the quantity-weighted average price of executed trades.
+  - `Portal` enum type with `classic` and `surf` values for onboarding flow differentiation.
+  - `default_portal` field to track the portal the user prefers to land on.
+
+  **Changed**
+  - `mwrr` and `twrr` descriptions now clarify they're annualized when the period is a year or longer, cumulative over the period otherwise.
+  - OrderQuoteRequest now uses `instrument` instead of `instrument_id` for the quoted instrument.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
