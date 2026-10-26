@@ -28,6 +28,11 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - `is_placeable` and `blockers` on every [order quote](/api-reference/trading/get-an-order-quote). Each blocker carries the `code` and `detail` placement would return, and a `context` with `rule`, `required`, `actual`, and `required_cash_amount`: on a cash buy, the smallest `cash_amount` (fees included) that meets every buy rule.
   - `trading_rule_violated` error code.
   - `insufficient_funds` and `insufficient_units` blocker codes on [order quotes](/api-reference/trading/get-an-order-quote). When a quote returns these blockers, the `context` tells you the balance check that failed: `available` and `requested` amounts, and the account `currency` (for funds) or the position's available units (for units). You can use this to prompt users to add funds or adjust their position size before placing the order.
+  - `rate_limited` error code when you exceed rate limits.
+  - Performance metrics on account and position earnings: `money_in` (the value invested or deposited over the period), `simple_return` (net return as a proportion of money in), and `simple_return_annualised` (simple return annualised to a full year when the period is a year or longer).
+  - `annualised` field on account and position returns to indicate whether `mwrr` and `twrr` are annual rates or cumulative over the period.
+  - `average_traded_price` on [orders](/api-reference/trading/retrieve-an-order), the quantity-weighted average price of executed trades (rounded to 5 decimal places for bonds), with `null` until the first trade executes.
+  - User portal preference via the new `Portal` enum (`classic` or `surf`) and `default_portal` field on user responses.
 
   **Changed**
 
@@ -40,6 +45,8 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - An order that sends both `cash_amount` and `quantity` is rejected with `invalid_param` on `quantity`. Previously, `quantity` silently took precedence.
   - Selling an instrument the account holds no position in returns `insufficient_units` with `context.available` of `"0"`.
   - `trading_increment` on instruments is returned at full precision (for example `"0.00010000"`) instead of rounded to two decimal places.
+  - Performance return fields `mwrr` and `twrr` descriptions now clarify they're annualised when the period is a year or longer, or cumulative over the period otherwise (see `annualised`).
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) request field `instrument_id` is now named `instrument`.
 </Update>
 
 <Update label="September 29, 2026" description="additions">
