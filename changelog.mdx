@@ -8,6 +8,22 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 26, 2026" description="additions">
+  ## Performance analytics and order execution transparency
+
+  We've expanded earnings and returns responses with performance calculations and added visibility into your order execution.
+
+  **Added**
+  - `money_in`, `simple_return`, and `simple_return_annualised` fields on [account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l) to help you calculate and track simple returns on your investments.
+  - `annualised` field on earnings and returns responses to indicate whether rates of return are annualised (for periods a year or longer) or cumulative over the period.
+  - `average_traded_price` on order responses to show the quantity-weighted average price of executed trades, rounded to 5 decimal places.
+  - `rate_limited` error code when too many requests are made in a short time.
+  - `Portal` enum (`classic` or `surf`) and `default_portal` field on [user profiles](/api-reference/identity/retrieve-current-actor) to track user portal preferences.
+
+  **Changed**
+  - [Order quote](/api-reference/trading/get-an-order-quote) requests now use `instrument` instead of `instrument_id`.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
