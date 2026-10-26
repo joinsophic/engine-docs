@@ -28,6 +28,11 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - `is_placeable` and `blockers` on every [order quote](/api-reference/trading/get-an-order-quote). Each blocker carries the `code` and `detail` placement would return, and a `context` with `rule`, `required`, `actual`, and `required_cash_amount`: on a cash buy, the smallest `cash_amount` (fees included) that meets every buy rule.
   - `trading_rule_violated` error code.
   - `insufficient_funds` and `insufficient_units` blocker codes on [order quotes](/api-reference/trading/get-an-order-quote). When a quote returns these blockers, the `context` tells you the balance check that failed: `available` and `requested` amounts, and the account `currency` (for funds) or the position's available units (for units). You can use this to prompt users to add funds or adjust their position size before placing the order.
+  - `average_traded_price` on [order responses](/api-reference/trading/place-an-order): the quantity-weighted average price of executed trades, rounded to 5 decimal places. Clean price for bonds (excludes accrued interest). `null` until the first trade executes.
+  - `rate_limited` error code when you've made too many requests.
+  - `money_in`, `simple_return`, and `simple_return_annualised` on [account](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l). `money_in` is what was invested in the account or position over the period. `simple_return` is the simple return as a decimal (`net` or `gross` divided by `money_in`). `simple_return_annualised` annualizes it over the period; `null` for periods under a year.
+  - `annualised` field on [account](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l) returns: a boolean indicating whether `mwrr` and `twrr` are annualised rates (true for periods a year or longer; never for periods under a year).
+  - `default_portal` on user profiles: the portal the user prefers to land on (`classic` or `surf`), or `null` if they haven't chosen one.
 
   **Changed**
 
@@ -40,6 +45,7 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
   - An order that sends both `cash_amount` and `quantity` is rejected with `invalid_param` on `quantity`. Previously, `quantity` silently took precedence.
   - Selling an instrument the account holds no position in returns `insufficient_units` with `context.available` of `"0"`.
   - `trading_increment` on instruments is returned at full precision (for example `"0.00010000"`) instead of rounded to two decimal places.
+  - `mwrr` and `twrr` fields on [account](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings (P&L)](/api-reference/performance/retrieve-position-earnings-p&l) are now annualised when the period is a year or longer, cumulative over the period otherwise. See the `annualised` field on the same response to determine which applies.
 </Update>
 
 <Update label="September 29, 2026" description="additions">
