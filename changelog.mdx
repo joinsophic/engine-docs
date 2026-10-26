@@ -8,6 +8,23 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 26, 2026" description="additions">
+  ## Enhanced return metrics and rate limiting
+
+  We've added more detailed return calculations for performance analysis, improved error visibility with rate limiting, and new user portal preferences.
+
+  **Added**
+  - `rate_limited` error code when you exceed rate limits. Retry after a delay when you receive this error.
+  - Return calculation fields on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings](/api-reference/performance/retrieve-position-earnings-p&l) responses: `money_in` (total capital deployed), `simple_return` (net return as a decimal), and `simple_return_annualised` (return annualized over the period).
+  - `annualised` field on [account returns](/api-reference/performance/retrieve-account-returns-mwrr-twrr) and [position returns](/api-reference/performance/retrieve-position-returns-mwrr-twrr) to clarify whether `mwrr` and `twrr` are annual rates.
+  - `average_traded_price` on [orders](/api-reference/trading/place-an-order), the quantity-weighted average price of executed trades (clean price for bonds).
+  - `default_portal` on [current actor](/api-reference/identity/retrieve-current-actor) to track the user's preferred interface.
+  - `Portal` enum with values `classic` and `surf`.
+
+  **Changed**
+  - Descriptions for `mwrr` and `twrr` on returns endpoints now clarify they're annualized when the period is a year or longer, cumulative otherwise.
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
