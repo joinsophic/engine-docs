@@ -8,6 +8,23 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 26, 2026" description="additions">
+  ## Enhanced performance metrics and user preferences
+
+  Performance data now includes simple return calculations and annualized rate indicators. Orders track average execution prices, and users can set their preferred portal.
+
+  **Added**
+  - `money_in`, `simple_return`, and `simple_return_annualised` on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l), [position earnings](/api-reference/performance/retrieve-position-earnings-p&l), and [position earnings (reporting)](/api-reference/performance/retrieve-position-earnings-p&l). `money_in` is the capital deployed over the period; `simple_return` is net divided by `money_in` (null when nothing was invested); `simple_return_annualised` annualizes that over the period.
+  - `annualised` on [account returns](/api-reference/performance/retrieve-account-returns-mwrr-twrr) and [position returns](/api-reference/performance/retrieve-position-returns-mwrr-twrr), indicating whether `mwrr` and `twrr` are annual rates. True when the period is a year or longer; periods under a year report cumulative rates.
+  - `average_traded_price` on [orders](/api-reference/trading/retrieve-an-order), the quantity-weighted average price of executed trades rounded to 5 decimal places. Null until the first trade executes.
+  - `default_portal` on [users](/api-reference/identity/retrieve-current-actor), the portal the user prefers to land on (`classic` or `surf`), or null if not set.
+  - `rate_limited` error code when requests exceed rate limits.
+
+  **Changed**
+  - [Get an order quote](/api-reference/trading/get-an-order-quote) now expects `instrument` instead of `instrument_id` in the request body.
+  - `mwrr` and `twrr` descriptions now clarify they return annualised rates when the period is a year or longer, and cumulative rates over the period otherwise (see `annualised`).
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
