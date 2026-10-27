@@ -8,6 +8,21 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="October 26, 2026" description="additions">
+  ## Performance and return metrics enhancements
+
+  We've expanded earnings and returns endpoints with new fields for simpler return calculations and clearer annualization behavior.
+
+  **Added**
+  - `money_in` on [account earnings](/api-reference/performance/retrieve-account-earnings-p&l) and [position earnings](/api-reference/performance/retrieve-position-earnings-p&l): the total amount deposited into the account or position over the period, each deposit converted at the exchange rate of its own day. Over the account's whole life, this is the total deposited.
+  - `simple_return` and `simple_return_annualised` on account and position earnings: `simple_return` is `net` divided by `money_in`, and `simple_return_annualised` applies annual compounding. Both are `null` when nothing was put in.
+  - `annualised` on [account returns](/api-reference/performance/retrieve-account-returns-mwrr-twrr) and [position returns](/api-reference/performance/retrieve-position-returns-mwrr-twrr): a boolean indicating whether the return rates are annualized (true for periods of a year or longer) or cumulative over the period.
+  - `rate_limited` error code, returned when too many requests are made in a short period.
+
+  **Changed**
+  - Descriptions for `mwrr` and `twrr` on [account returns](/api-reference/performance/retrieve-account-returns-mwrr-twrr) and [position returns](/api-reference/performance/retrieve-position-returns-mwrr-twrr) now clarify that they're annualized for periods of a year or longer and cumulative over the period otherwise (see `annualised`).
+</Update>
+
 <Update label="October 1, 2026" description="2026-10-01">
   ## Trading configuration and consistent order validation
 
