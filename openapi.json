@@ -111,7 +111,8 @@
           "instrument_type": {
             "const": "amc",
             "description": "Instrument type.",
-            "title": "Instrument Type"
+            "title": "Instrument Type",
+            "type": "string"
           },
           "is_passed_dealing_deadline": {
             "description": "Whether today's dealing cutoff has passed.",
@@ -193,11 +194,7 @@
             "title": "Portfolio Manager"
           },
           "price_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PriceType"
-              }
-            ],
+            "$ref": "#/components/schemas/PriceType",
             "description": "Price quotation type."
           },
           "pro_traders_only": {
@@ -314,19 +311,11 @@
             "title": "Ticker"
           },
           "trading_configuration": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/TradingConfiguration"
-              }
-            ],
+            "$ref": "#/components/schemas/TradingConfiguration",
             "description": "How orders may be sized and the minimums they must meet, by side. Cash amounts are in the trading currency."
           },
           "trading_currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "Currency used to trade the instrument.",
             "examples": [
               "USD"
@@ -341,11 +330,7 @@
             "type": "string"
           },
           "trading_status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/InstrumentTradingStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/InstrumentTradingStatus",
             "description": "Current trading status."
           }
         },
@@ -392,11 +377,7 @@
             "type": "string"
           },
           "base_currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "Currency used for account valuation."
           },
           "can_deposit": {
@@ -480,11 +461,7 @@
             "type": "string"
           },
           "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AccountStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/AccountStatus",
             "description": "Current account status."
           }
         },
@@ -514,11 +491,7 @@
       "AccountCashEarnings": {
         "properties": {
           "attribution": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/CashEarningsAttribution"
-              }
-            ],
+            "$ref": "#/components/schemas/CashEarningsAttribution",
             "description": "Breakdown of the cash earnings. Cash only gains or loses value through exchange rates, so this holds a single currency component."
           },
           "gross": {
@@ -542,19 +515,11 @@
             "type": "string"
           },
           "cash": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AccountCashEarnings"
-              }
-            ],
+            "$ref": "#/components/schemas/AccountCashEarnings",
             "description": "What uninvested foreign-currency cash gained or lost from exchange-rate movements."
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "Reporting currency of the earnings amounts."
           },
           "fees": {
@@ -605,11 +570,7 @@
             "x-remove-null-from-type-union": true
           },
           "positions": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AccountPositionsEarnings"
-              }
-            ],
+            "$ref": "#/components/schemas/AccountPositionsEarnings",
             "description": "What the account's positions earned, with a breakdown of where it came from."
           },
           "simple_return": {
@@ -661,8 +622,9 @@
         "type": "object"
       },
       "AccountHistoryResolution": {
-        "const": "day",
-        "description": "The point aggregation resolution of the history time series.",
+        "enum": [
+          "day"
+        ],
         "properties": {},
         "title": "AccountHistoryResolution",
         "type": "string"
@@ -670,11 +632,7 @@
       "AccountOwnership": {
         "properties": {
           "account": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Account"
-              }
-            ],
+            "$ref": "#/components/schemas/Account",
             "description": "Account owned by the customer."
           },
           "created_at": {
@@ -684,7 +642,16 @@
             "type": "string"
           },
           "customer": {
-            "anyOf": [
+            "description": "Customer that owns the account.",
+            "discriminator": {
+              "mapping": {
+                "business": "#/components/schemas/BusinessCustomer",
+                "individual": "#/components/schemas/IndividualCustomer",
+                "joint": "#/components/schemas/JointCustomer"
+              },
+              "propertyName": "customer_type"
+            },
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/IndividualCustomer"
               },
@@ -695,7 +662,6 @@
                 "$ref": "#/components/schemas/BusinessCustomer"
               }
             ],
-            "description": "Customer that owns the account.",
             "title": "Customer"
           },
           "id": {
@@ -729,11 +695,7 @@
       "AccountPositionsEarnings": {
         "properties": {
           "attribution": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/EarningsAttribution"
-              }
-            ],
+            "$ref": "#/components/schemas/EarningsAttribution",
             "description": "Breakdown of the positions' earnings into how much came from the investments themselves and how much from exchange-rate movements."
           },
           "gross": {
@@ -785,11 +747,7 @@
             "title": "Mwrr"
           },
           "period": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Period"
-              }
-            ],
+            "$ref": "#/components/schemas/Period",
             "description": "Requested period the returns were computed over."
           },
           "period_end": {
@@ -1006,19 +964,11 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The currency every cash amount in this quote is given in."
           },
           "estimate": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AmcMarketCashEstimate"
-              }
-            ],
+            "$ref": "#/components/schemas/AmcMarketCashEstimate",
             "description": "Estimated economics at the latest price."
           },
           "expires_at": {
@@ -1041,7 +991,19 @@
             "type": "string"
           },
           "instrument": {
-            "anyOf": [
+            "description": "The full instrument being quoted.",
+            "discriminator": {
+              "mapping": {
+                "amc": "#/components/schemas/AMC",
+                "bill": "#/components/schemas/Bill",
+                "bond": "#/components/schemas/Bond",
+                "currency_pair": "#/components/schemas/CurrencyPair",
+                "etf": "#/components/schemas/ETF",
+                "money_market_fund": "#/components/schemas/MoneyMarketFund"
+              },
+              "propertyName": "instrument_type"
+            },
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/Bill"
               },
@@ -1061,7 +1023,6 @@
                 "$ref": "#/components/schemas/ETF"
               }
             ],
-            "description": "The full instrument being quoted.",
             "title": "Instrument"
           },
           "is_binding": {
@@ -1075,28 +1036,21 @@
             "type": "boolean"
           },
           "order_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderType"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderType",
             "description": "Market or limit."
           },
           "quote_type": {
             "const": "amc_market_cash",
             "default": "amc_market_cash",
             "description": "The kind of order quote returned, which determines the set of fields present in this response.",
-            "title": "Quote Type"
+            "title": "Quote Type",
+            "type": "string"
           },
           "reservation": {
             "$ref": "#/components/schemas/OrderQuoteReservation"
           },
           "side": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderSide"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderSide",
             "description": "Buy or sell."
           }
         },
@@ -1135,11 +1089,7 @@
         "description": "One class within an instrument's asset-class composition.",
         "properties": {
           "asset_class": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AssetClass"
-              }
-            ],
+            "$ref": "#/components/schemas/AssetClass",
             "description": "The asset class.",
             "examples": [
               "equity"
@@ -1162,8 +1112,9 @@
         "type": "object"
       },
       "AttestationType": {
-        "const": "data_accuracy",
-        "description": "Self-declarations a person can make about a specific action or submission.\n\nAn attestation is always recorded against a target resource (see\n`ConsentTargetType`) — for example, asserting data accuracy for an\nonboarding application the person is submitting. It does not\nreference a `LegalDocumentVersion`; the wording is implicit in the\nsurrounding flow.",
+        "enum": [
+          "data_accuracy"
+        ],
         "properties": {},
         "title": "AttestationType",
         "type": "string"
@@ -1306,7 +1257,8 @@
           "instrument_type": {
             "const": "bill",
             "description": "Instrument type.",
-            "title": "Instrument Type"
+            "title": "Instrument Type",
+            "type": "string"
           },
           "isin": {
             "description": "International Securities Identification Number.",
@@ -1409,11 +1361,7 @@
             "type": "string"
           },
           "price_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PriceType"
-              }
-            ],
+            "$ref": "#/components/schemas/PriceType",
             "description": "Price quotation type."
           },
           "pro_traders_only": {
@@ -1475,19 +1423,11 @@
             "title": "Ticker"
           },
           "trading_configuration": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/TradingConfiguration"
-              }
-            ],
+            "$ref": "#/components/schemas/TradingConfiguration",
             "description": "How orders may be sized and the minimums they must meet, by side. Cash amounts are in the trading currency."
           },
           "trading_currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "Currency used to trade the instrument.",
             "examples": [
               "USD"
@@ -1502,11 +1442,7 @@
             "type": "string"
           },
           "trading_status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/InstrumentTradingStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/InstrumentTradingStatus",
             "description": "Current trading status."
           }
         },
@@ -1643,19 +1579,11 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The currency every cash amount in this quote is given in."
           },
           "estimate": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/BillMarketCashEstimate"
-              }
-            ],
+            "$ref": "#/components/schemas/BillMarketCashEstimate",
             "description": "Estimated economics at the latest price."
           },
           "expires_at": {
@@ -1678,7 +1606,19 @@
             "type": "string"
           },
           "instrument": {
-            "anyOf": [
+            "description": "The full instrument being quoted.",
+            "discriminator": {
+              "mapping": {
+                "amc": "#/components/schemas/AMC",
+                "bill": "#/components/schemas/Bill",
+                "bond": "#/components/schemas/Bond",
+                "currency_pair": "#/components/schemas/CurrencyPair",
+                "etf": "#/components/schemas/ETF",
+                "money_market_fund": "#/components/schemas/MoneyMarketFund"
+              },
+              "propertyName": "instrument_type"
+            },
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/Bill"
               },
@@ -1698,7 +1638,6 @@
                 "$ref": "#/components/schemas/ETF"
               }
             ],
-            "description": "The full instrument being quoted.",
             "title": "Instrument"
           },
           "is_binding": {
@@ -1712,28 +1651,21 @@
             "type": "boolean"
           },
           "order_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderType"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderType",
             "description": "Market or limit."
           },
           "quote_type": {
             "const": "bill_market_cash",
             "default": "bill_market_cash",
             "description": "The kind of order quote returned, which determines the set of fields present in this response.",
-            "title": "Quote Type"
+            "title": "Quote Type",
+            "type": "string"
           },
           "reservation": {
             "$ref": "#/components/schemas/OrderQuoteReservation"
           },
           "side": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderSide"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderSide",
             "description": "Buy or sell."
           }
         },
@@ -1808,11 +1740,7 @@
             "description": "Frequency of coupon payments."
           },
           "coupon_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/BondCouponType"
-              }
-            ],
+            "$ref": "#/components/schemas/BondCouponType",
             "description": "Coupon payment type."
           },
           "day_count_convention": {
@@ -1927,7 +1855,8 @@
           "instrument_type": {
             "const": "bond",
             "description": "Instrument type.",
-            "title": "Instrument Type"
+            "title": "Instrument Type",
+            "type": "string"
           },
           "isin": {
             "description": "International Securities Identification Number.",
@@ -2061,11 +1990,7 @@
             "title": "Par Value"
           },
           "price_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PriceType"
-              }
-            ],
+            "$ref": "#/components/schemas/PriceType",
             "description": "Price quotation type."
           },
           "pro_traders_only": {
@@ -2127,19 +2052,11 @@
             "title": "Ticker"
           },
           "trading_configuration": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/TradingConfiguration"
-              }
-            ],
+            "$ref": "#/components/schemas/TradingConfiguration",
             "description": "How orders may be sized and the minimums they must meet, by side. Cash amounts are in the trading currency."
           },
           "trading_currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "Currency used to trade the instrument.",
             "examples": [
               "USD"
@@ -2154,11 +2071,7 @@
             "type": "string"
           },
           "trading_status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/InstrumentTradingStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/InstrumentTradingStatus",
             "description": "Current trading status."
           },
           "upcoming_coupon_amount_per_unit": {
@@ -2371,19 +2284,11 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The currency every cash amount in this quote is given in."
           },
           "estimate": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/BondFixedCouponMarketCashEstimate"
-              }
-            ],
+            "$ref": "#/components/schemas/BondFixedCouponMarketCashEstimate",
             "description": "Estimated economics at the latest price."
           },
           "expires_at": {
@@ -2406,7 +2311,19 @@
             "type": "string"
           },
           "instrument": {
-            "anyOf": [
+            "description": "The full instrument being quoted.",
+            "discriminator": {
+              "mapping": {
+                "amc": "#/components/schemas/AMC",
+                "bill": "#/components/schemas/Bill",
+                "bond": "#/components/schemas/Bond",
+                "currency_pair": "#/components/schemas/CurrencyPair",
+                "etf": "#/components/schemas/ETF",
+                "money_market_fund": "#/components/schemas/MoneyMarketFund"
+              },
+              "propertyName": "instrument_type"
+            },
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/Bill"
               },
@@ -2426,7 +2343,6 @@
                 "$ref": "#/components/schemas/ETF"
               }
             ],
-            "description": "The full instrument being quoted.",
             "title": "Instrument"
           },
           "is_binding": {
@@ -2440,28 +2356,21 @@
             "type": "boolean"
           },
           "order_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderType"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderType",
             "description": "Market or limit."
           },
           "quote_type": {
             "const": "bond_fixed_coupon_market_cash",
             "default": "bond_fixed_coupon_market_cash",
             "description": "The kind of order quote returned, which determines the set of fields present in this response.",
-            "title": "Quote Type"
+            "title": "Quote Type",
+            "type": "string"
           },
           "reservation": {
             "$ref": "#/components/schemas/OrderQuoteReservation"
           },
           "side": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderSide"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderSide",
             "description": "Buy or sell."
           }
         },
@@ -2584,19 +2493,11 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The currency every cash amount in this quote is given in."
           },
           "estimate": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/BondZeroCouponMarketCashEstimate"
-              }
-            ],
+            "$ref": "#/components/schemas/BondZeroCouponMarketCashEstimate",
             "description": "Estimated economics at the latest price."
           },
           "expires_at": {
@@ -2619,7 +2520,19 @@
             "type": "string"
           },
           "instrument": {
-            "anyOf": [
+            "description": "The full instrument being quoted.",
+            "discriminator": {
+              "mapping": {
+                "amc": "#/components/schemas/AMC",
+                "bill": "#/components/schemas/Bill",
+                "bond": "#/components/schemas/Bond",
+                "currency_pair": "#/components/schemas/CurrencyPair",
+                "etf": "#/components/schemas/ETF",
+                "money_market_fund": "#/components/schemas/MoneyMarketFund"
+              },
+              "propertyName": "instrument_type"
+            },
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/Bill"
               },
@@ -2639,7 +2552,6 @@
                 "$ref": "#/components/schemas/ETF"
               }
             ],
-            "description": "The full instrument being quoted.",
             "title": "Instrument"
           },
           "is_binding": {
@@ -2653,28 +2565,21 @@
             "type": "boolean"
           },
           "order_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderType"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderType",
             "description": "Market or limit."
           },
           "quote_type": {
             "const": "bond_zero_coupon_market_cash",
             "default": "bond_zero_coupon_market_cash",
             "description": "The kind of order quote returned, which determines the set of fields present in this response.",
-            "title": "Quote Type"
+            "title": "Quote Type",
+            "type": "string"
           },
           "reservation": {
             "$ref": "#/components/schemas/OrderQuoteReservation"
           },
           "side": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderSide"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderSide",
             "description": "Buy or sell."
           }
         },
@@ -2719,7 +2624,8 @@
           "customer_type": {
             "const": "business",
             "description": "Customer classification.",
-            "title": "Customer Type"
+            "title": "Customer Type",
+            "type": "string"
           },
           "entity_name": {
             "description": "Registered business name.",
@@ -2881,11 +2787,7 @@
             "title": "Risk Score"
           },
           "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/CustomerStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/CustomerStatus",
             "description": "Current customer status."
           }
         },
@@ -2936,7 +2838,8 @@
           },
           "claim_type": {
             "const": "business_nature",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "has_nominee_shareholders": {
             "title": "Has Nominee Shareholders",
@@ -3016,7 +2919,8 @@
           },
           "claim_type": {
             "const": "business_nature",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Date and time the claim was created.",
@@ -3159,7 +3063,8 @@
           },
           "claim_type": {
             "const": "business_nature",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Time the claim was created.",
@@ -3333,11 +3238,7 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "Currency of the cash balance.",
             "examples": [
               "EUR"
@@ -3387,11 +3288,7 @@
       "CashEarningsAttribution": {
         "properties": {
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/CashCurrencyEffect"
-              }
-            ],
+            "$ref": "#/components/schemas/CashCurrencyEffect",
             "description": "Gains or losses from exchange-rate movements on uninvested foreign-currency cash. This is the only way cash earns or loses value."
           }
         },
@@ -3413,19 +3310,11 @@
             "type": "string"
           },
           "cash_balance": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/CashBalance"
-              }
-            ],
+            "$ref": "#/components/schemas/CashBalance",
             "description": "The valued cash balance."
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The currency of the cash value."
           },
           "value": {
@@ -3634,7 +3523,8 @@
           "grant_type": {
             "const": "client_credentials",
             "description": "Must be `client_credentials`.",
-            "title": "Grant Type"
+            "title": "Grant Type",
+            "type": "string"
           },
           "scope": {
             "description": "Space-separated list of scopes.",
@@ -3657,7 +3547,8 @@
         "properties": {
           "claim_type": {
             "const": "contact_details",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "email": {
             "anyOf": [
@@ -3703,7 +3594,8 @@
           },
           "claim_type": {
             "const": "contact_details",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Date and time the claim was created.",
@@ -3812,7 +3704,8 @@
         "properties": {
           "claim_type": {
             "const": "contact_details",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Time the claim was created.",
@@ -3892,11 +3785,7 @@
             "title": "Amount"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "Supported account currency to credit."
           },
           "payment_reference": {
@@ -4000,11 +3889,7 @@
             "type": "array"
           },
           "person_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PersonType"
-              }
-            ],
+            "$ref": "#/components/schemas/PersonType",
             "description": "Whether the person is natural or legal."
           }
         },
@@ -4037,7 +3922,8 @@
           "purpose": {
             "const": "verification_evidence",
             "description": "The purpose of the uploaded file.",
-            "title": "Purpose"
+            "title": "Purpose",
+            "type": "string"
           }
         },
         "required": [
@@ -4089,11 +3975,7 @@
             "title": "Amount"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "Supported account currency to withdraw without conversion."
           },
           "funding_account": {
@@ -4153,11 +4035,7 @@
             "title": "Asset Class"
           },
           "base_currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "Currency being bought or sold.",
             "examples": [
               "EUR"
@@ -4209,7 +4087,8 @@
           "instrument_type": {
             "const": "currency_pair",
             "description": "Instrument type.",
-            "title": "Instrument Type"
+            "title": "Instrument Type",
+            "type": "string"
           },
           "name": {
             "description": "Display name of the instrument.",
@@ -4220,11 +4099,7 @@
             "type": "string"
           },
           "price_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PriceType"
-              }
-            ],
+            "$ref": "#/components/schemas/PriceType",
             "description": "Price quotation type."
           },
           "pro_traders_only": {
@@ -4233,11 +4108,7 @@
             "type": "boolean"
           },
           "quote_currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "Currency in which the pair is priced.",
             "examples": [
               "USD"
@@ -4271,11 +4142,7 @@
             "type": "array"
           },
           "trading_configuration": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/TradingConfiguration"
-              }
-            ],
+            "$ref": "#/components/schemas/TradingConfiguration",
             "description": "How orders may be sized and the minimums they must meet, by side. Cash amounts are in the trading currency."
           },
           "trading_increment": {
@@ -4287,11 +4154,7 @@
             "type": "string"
           },
           "trading_status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/InstrumentTradingStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/InstrumentTradingStatus",
             "description": "Current trading status."
           }
         },
@@ -4317,11 +4180,7 @@
       "CustomerAuthority": {
         "properties": {
           "authority_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AuthorityType"
-              }
-            ],
+            "$ref": "#/components/schemas/AuthorityType",
             "description": "Kind of authority granted."
           },
           "created_at": {
@@ -4331,7 +4190,16 @@
             "type": "string"
           },
           "customer": {
-            "anyOf": [
+            "description": "Customer covered by the authority.",
+            "discriminator": {
+              "mapping": {
+                "business": "#/components/schemas/BusinessCustomer",
+                "individual": "#/components/schemas/IndividualCustomer",
+                "joint": "#/components/schemas/JointCustomer"
+              },
+              "propertyName": "customer_type"
+            },
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/IndividualCustomer"
               },
@@ -4342,7 +4210,6 @@
                 "$ref": "#/components/schemas/BusinessCustomer"
               }
             ],
-            "description": "Customer covered by the authority.",
             "title": "Customer"
           },
           "granted_at": {
@@ -4366,7 +4233,15 @@
             "type": "string"
           },
           "person": {
-            "anyOf": [
+            "description": "Person granted the authority.",
+            "discriminator": {
+              "mapping": {
+                "legal": "#/components/schemas/LegalPerson",
+                "natural": "#/components/schemas/NaturalPerson"
+              },
+              "propertyName": "person_type"
+            },
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/NaturalPerson"
               },
@@ -4374,7 +4249,6 @@
                 "$ref": "#/components/schemas/LegalPerson"
               }
             ],
-            "description": "Person granted the authority.",
             "title": "Person"
           },
           "revoked_at": {
@@ -4394,11 +4268,7 @@
             "title": "Revoked At"
           },
           "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AuthorityStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/AuthorityStatus",
             "description": "Current authority status."
           }
         },
@@ -4503,11 +4373,7 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The currency of the deposit."
           },
           "id": {
@@ -4530,11 +4396,7 @@
             "type": "string"
           },
           "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/DepositStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/DepositStatus",
             "description": "The status of the deposit."
           },
           "was_advanced": {
@@ -4590,11 +4452,7 @@
             "type": "string"
           },
           "document_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/DocumentType-Output"
-              }
-            ],
+            "$ref": "#/components/schemas/DocumentType-Output",
             "description": "Kind of document."
           },
           "file": {
@@ -4954,7 +4812,8 @@
           "instrument_type": {
             "const": "etf",
             "description": "Instrument type.",
-            "title": "Instrument Type"
+            "title": "Instrument Type",
+            "type": "string"
           },
           "isin": {
             "description": "International Securities Identification Number.",
@@ -5030,11 +4889,7 @@
             "title": "Net Assets"
           },
           "price_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PriceType"
-              }
-            ],
+            "$ref": "#/components/schemas/PriceType",
             "description": "Price quotation type."
           },
           "pro_traders_only": {
@@ -5136,19 +4991,11 @@
             "title": "Tracking Index"
           },
           "trading_configuration": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/TradingConfiguration"
-              }
-            ],
+            "$ref": "#/components/schemas/TradingConfiguration",
             "description": "How orders may be sized and the minimums they must meet, by side. Cash amounts are in the trading currency."
           },
           "trading_currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "Currency used to trade the instrument.",
             "examples": [
               "USD"
@@ -5163,11 +5010,7 @@
             "type": "string"
           },
           "trading_status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/InstrumentTradingStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/InstrumentTradingStatus",
             "description": "Current trading status."
           }
         },
@@ -5246,19 +5089,11 @@
       "EarningsAttribution": {
         "properties": {
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/EarningsEffect"
-              }
-            ],
+            "$ref": "#/components/schemas/EarningsEffect",
             "description": "How much came from exchange-rate movements on the money invested in positions, between the day it was invested and either the day it was sold or today. Zero when everything is in the account's currency."
           },
           "investment": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/EarningsEffect"
-              }
-            ],
+            "$ref": "#/components/schemas/EarningsEffect",
             "description": "How much came from the investments themselves, that is price changes and income, with the effect of exchange-rate movements stripped out."
           }
         },
@@ -5272,11 +5107,7 @@
       "EarningsEffect": {
         "properties": {
           "realized": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/RealizedEarningsSplit"
-              }
-            ],
+            "$ref": "#/components/schemas/RealizedEarningsSplit",
             "description": "Earnings already locked in: from units sold and income paid out, each converted at the exchange rate of the day it happened."
           },
           "total": {
@@ -5285,11 +5116,7 @@
             "type": "string"
           },
           "unrealized": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/UnrealizedEarningsSplit"
-              }
-            ],
+            "$ref": "#/components/schemas/UnrealizedEarningsSplit",
             "description": "Earnings not yet locked in: from units still held and interest accrued but not yet paid, converted at the current exchange rate."
           }
         },
@@ -5307,7 +5134,8 @@
         "properties": {
           "claim_type": {
             "const": "education_level",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "education_level": {
             "$ref": "#/components/schemas/ClaimEducationLevel"
@@ -5341,7 +5169,8 @@
           },
           "claim_type": {
             "const": "education_level",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Date and time the claim was created.",
@@ -5438,7 +5267,8 @@
         "properties": {
           "claim_type": {
             "const": "education_level",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Time the claim was created.",
@@ -5483,7 +5313,8 @@
         "properties": {
           "claim_type": {
             "const": "employment",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "employment_status": {
             "$ref": "#/components/schemas/ClaimEmploymentStatus"
@@ -5538,7 +5369,8 @@
           },
           "claim_type": {
             "const": "employment",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Date and time the claim was created.",
@@ -5656,7 +5488,8 @@
         "properties": {
           "claim_type": {
             "const": "employment",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Time the claim was created.",
@@ -5851,19 +5684,11 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The currency every cash amount in this quote is given in."
           },
           "estimate": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/EtfLimitCashEstimate"
-              }
-            ],
+            "$ref": "#/components/schemas/EtfLimitCashEstimate",
             "description": "Estimated economics at the limit price."
           },
           "expires_at": {
@@ -5886,7 +5711,19 @@
             "type": "string"
           },
           "instrument": {
-            "anyOf": [
+            "description": "The full instrument being quoted.",
+            "discriminator": {
+              "mapping": {
+                "amc": "#/components/schemas/AMC",
+                "bill": "#/components/schemas/Bill",
+                "bond": "#/components/schemas/Bond",
+                "currency_pair": "#/components/schemas/CurrencyPair",
+                "etf": "#/components/schemas/ETF",
+                "money_market_fund": "#/components/schemas/MoneyMarketFund"
+              },
+              "propertyName": "instrument_type"
+            },
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/Bill"
               },
@@ -5906,7 +5743,6 @@
                 "$ref": "#/components/schemas/ETF"
               }
             ],
-            "description": "The full instrument being quoted.",
             "title": "Instrument"
           },
           "is_binding": {
@@ -5928,28 +5764,21 @@
             "type": "string"
           },
           "order_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderType"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderType",
             "description": "Market or limit."
           },
           "quote_type": {
             "const": "etf_limit_cash",
             "default": "etf_limit_cash",
             "description": "The kind of order quote returned, which determines the set of fields present in this response.",
-            "title": "Quote Type"
+            "title": "Quote Type",
+            "type": "string"
           },
           "reservation": {
             "$ref": "#/components/schemas/OrderQuoteReservation"
           },
           "side": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderSide"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderSide",
             "description": "Buy or sell."
           }
         },
@@ -6043,19 +5872,11 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The currency every cash amount in this quote is given in."
           },
           "estimate": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/EtfLimitQuantityEstimate"
-              }
-            ],
+            "$ref": "#/components/schemas/EtfLimitQuantityEstimate",
             "description": "Estimated economics at the limit price."
           },
           "expires_at": {
@@ -6078,7 +5899,19 @@
             "type": "string"
           },
           "instrument": {
-            "anyOf": [
+            "description": "The full instrument being quoted.",
+            "discriminator": {
+              "mapping": {
+                "amc": "#/components/schemas/AMC",
+                "bill": "#/components/schemas/Bill",
+                "bond": "#/components/schemas/Bond",
+                "currency_pair": "#/components/schemas/CurrencyPair",
+                "etf": "#/components/schemas/ETF",
+                "money_market_fund": "#/components/schemas/MoneyMarketFund"
+              },
+              "propertyName": "instrument_type"
+            },
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/Bill"
               },
@@ -6098,7 +5931,6 @@
                 "$ref": "#/components/schemas/ETF"
               }
             ],
-            "description": "The full instrument being quoted.",
             "title": "Instrument"
           },
           "is_binding": {
@@ -6120,11 +5952,7 @@
             "type": "string"
           },
           "order_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderType"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderType",
             "description": "Market or limit."
           },
           "quantity": {
@@ -6139,17 +5967,14 @@
             "const": "etf_limit_quantity",
             "default": "etf_limit_quantity",
             "description": "The kind of order quote returned, which determines the set of fields present in this response.",
-            "title": "Quote Type"
+            "title": "Quote Type",
+            "type": "string"
           },
           "reservation": {
             "$ref": "#/components/schemas/OrderQuoteReservation"
           },
           "side": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderSide"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderSide",
             "description": "Buy or sell."
           }
         },
@@ -6258,19 +6083,11 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The currency every cash amount in this quote is given in."
           },
           "estimate": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/EtfMarketCashEstimate"
-              }
-            ],
+            "$ref": "#/components/schemas/EtfMarketCashEstimate",
             "description": "Estimated economics at the latest price."
           },
           "expires_at": {
@@ -6293,7 +6110,19 @@
             "type": "string"
           },
           "instrument": {
-            "anyOf": [
+            "description": "The full instrument being quoted.",
+            "discriminator": {
+              "mapping": {
+                "amc": "#/components/schemas/AMC",
+                "bill": "#/components/schemas/Bill",
+                "bond": "#/components/schemas/Bond",
+                "currency_pair": "#/components/schemas/CurrencyPair",
+                "etf": "#/components/schemas/ETF",
+                "money_market_fund": "#/components/schemas/MoneyMarketFund"
+              },
+              "propertyName": "instrument_type"
+            },
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/Bill"
               },
@@ -6313,7 +6142,6 @@
                 "$ref": "#/components/schemas/ETF"
               }
             ],
-            "description": "The full instrument being quoted.",
             "title": "Instrument"
           },
           "is_binding": {
@@ -6327,28 +6155,21 @@
             "type": "boolean"
           },
           "order_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderType"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderType",
             "description": "Market or limit."
           },
           "quote_type": {
             "const": "etf_market_cash",
             "default": "etf_market_cash",
             "description": "The kind of order quote returned, which determines the set of fields present in this response.",
-            "title": "Quote Type"
+            "title": "Quote Type",
+            "type": "string"
           },
           "reservation": {
             "$ref": "#/components/schemas/OrderQuoteReservation"
           },
           "side": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderSide"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderSide",
             "description": "Buy or sell."
           }
         },
@@ -6457,19 +6278,11 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The currency every cash amount in this quote is given in."
           },
           "estimate": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/EtfMarketQuantityEstimate"
-              }
-            ],
+            "$ref": "#/components/schemas/EtfMarketQuantityEstimate",
             "description": "Estimated economics at the latest price."
           },
           "expires_at": {
@@ -6492,7 +6305,19 @@
             "type": "string"
           },
           "instrument": {
-            "anyOf": [
+            "description": "The full instrument being quoted.",
+            "discriminator": {
+              "mapping": {
+                "amc": "#/components/schemas/AMC",
+                "bill": "#/components/schemas/Bill",
+                "bond": "#/components/schemas/Bond",
+                "currency_pair": "#/components/schemas/CurrencyPair",
+                "etf": "#/components/schemas/ETF",
+                "money_market_fund": "#/components/schemas/MoneyMarketFund"
+              },
+              "propertyName": "instrument_type"
+            },
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/Bill"
               },
@@ -6512,7 +6337,6 @@
                 "$ref": "#/components/schemas/ETF"
               }
             ],
-            "description": "The full instrument being quoted.",
             "title": "Instrument"
           },
           "is_binding": {
@@ -6526,11 +6350,7 @@
             "type": "boolean"
           },
           "order_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderType"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderType",
             "description": "Market or limit."
           },
           "quantity": {
@@ -6545,17 +6365,14 @@
             "const": "etf_market_quantity",
             "default": "etf_market_quantity",
             "description": "The kind of order quote returned, which determines the set of fields present in this response.",
-            "title": "Quote Type"
+            "title": "Quote Type",
+            "type": "string"
           },
           "reservation": {
             "$ref": "#/components/schemas/OrderQuoteReservation"
           },
           "side": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderSide"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderSide",
             "description": "Buy or sell."
           }
         },
@@ -6604,6 +6421,7 @@
             "type": "string"
           },
           "data": {
+            "additionalProperties": true,
             "description": "Event-specific payload data.",
             "title": "Data",
             "type": "object"
@@ -6619,11 +6437,7 @@
             "type": "string"
           },
           "resource": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/EventResource"
-              }
-            ],
+            "$ref": "#/components/schemas/EventResource",
             "description": "Resource associated with the event."
           }
         },
@@ -6693,7 +6507,8 @@
           },
           "claim_type": {
             "const": "expected_activity",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "funding_currency": {
             "title": "Funding Currency",
@@ -6746,7 +6561,8 @@
           },
           "claim_type": {
             "const": "expected_activity",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Date and time the claim was created.",
@@ -6862,7 +6678,8 @@
           },
           "claim_type": {
             "const": "expected_activity",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Time the claim was created.",
@@ -6915,7 +6732,8 @@
         "properties": {
           "claim_type": {
             "const": "fatca_status",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "is_us_person": {
             "title": "Is Us Person",
@@ -6950,7 +6768,8 @@
           },
           "claim_type": {
             "const": "fatca_status",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Date and time the claim was created.",
@@ -7048,7 +6867,8 @@
         "properties": {
           "claim_type": {
             "const": "fatca_status",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Time the claim was created.",
@@ -7127,11 +6947,7 @@
             "type": "string"
           },
           "fee_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/FeeType"
-              }
-            ],
+            "$ref": "#/components/schemas/FeeType",
             "description": "Type of fee."
           },
           "id": {
@@ -7268,19 +7084,11 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "Currency of the charge amounts."
           },
           "fee": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Fee"
-              }
-            ],
+            "$ref": "#/components/schemas/Fee",
             "description": "Fee represented by this charge."
           },
           "id": {
@@ -7482,11 +7290,7 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "Currency of the collected amount."
           },
           "id": {
@@ -7692,7 +7496,8 @@
           },
           "claim_type": {
             "const": "financial_profile",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "income_sources": {
             "items": {
@@ -7748,7 +7553,8 @@
           },
           "claim_type": {
             "const": "financial_profile",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Date and time the claim was created.",
@@ -7867,7 +7673,8 @@
           },
           "claim_type": {
             "const": "financial_profile",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Time the claim was created.",
@@ -7939,11 +7746,7 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The currency of the funding account."
           },
           "iban": {
@@ -8045,7 +7848,8 @@
         "properties": {
           "claim_type": {
             "const": "identity",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "date_of_birth": {
             "format": "date",
@@ -8091,7 +7895,8 @@
           },
           "claim_type": {
             "const": "identity",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Date and time the claim was created.",
@@ -8200,7 +8005,8 @@
         "properties": {
           "claim_type": {
             "const": "identity",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Time the claim was created.",
@@ -8273,7 +8079,8 @@
           "customer_type": {
             "const": "individual",
             "description": "Customer classification.",
-            "title": "Customer Type"
+            "title": "Customer Type",
+            "type": "string"
           },
           "date_of_birth": {
             "anyOf": [
@@ -8444,11 +8251,7 @@
             "title": "Risk Score"
           },
           "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/CustomerStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/CustomerStatus",
             "description": "Current customer status."
           },
           "tax_number": {
@@ -8576,7 +8379,8 @@
           },
           "claim_type": {
             "const": "investment_experience",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "has_prior_experience": {
             "title": "Has Prior Experience",
@@ -8618,7 +8422,8 @@
           },
           "claim_type": {
             "const": "investment_experience",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Date and time the claim was created.",
@@ -8723,7 +8528,8 @@
           },
           "claim_type": {
             "const": "investment_experience",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Time the claim was created.",
@@ -8785,7 +8591,8 @@
           "customer_type": {
             "const": "joint",
             "description": "Customer classification.",
-            "title": "Customer Type"
+            "title": "Customer Type",
+            "type": "string"
           },
           "first_name": {
             "anyOf": [
@@ -8915,11 +8722,7 @@
             "title": "Risk Score"
           },
           "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/CustomerStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/CustomerStatus",
             "description": "Current customer status."
           }
         },
@@ -8953,11 +8756,7 @@
             "type": "string"
           },
           "document_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/LegalDocumentType"
-              }
-            ],
+            "$ref": "#/components/schemas/LegalDocumentType",
             "description": "Legal document type."
           },
           "id": {
@@ -9249,7 +9048,8 @@
           "person_type": {
             "const": "legal",
             "description": "Person classification.",
-            "title": "Person Type"
+            "title": "Person Type",
+            "type": "string"
           },
           "phone_number": {
             "anyOf": [
@@ -9287,7 +9087,8 @@
         "properties": {
           "claim_type": {
             "const": "lei",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "expiry_date": {
             "format": "date",
@@ -9328,7 +9129,8 @@
           },
           "claim_type": {
             "const": "lei",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Date and time the claim was created.",
@@ -9432,7 +9234,8 @@
         "properties": {
           "claim_type": {
             "const": "lei",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Time the claim was created.",
@@ -9578,19 +9381,11 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The currency every cash amount in this quote is given in."
           },
           "estimate": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MmfMarketCashEstimate"
-              }
-            ],
+            "$ref": "#/components/schemas/MmfMarketCashEstimate",
             "description": "Estimated economics at the latest NAV."
           },
           "expires_at": {
@@ -9613,7 +9408,19 @@
             "type": "string"
           },
           "instrument": {
-            "anyOf": [
+            "description": "The full instrument being quoted.",
+            "discriminator": {
+              "mapping": {
+                "amc": "#/components/schemas/AMC",
+                "bill": "#/components/schemas/Bill",
+                "bond": "#/components/schemas/Bond",
+                "currency_pair": "#/components/schemas/CurrencyPair",
+                "etf": "#/components/schemas/ETF",
+                "money_market_fund": "#/components/schemas/MoneyMarketFund"
+              },
+              "propertyName": "instrument_type"
+            },
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/Bill"
               },
@@ -9633,7 +9440,6 @@
                 "$ref": "#/components/schemas/ETF"
               }
             ],
-            "description": "The full instrument being quoted.",
             "title": "Instrument"
           },
           "is_binding": {
@@ -9647,28 +9453,21 @@
             "type": "boolean"
           },
           "order_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderType"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderType",
             "description": "Market or limit."
           },
           "quote_type": {
             "const": "mmf_market_cash",
             "default": "mmf_market_cash",
             "description": "The kind of order quote returned, which determines the set of fields present in this response.",
-            "title": "Quote Type"
+            "title": "Quote Type",
+            "type": "string"
           },
           "reservation": {
             "$ref": "#/components/schemas/OrderQuoteReservation"
           },
           "side": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderSide"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderSide",
             "description": "Buy or sell."
           }
         },
@@ -9832,7 +9631,8 @@
           "instrument_type": {
             "const": "money_market_fund",
             "description": "Instrument type.",
-            "title": "Instrument Type"
+            "title": "Instrument Type",
+            "type": "string"
           },
           "investment_objective": {
             "anyOf": [
@@ -9919,11 +9719,7 @@
             "type": "string"
           },
           "price_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PriceType"
-              }
-            ],
+            "$ref": "#/components/schemas/PriceType",
             "description": "Price quotation type."
           },
           "pro_traders_only": {
@@ -9980,19 +9776,11 @@
             "title": "Ticker"
           },
           "trading_configuration": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/TradingConfiguration"
-              }
-            ],
+            "$ref": "#/components/schemas/TradingConfiguration",
             "description": "How orders may be sized and the minimums they must meet, by side. Cash amounts are in the trading currency."
           },
           "trading_currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "Currency used to trade the instrument.",
             "examples": [
               "USD"
@@ -10007,11 +9795,7 @@
             "type": "string"
           },
           "trading_status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/InstrumentTradingStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/InstrumentTradingStatus",
             "description": "Current trading status."
           }
         },
@@ -10056,7 +9840,8 @@
         "properties": {
           "claim_type": {
             "const": "nationalities",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "nationalities": {
             "items": {
@@ -10093,7 +9878,8 @@
           },
           "claim_type": {
             "const": "nationalities",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Date and time the claim was created.",
@@ -10193,7 +9979,8 @@
         "properties": {
           "claim_type": {
             "const": "nationalities",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Time the claim was created.",
@@ -10382,7 +10169,8 @@
           "person_type": {
             "const": "natural",
             "description": "Person classification.",
-            "title": "Person Type"
+            "title": "Person Type",
+            "type": "string"
           },
           "phone_number": {
             "anyOf": [
@@ -10506,6 +10294,7 @@
       "OnboardingApplicationResponse": {
         "properties": {
           "application": {
+            "additionalProperties": true,
             "description": "Submitted application data.",
             "title": "Application",
             "type": "object"
@@ -10517,11 +10306,7 @@
             "type": "string"
           },
           "customer_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/CustomerType"
-              }
-            ],
+            "$ref": "#/components/schemas/CustomerType",
             "description": "Customer type for the application."
           },
           "id": {
@@ -10547,11 +10332,7 @@
             "description": "Final application outcome."
           },
           "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OnboardingApplicationStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/OnboardingApplicationStatus",
             "description": "Lifecycle status of the application."
           }
         },
@@ -10683,7 +10464,8 @@
           },
           "claim_type": {
             "const": "operating_address",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "country_code": {
             "title": "Country Code",
@@ -10766,7 +10548,8 @@
           },
           "claim_type": {
             "const": "operating_address",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "country_code": {
             "title": "Country Code",
@@ -10912,7 +10695,8 @@
           },
           "claim_type": {
             "const": "operating_address",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "country_code": {
             "title": "Country Code",
@@ -11139,7 +10923,19 @@
             "type": "string"
           },
           "instrument": {
-            "anyOf": [
+            "description": "The instrument to buy or sell.",
+            "discriminator": {
+              "mapping": {
+                "amc": "#/components/schemas/AMC",
+                "bill": "#/components/schemas/Bill",
+                "bond": "#/components/schemas/Bond",
+                "currency_pair": "#/components/schemas/CurrencyPair",
+                "etf": "#/components/schemas/ETF",
+                "money_market_fund": "#/components/schemas/MoneyMarketFund"
+              },
+              "propertyName": "instrument_type"
+            },
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/Bill"
               },
@@ -11159,7 +10955,6 @@
                 "$ref": "#/components/schemas/ETF"
               }
             ],
-            "description": "The instrument to buy or sell.",
             "title": "Instrument"
           },
           "is_cancellable": {
@@ -11204,11 +10999,7 @@
             "title": "Net Cash Amount"
           },
           "order_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderType"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderType",
             "description": "The order type (e.g. market, limit)."
           },
           "position": {
@@ -11224,11 +11015,7 @@
             "title": "Position"
           },
           "purpose": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderPurpose"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderPurpose",
             "description": "The purpose of the order."
           },
           "quantity": {
@@ -11275,19 +11062,11 @@
             "title": "Settled At"
           },
           "side": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderSide"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderSide",
             "description": "Buy or sell."
           },
           "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderStatus",
             "description": "The order status."
           },
           "traded_notional": {
@@ -11543,15 +11322,11 @@
           "cash_amount": {
             "anyOf": [
               {
-                "anyOf": [
-                  {
-                    "type": "number"
-                  },
-                  {
-                    "type": "string"
-                  }
-                ],
-                "gt": 0
+                "exclusiveMinimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "string"
               },
               {
                 "type": "null"
@@ -11571,15 +11346,11 @@
           "limit_price": {
             "anyOf": [
               {
-                "anyOf": [
-                  {
-                    "type": "number"
-                  },
-                  {
-                    "type": "string"
-                  }
-                ],
-                "gt": 0
+                "exclusiveMinimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "string"
               },
               {
                 "type": "null"
@@ -11594,15 +11365,11 @@
           "quantity": {
             "anyOf": [
               {
-                "anyOf": [
-                  {
-                    "type": "number"
-                  },
-                  {
-                    "type": "string"
-                  }
-                ],
-                "gt": 0
+                "exclusiveMinimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "string"
               },
               {
                 "type": "null"
@@ -11621,11 +11388,7 @@
             "type": "boolean"
           },
           "side": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderSide"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderSide",
             "description": "The order side, buy or sell."
           }
         },
@@ -11648,11 +11411,7 @@
             "type": "string"
           },
           "denomination": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ReservedDenomination"
-              }
-            ],
+            "$ref": "#/components/schemas/ReservedDenomination",
             "description": "Whether `amount` is a cash amount or a unit quantity."
           }
         },
@@ -11797,7 +11556,19 @@
             "type": "string"
           },
           "instrument": {
-            "anyOf": [
+            "description": "The traded instrument.",
+            "discriminator": {
+              "mapping": {
+                "amc": "#/components/schemas/AMC",
+                "bill": "#/components/schemas/Bill",
+                "bond": "#/components/schemas/Bond",
+                "currency_pair": "#/components/schemas/CurrencyPair",
+                "etf": "#/components/schemas/ETF",
+                "money_market_fund": "#/components/schemas/MoneyMarketFund"
+              },
+              "propertyName": "instrument_type"
+            },
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/Bill"
               },
@@ -11817,7 +11588,6 @@
                 "$ref": "#/components/schemas/ETF"
               }
             ],
-            "description": "The traded instrument.",
             "title": "Instrument"
           },
           "is_reportable": {
@@ -11835,6 +11605,7 @@
           "meta": {
             "anyOf": [
               {
+                "additionalProperties": true,
                 "type": "object"
               },
               {
@@ -11859,11 +11630,7 @@
             "type": "string"
           },
           "notional_currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The currency of the notional amount."
           },
           "order": {
@@ -11955,19 +11722,11 @@
             "title": "Settlement Date"
           },
           "side": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderSide"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderSide",
             "description": "The executed order side."
           },
           "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderTradeStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderTradeStatus",
             "description": "The trade status."
           },
           "trading_venue": {
@@ -12066,7 +11825,8 @@
         "properties": {
           "claim_type": {
             "const": "pep_status",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "has_pep_association": {
             "title": "Has Pep Association",
@@ -12163,7 +11923,8 @@
           },
           "claim_type": {
             "const": "pep_status",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Date and time the claim was created.",
@@ -12323,7 +12084,8 @@
         "properties": {
           "claim_type": {
             "const": "pep_status",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Time the claim was created.",
@@ -12481,7 +12243,30 @@
           "claims": {
             "description": "Claims created for this person.",
             "items": {
-              "anyOf": [
+              "discriminator": {
+                "mapping": {
+                  "business_nature": "#/components/schemas/BusinessNaturePersonClaimSummary",
+                  "contact_details": "#/components/schemas/ContactDetailsPersonClaimSummary",
+                  "education_level": "#/components/schemas/EducationLevelPersonClaimSummary",
+                  "employment": "#/components/schemas/EmploymentPersonClaimSummary",
+                  "expected_activity": "#/components/schemas/ExpectedActivityPersonClaimSummary",
+                  "fatca_status": "#/components/schemas/FatcaStatusPersonClaimSummary",
+                  "financial_profile": "#/components/schemas/FinancialProfilePersonClaimSummary",
+                  "identity": "#/components/schemas/IdentityPersonClaimSummary",
+                  "investment_experience": "#/components/schemas/InvestmentExperiencePersonClaimSummary",
+                  "lei": "#/components/schemas/LeiPersonClaimSummary",
+                  "nationalities": "#/components/schemas/NationalitiesPersonClaimSummary",
+                  "operating_address": "#/components/schemas/OperatingAddressPersonClaimSummary",
+                  "pep_status": "#/components/schemas/PepStatusPersonClaimSummary",
+                  "registered_address": "#/components/schemas/RegisteredAddressPersonClaimSummary",
+                  "registration": "#/components/schemas/RegistrationPersonClaimSummary",
+                  "relationships": "#/components/schemas/RelationshipsPersonClaimSummary",
+                  "residence": "#/components/schemas/ResidencePersonClaimSummary",
+                  "tax_residencies": "#/components/schemas/TaxResidenciesPersonClaimSummary"
+                },
+                "propertyName": "claim_type"
+              },
+              "oneOf": [
                 {
                   "$ref": "#/components/schemas/IdentityPersonClaimSummary"
                 },
@@ -12564,11 +12349,7 @@
             "type": "string"
           },
           "person_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PersonType"
-              }
-            ],
+            "$ref": "#/components/schemas/PersonType",
             "description": "Person type."
           }
         },
@@ -12630,15 +12411,11 @@
           "cash_amount": {
             "anyOf": [
               {
-                "anyOf": [
-                  {
-                    "type": "number"
-                  },
-                  {
-                    "type": "string"
-                  }
-                ],
-                "gt": 0
+                "exclusiveMinimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "string"
               },
               {
                 "type": "null"
@@ -12658,15 +12435,11 @@
           "limit_price": {
             "anyOf": [
               {
-                "anyOf": [
-                  {
-                    "type": "number"
-                  },
-                  {
-                    "type": "string"
-                  }
-                ],
-                "gt": 0
+                "exclusiveMinimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "string"
               },
               {
                 "type": "null"
@@ -12679,25 +12452,17 @@
             "title": "Limit Price"
           },
           "order_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderType"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderType",
             "description": "The order type, market or limit. Limit orders are ETFs only."
           },
           "quantity": {
             "anyOf": [
               {
-                "anyOf": [
-                  {
-                    "type": "number"
-                  },
-                  {
-                    "type": "string"
-                  }
-                ],
-                "gt": 0
+                "exclusiveMinimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "string"
               },
               {
                 "type": "null"
@@ -12722,11 +12487,7 @@
             "title": "Quote"
           },
           "side": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderSide"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderSide",
             "description": "The order side, buy or sell."
           }
         },
@@ -12834,7 +12595,19 @@
             "type": "string"
           },
           "instrument": {
-            "anyOf": [
+            "description": "Instrument held in the position.",
+            "discriminator": {
+              "mapping": {
+                "amc": "#/components/schemas/AMC",
+                "bill": "#/components/schemas/Bill",
+                "bond": "#/components/schemas/Bond",
+                "currency_pair": "#/components/schemas/CurrencyPair",
+                "etf": "#/components/schemas/ETF",
+                "money_market_fund": "#/components/schemas/MoneyMarketFund"
+              },
+              "propertyName": "instrument_type"
+            },
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/Bill"
               },
@@ -12854,7 +12627,6 @@
                 "$ref": "#/components/schemas/ETF"
               }
             ],
-            "description": "Instrument held in the position.",
             "title": "Instrument"
           },
           "modified_at": {
@@ -12907,11 +12679,7 @@
             "type": "string"
           },
           "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PositionStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/PositionStatus",
             "description": "Current lifecycle status of the position."
           },
           "total": {
@@ -13009,19 +12777,11 @@
             "type": "string"
           },
           "reporting": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PositionReportingEarnings"
-              }
-            ],
+            "$ref": "#/components/schemas/PositionReportingEarnings",
             "description": "The position's earnings in the account's base currency, with a breakdown into what the investment earned and what exchange-rate movements added or took away. Summed over all positions, these give the account's positions figures."
           },
           "trading": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PositionTradingEarnings"
-              }
-            ],
+            "$ref": "#/components/schemas/PositionTradingEarnings",
             "description": "The position's earnings in the instrument's own currency."
           }
         },
@@ -13039,11 +12799,7 @@
       "PositionReportingEarnings": {
         "properties": {
           "attribution": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/EarningsAttribution"
-              }
-            ],
+            "$ref": "#/components/schemas/EarningsAttribution",
             "description": "Breakdown of the earnings into how much came from the investment itself and how much from exchange-rate movements."
           },
           "cost_basis": {
@@ -13052,11 +12808,7 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The account's base currency."
           },
           "gross": {
@@ -13143,11 +12895,7 @@
             "title": "Mwrr"
           },
           "period": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Period"
-              }
-            ],
+            "$ref": "#/components/schemas/Period",
             "description": "Requested period the returns were computed over."
           },
           "period_end": {
@@ -13215,11 +12963,7 @@
       "PositionTradingEarnings": {
         "properties": {
           "attribution": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/TradingEarningsAttribution"
-              }
-            ],
+            "$ref": "#/components/schemas/TradingEarningsAttribution",
             "description": "Breakdown of the earnings into realized and unrealized, and within each into price changes and income."
           },
           "cost_basis": {
@@ -13228,11 +12972,7 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The instrument's currency."
           },
           "gross": {
@@ -13306,19 +13046,11 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The currency of the position value."
           },
           "position": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Position"
-              }
-            ],
+            "$ref": "#/components/schemas/Position",
             "description": "The valued position."
           },
           "price": {
@@ -13382,11 +13114,7 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The trading currency associated with the price."
           },
           "dirty_ask": {
@@ -13450,19 +13178,11 @@
             "title": "Mid"
           },
           "price_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PriceType"
-              }
-            ],
+            "$ref": "#/components/schemas/PriceType",
             "description": "The price quotation type."
           },
           "quality": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PriceQuality"
-              }
-            ],
+            "$ref": "#/components/schemas/PriceQuality",
             "description": "The timeliness quality of the price."
           },
           "symbol": {
@@ -13615,11 +13335,7 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "Currency of the refund amount."
           },
           "fee_charge": {
@@ -13661,7 +13377,8 @@
           },
           "claim_type": {
             "const": "registered_address",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "country_code": {
             "title": "Country Code",
@@ -13749,7 +13466,8 @@
           },
           "claim_type": {
             "const": "registered_address",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "country_code": {
             "title": "Country Code",
@@ -13900,7 +13618,8 @@
           },
           "claim_type": {
             "const": "registered_address",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "country_code": {
             "title": "Country Code",
@@ -13995,7 +13714,8 @@
         "properties": {
           "claim_type": {
             "const": "registration",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "country_of_incorporation": {
             "title": "Country Of Incorporation",
@@ -14061,7 +13781,8 @@
           },
           "claim_type": {
             "const": "registration",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "country_of_incorporation": {
             "title": "Country Of Incorporation",
@@ -14190,7 +13911,8 @@
         "properties": {
           "claim_type": {
             "const": "registration",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "country_of_incorporation": {
             "title": "Country Of Incorporation",
@@ -14442,7 +14164,8 @@
         "properties": {
           "claim_type": {
             "const": "relationships",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "relationships": {
             "items": {
@@ -14481,7 +14204,8 @@
           },
           "claim_type": {
             "const": "relationships",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Date and time the claim was created.",
@@ -14583,7 +14307,8 @@
         "properties": {
           "claim_type": {
             "const": "relationships",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Time the claim was created.",
@@ -14646,7 +14371,8 @@
           },
           "claim_type": {
             "const": "residence",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "country_code": {
             "title": "Country Code",
@@ -14729,7 +14455,8 @@
           },
           "claim_type": {
             "const": "residence",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "country_code": {
             "title": "Country Code",
@@ -14875,7 +14602,8 @@
           },
           "claim_type": {
             "const": "residence",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "country_code": {
             "title": "Country Code",
@@ -15074,19 +14802,11 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The currency every cash amount in this quote is given in."
           },
           "estimate": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/SellEstimate"
-              }
-            ],
+            "$ref": "#/components/schemas/SellEstimate",
             "description": "Estimated proceeds."
           },
           "expires_at": {
@@ -15109,7 +14829,19 @@
             "type": "string"
           },
           "instrument": {
-            "anyOf": [
+            "description": "The full instrument being quoted.",
+            "discriminator": {
+              "mapping": {
+                "amc": "#/components/schemas/AMC",
+                "bill": "#/components/schemas/Bill",
+                "bond": "#/components/schemas/Bond",
+                "currency_pair": "#/components/schemas/CurrencyPair",
+                "etf": "#/components/schemas/ETF",
+                "money_market_fund": "#/components/schemas/MoneyMarketFund"
+              },
+              "propertyName": "instrument_type"
+            },
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/Bill"
               },
@@ -15129,7 +14861,6 @@
                 "$ref": "#/components/schemas/ETF"
               }
             ],
-            "description": "The full instrument being quoted.",
             "title": "Instrument"
           },
           "is_binding": {
@@ -15158,11 +14889,7 @@
             "title": "Limit Price"
           },
           "order_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderType"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderType",
             "description": "Market or limit."
           },
           "quantity": {
@@ -15177,17 +14904,14 @@
             "const": "sell",
             "default": "sell",
             "description": "The kind of order quote returned, which determines the set of fields present in this response.",
-            "title": "Quote Type"
+            "title": "Quote Type",
+            "type": "string"
           },
           "reservation": {
             "$ref": "#/components/schemas/OrderQuoteReservation"
           },
           "side": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OrderSide"
-              }
-            ],
+            "$ref": "#/components/schemas/OrderSide",
             "description": "Buy or sell."
           }
         },
@@ -15330,7 +15054,8 @@
           "purpose": {
             "const": "verification_evidence",
             "description": "Purpose of the file upload.",
-            "title": "Purpose"
+            "title": "Purpose",
+            "type": "string"
           },
           "signed_upload_url": {
             "description": "Signed URL for uploading the file.",
@@ -15370,11 +15095,7 @@
             "type": "array"
           },
           "customer_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/CustomerType"
-              }
-            ],
+            "$ref": "#/components/schemas/CustomerType",
             "description": "Customer structure for the application."
           },
           "evidence": {
@@ -15413,7 +15134,8 @@
         "properties": {
           "claim_type": {
             "const": "tax_residencies",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "tax_residencies": {
             "items": {
@@ -15450,7 +15172,8 @@
           },
           "claim_type": {
             "const": "tax_residencies",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Date and time the claim was created.",
@@ -15550,7 +15273,8 @@
         "properties": {
           "claim_type": {
             "const": "tax_residencies",
-            "title": "Claim Type"
+            "title": "Claim Type",
+            "type": "string"
           },
           "created_at": {
             "description": "Time the claim was created.",
@@ -15641,19 +15365,11 @@
         "description": "The order rules of an instrument, split by side.",
         "properties": {
           "buy": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/BuyTradingConfiguration"
-              }
-            ],
+            "$ref": "#/components/schemas/BuyTradingConfiguration",
             "description": "Rules for buy orders."
           },
           "sell": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/SellTradingConfiguration"
-              }
-            ],
+            "$ref": "#/components/schemas/SellTradingConfiguration",
             "description": "Rules for sell orders."
           }
         },
@@ -15667,11 +15383,7 @@
       "TradingEarningsAttribution": {
         "properties": {
           "investment": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/EarningsEffect"
-              }
-            ],
+            "$ref": "#/components/schemas/EarningsEffect",
             "description": "How much the position earned, measured in the instrument's own currency. Exchange rates play no part here, so there is no currency effect."
           }
         },
@@ -15764,11 +15476,7 @@
             "title": "Reference"
           },
           "reference_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ReferenceType"
-              }
-            ],
+            "$ref": "#/components/schemas/ReferenceType",
             "description": "The type of the related resource."
           },
           "settlement_date": {
@@ -15809,11 +15517,7 @@
             "type": "array"
           },
           "transaction_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/TransactionType"
-              }
-            ],
+            "$ref": "#/components/schemas/TransactionType",
             "description": "The transaction type."
           },
           "unit_price": {
@@ -16128,11 +15832,7 @@
             "type": "array"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The currency of the aggregate values."
           },
           "position_valuations": {
@@ -16184,11 +15884,7 @@
       "ValuationHistory": {
         "properties": {
           "resolution": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AccountHistoryResolution"
-              }
-            ],
+            "$ref": "#/components/schemas/AccountHistoryResolution",
             "description": "The time interval between valuation points."
           },
           "series": {
@@ -16344,16 +16040,13 @@
             "title": "Next Attempt At"
           },
           "payload": {
+            "additionalProperties": true,
             "description": "Delivery payload.",
             "title": "Payload",
             "type": "object"
           },
           "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/WebhookDeliveryStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/WebhookDeliveryStatus",
             "description": "The delivery lifecycle status."
           },
           "succeeded_at": {
@@ -16426,11 +16119,7 @@
             "type": "string"
           },
           "outcome": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/WebhookDeliveryAttemptOutcome"
-              }
-            ],
+            "$ref": "#/components/schemas/WebhookDeliveryAttemptOutcome",
             "description": "Delivery attempt outcome."
           },
           "response": {
@@ -16460,11 +16149,7 @@
       "WebhookDeliveryAttemptError": {
         "properties": {
           "error_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/WebhookDeliveryAttemptErrorType"
-              }
-            ],
+            "$ref": "#/components/schemas/WebhookDeliveryAttemptErrorType",
             "description": "Classification of the failure."
           },
           "message": {
@@ -16638,19 +16323,11 @@
             "type": "string"
           },
           "currency": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Currency"
-              }
-            ],
+            "$ref": "#/components/schemas/Currency",
             "description": "The currency to withdraw."
           },
           "funding_account": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/FundingAccount"
-              }
-            ],
+            "$ref": "#/components/schemas/FundingAccount",
             "description": "The funding account that will receive the funds."
           },
           "id": {
@@ -16665,11 +16342,7 @@
             "type": "string"
           },
           "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/WithdrawalStatus"
-              }
-            ],
+            "$ref": "#/components/schemas/WithdrawalStatus",
             "description": "The status of the withdrawal."
           }
         },
@@ -17618,13 +17291,8 @@
             "name": "period",
             "required": true,
             "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/Period"
-                }
-              ],
-              "description": "Predefined period over which returns are computed.",
-              "title": "Period"
+              "$ref": "#/components/schemas/Period",
+              "description": "Predefined period over which returns are computed."
             }
           }
         ],
@@ -20475,13 +20143,8 @@
             "name": "period",
             "required": true,
             "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/Period"
-                }
-              ],
-              "description": "Predefined period over which returns are computed.",
-              "title": "Period"
+              "$ref": "#/components/schemas/Period",
+              "description": "Predefined period over which returns are computed."
             }
           }
         ],
