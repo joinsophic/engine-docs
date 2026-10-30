@@ -13298,7 +13298,8 @@
           "corporate_action",
           "position_migration_in",
           "book_transfer",
-          "portfolio_deposit"
+          "portfolio_deposit",
+          "portfolio_withdrawal"
         ],
         "properties": {},
         "title": "ReferenceType",
