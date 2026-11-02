@@ -126,6 +126,10 @@
       "detail": "The instrument is not tradable in the requested currency."
     },
     {
+      "code": "invalid_webhook_url",
+      "detail": "The webhook URL must be HTTPS and resolve to a public IP address."
+    },
+    {
       "code": "limit_budget_too_small",
       "detail": "The cash budget is too small to buy one trading increment at the limit price."
     },
