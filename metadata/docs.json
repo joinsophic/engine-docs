@@ -126,6 +126,10 @@
       "detail": "The instrument is not tradable in the requested currency."
     },
     {
+      "code": "invalid_webhook_url",
+      "detail": "The webhook URL must be HTTPS and resolve to a public IP address."
+    },
+    {
       "code": "limit_budget_too_small",
       "detail": "The cash budget is too small to buy one trading increment at the limit price."
     },
@@ -222,7 +226,7 @@
       "detail": "Withdrawals are not enabled for this account."
     }
   ],
-  "openapi_sha256": "0042ca39f1c4e349fb4c9ace26c49ce8e176231c3a09417e2f68fdeded0b0527",
+  "openapi_sha256": "2118f831facddd11c107c065c9fe750d1e922e698fa9de46e7807a8ed8d60e74",
   "schema_version": 1,
   "webhook_events": [
     {
