@@ -8,6 +8,15 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="November 3, 2026" description="additions">
+  ## Webhook URL validation
+
+  We now validate webhook URLs to ensure they're secure and publicly accessible.
+
+  **Added**
+  - `invalid_webhook_url` error code, returned when a webhook URL is not HTTPS or doesn't resolve to a public IP address. This helps catch configuration issues early when you register or update a webhook endpoint.
+</Update>
+
 <Update label="October 29, 2026" description="2026-10-29">
   ## Cumulative and annualised returns side by side
 
