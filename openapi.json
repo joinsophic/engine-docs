@@ -2789,7 +2789,7 @@
       },
       "BusinessNatureClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for legal entity business nature and turnover claim data.",
+        "description": "Business activity, turnover and risk indicators.",
         "properties": {
           "annual_turnover_eur": {
             "$ref": "#/components/schemas/EurAmountBand"
@@ -3515,7 +3515,7 @@
       },
       "ContactDetailsClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for legal entity contact details claim data.",
+        "description": "How to reach the person, or a legal person's point of contact.",
         "properties": {
           "claim_type": {
             "const": "contact_details",
@@ -3831,6 +3831,12 @@
                   "$ref": "#/components/schemas/InvestmentExperienceClaimSpec"
                 },
                 {
+                  "$ref": "#/components/schemas/ExpectedActivityClaimSpec"
+                },
+                {
+                  "$ref": "#/components/schemas/RelationshipsClaimSpec"
+                },
+                {
                   "$ref": "#/components/schemas/RegistrationClaimSpec"
                 },
                 {
@@ -3847,12 +3853,6 @@
                 },
                 {
                   "$ref": "#/components/schemas/BusinessNatureClaimSpec"
-                },
-                {
-                  "$ref": "#/components/schemas/ExpectedActivityClaimSpec"
-                },
-                {
-                  "$ref": "#/components/schemas/RelationshipsClaimSpec"
                 }
               ]
             },
@@ -5102,7 +5102,7 @@
       },
       "EducationLevelClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for education level claim data (MiFID II suitability).",
+        "description": "Highest level of education (MiFID II suitability).",
         "properties": {
           "claim_type": {
             "const": "education_level",
@@ -5281,7 +5281,7 @@
       },
       "EmploymentClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for employment claim data (MiFID II suitability).",
+        "description": "Employment status and industry (MiFID II suitability).",
         "properties": {
           "claim_type": {
             "const": "employment",
@@ -6464,7 +6464,7 @@
       },
       "ExpectedActivityClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for expected investment activity claim data.",
+        "description": "How the person expects to use the account.",
         "properties": {
           "annual_transactions": {
             "title": "Annual Transactions",
@@ -6700,7 +6700,7 @@
       },
       "FatcaStatusClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for FATCA US-person status (natural or legal person).",
+        "description": "Whether the person is a US person under FATCA.",
         "properties": {
           "claim_type": {
             "const": "fatca_status",
@@ -7461,7 +7461,7 @@
       },
       "FinancialProfileClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for income and wealth financial profile claim data.",
+        "description": "AML income and wealth, in bands, with their sources.",
         "properties": {
           "annual_income_eur": {
             "$ref": "#/components/schemas/EurAmountBand"
@@ -7816,7 +7816,7 @@
       },
       "IdentityClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for identity claim data.",
+        "description": "Legal name and date of birth.",
         "properties": {
           "claim_type": {
             "const": "identity",
@@ -8340,7 +8340,7 @@
       },
       "InvestmentExperienceClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for prior investment experience claim data.",
+        "description": "Onboarding summary of prior investing.",
         "properties": {
           "asset_classes": {
             "items": {
@@ -9055,7 +9055,7 @@
       },
       "LeiClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for Legal Entity Identifier (LEI) claim data.",
+        "description": "Legal Entity Identifier.",
         "properties": {
           "claim_type": {
             "const": "lei",
@@ -9808,7 +9808,7 @@
       },
       "NationalitiesClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for nationalities claim data.",
+        "description": "Every nationality the person holds.",
         "properties": {
           "claim_type": {
             "const": "nationalities",
@@ -10009,6 +10009,7 @@
       },
       "NationalityEntry": {
         "additionalProperties": false,
+        "description": "One nationality and how it is held.",
         "properties": {
           "basis": {
             "anyOf": [
@@ -10428,7 +10429,7 @@
       },
       "OperatingAddressClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for legal entity operating (principal place of business) address.",
+        "description": "Where the business trades (principal place of business).",
         "properties": {
           "city": {
             "title": "City",
@@ -11793,7 +11794,7 @@
       },
       "PepStatusClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for politically exposed person (PEP) declaration claim data.",
+        "description": "Politically exposed person status and associations.",
         "properties": {
           "claim_type": {
             "const": "pep_status",
@@ -13356,7 +13357,7 @@
       },
       "RegisteredAddressClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for legal entity registered address claim data.\n\nWhen `operating_address_is_same` is True, onboarding applications for\nthis entity do not need a separate `operating_address` claim or\n`proof_of_operating_address` evidence -- compliance treats the\nregistered address as both. Defaults to False so existing behaviour\n(distinct operating address required) is preserved.",
+        "description": "Legal registration address.",
         "properties": {
           "city": {
             "title": "City",
@@ -13697,7 +13698,7 @@
       },
       "RegistrationClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for legal entity registration claim data.",
+        "description": "Company registration.",
         "properties": {
           "claim_type": {
             "const": "registration",
@@ -14147,7 +14148,7 @@
       },
       "RelationshipsClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for person relationships (UBOs, directors, shareholders, etc.).",
+        "description": "Directors, owners, UBOs and signatories of a legal person.",
         "properties": {
           "claim_type": {
             "const": "relationships",
@@ -14350,7 +14351,7 @@
       },
       "ResidenceClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for residence claim data (aligned with Address).",
+        "description": "Residential address.",
         "properties": {
           "city": {
             "title": "City",
@@ -15048,6 +15049,14 @@
             "description": "Signed URL for uploading the file.",
             "title": "Signed Upload Url",
             "type": "string"
+          },
+          "upload_headers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Headers the upload must send verbatim. They are covered by the URL's signature, so storage rejects the upload if any is missing or altered.",
+            "title": "Upload Headers",
+            "type": "object"
           }
         },
         "required": [
@@ -15057,7 +15066,8 @@
           "filename",
           "expires_at",
           "purpose",
-          "signed_upload_url"
+          "signed_upload_url",
+          "upload_headers"
         ],
         "title": "SignedUpload",
         "type": "object"
@@ -15117,7 +15127,7 @@
       },
       "TaxResidenciesClaimSpec": {
         "additionalProperties": false,
-        "description": "Spec for tax residencies claim data.",
+        "description": "Every tax residence, each with its TIN or an exemption reason.",
         "properties": {
           "claim_type": {
             "const": "tax_residencies",
@@ -15305,6 +15315,7 @@
       },
       "TaxResidencyEntry": {
         "additionalProperties": false,
+        "description": "One tax residence, with its TIN or the reason there is none.",
         "properties": {
           "country_code": {
             "title": "Country Code",
@@ -19581,6 +19592,12 @@
                     "$ref": "#/components/schemas/InvestmentExperienceClaimSpec"
                   },
                   {
+                    "$ref": "#/components/schemas/ExpectedActivityClaimSpec"
+                  },
+                  {
+                    "$ref": "#/components/schemas/RelationshipsClaimSpec"
+                  },
+                  {
                     "$ref": "#/components/schemas/RegistrationClaimSpec"
                   },
                   {
@@ -19597,12 +19614,6 @@
                   },
                   {
                     "$ref": "#/components/schemas/BusinessNatureClaimSpec"
-                  },
-                  {
-                    "$ref": "#/components/schemas/ExpectedActivityClaimSpec"
-                  },
-                  {
-                    "$ref": "#/components/schemas/RelationshipsClaimSpec"
                   }
                 ],
                 "description": "The claim payload, discriminated by claim_type.",
