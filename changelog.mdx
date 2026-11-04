@@ -8,6 +8,18 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="November 1, 2026" description="2026-11-01">
+  ## Enhanced file uploads and webhook validation
+
+  <Info>New API version `2026-11-01`. See [Versioning](/api-reference/versioning) to migrate.</Info>
+
+  We've improved security for file uploads and webhooks: signed uploads now return required headers for the upload request, and we validate webhook URLs more strictly.
+
+  **Added**
+  - `upload_headers` on [Request file upload](/api-reference/files/request-file-upload) responses: headers you must send verbatim when uploading to the signed URL. They're covered by the URL's signature, so storage rejects the upload if any header is missing or altered.
+  - `invalid_webhook_url` error code returned when a webhook URL isn't HTTPS or doesn't resolve to a public IP address.
+</Update>
+
 <Update label="October 29, 2026" description="2026-10-29">
   ## Cumulative and annualised returns side by side
 
