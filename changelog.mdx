@@ -8,6 +8,20 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="November 1, 2026" description="2026-11-01">
+  ## Signed upload headers and webhook validation
+
+  <Info>New API version `2026-11-01`. See [Versioning](/api-reference/versioning) to migrate.</Info>
+
+  Signed uploads now require you to send specific headers when uploading to the signed URL, improving security through signature verification. Requests pinned to `2026-10-29` or earlier keep the previous behavior.
+
+  **Breaking**
+  - [Request file upload](/api-reference/files/request-file-upload) now returns a required `upload_headers` field on the SignedUpload response. These headers must be sent verbatim with your upload request; they're covered by the URL's signature, and storage rejects the upload if any header is missing or altered.
+
+  **Added**
+  - `invalid_webhook_url` error code when a webhook URL is not HTTPS or doesn't resolve to a public IP address.
+</Update>
+
 <Update label="October 29, 2026" description="2026-10-29">
   ## Cumulative and annualised returns side by side
 
