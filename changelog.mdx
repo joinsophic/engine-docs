@@ -8,6 +8,22 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="November 1, 2026" description="2026-11-01">
+  ## Signed upload headers and webhook URL validation
+
+  <Info>New API version `2026-11-01`. See [Versioning](/api-reference/versioning) to migrate.</Info>
+
+  We now return headers with signed uploads that you must send verbatim when uploading to the signed URL. We've also added validation for webhook URLs to ensure they use HTTPS and resolve to a public IP address. Requests pinned to `2026-10-29` or earlier don't receive or require headers.
+
+  **Breaking**
+  - [Request file upload](/api-reference/files/request-file-upload) now returns an `upload_headers` object (required). When uploading to `signed_upload_url`, you must send these headers verbatim with your request; the storage service validates them against the URL's signature. On `2026-10-29` and earlier, signed uploads don't return or require headers.
+  - Webhook URLs must be HTTPS and resolve to a public IP address. Registering a webhook with a non-HTTPS URL, a private IP, or a non-resolvable address returns the new `invalid_webhook_url` error code.
+
+  **Added**
+  - `upload_headers` on [Request file upload](/api-reference/files/request-file-upload) responses: a map of header names to values that the client must include when uploading to the `signed_upload_url`.
+  - `invalid_webhook_url` error code when registering a webhook URL that isn't HTTPS or doesn't resolve to a public address.
+</Update>
+
 <Update label="October 29, 2026" description="2026-10-29">
   ## Cumulative and annualised returns side by side
 
