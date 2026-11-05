@@ -8,6 +8,24 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="November 5, 2026" description="2026-11-01">
+  ## Signed uploads check content type, and stricter webhook URLs
+
+  <Info>New API version `2026-11-01`. See [Versioning](/api-reference/versioning) to migrate.</Info>
+
+  Signed upload requests now tell you exactly which headers the upload must send, and webhook URLs are checked before we accept them, so a bad address fails at registration instead of at delivery.
+
+  **Breaking**
+  - [Request file upload](/api-reference/files/request-file-upload) validates `content_type` against the purpose's allowlist (for example `profile_photo` accepts only `image/jpeg`, `image/png`, and `image/webp`) and returns a 400 on `content_type` when the type isn't accepted. Requests pinned to `2026-10-29` or earlier keep accepting any content type for any purpose.
+
+  **Added**
+  - `upload_headers` on the [signed upload](/api-reference/files/request-file-upload) response: the headers your upload must send verbatim. They're covered by the URL's signature, so storage rejects the upload if any is missing or altered.
+  - `invalid_webhook_url` error code, returned by [Create a webhook](/api-reference/webhooks/create-a-webhook) and [Update a webhook](/api-reference/webhooks/update-a-webhook) when the URL isn't HTTPS, is an IP address, or doesn't resolve to a public IP address.
+
+  **Changed**
+  - `fund_ongoing_charges` on [money market fund instruments](/api-reference/catalog/retrieve-an-instrument) is returned at 4 decimal places instead of 2.
+</Update>
+
 <Update label="October 29, 2026" description="2026-10-29">
   ## Cumulative and annualised returns side by side
 
