@@ -279,10 +279,10 @@ A successful request returns `201 Created`:
 | `id` | The person's unique ID, prefix `per_`. |
 | `person_type` | `natural` or `legal`. |
 | `full_name` | Natural: `"{first_name} {last_name}"` from the identity claim. Legal: `entity_name` from registration, or empty. |
-| `claims` | The claims you provided. Each element carries `id`, `created_at`, `status: pending`, `claim_type`, and the fields defined for that `claim_type`. To get the full claim (with `person`, `lifecycle`, `verified_at`, `superseded_at`, `archived_at`) for a specific claim later, call [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/customers/retrieve-a-person-claim). See [claim lifecycle](/docs/onboarding/claims#lifecycle). |
+| `claims` | The values you provided, one per claim, each carrying `id`, `created_at`, `status: pending`, `claim_type` and the fields defined for that `claim_type`. This response keeps that shape on every API version, and `id` is the value's version ID (`clmv_`). To read the claims with their versions, list them with [`GET /persons/{person_id}/claims`](/api-reference/customers/list-claims-for-a-person). See [claims and versions](/docs/onboarding/claims#claims-and-versions). |
 
 <Note>
-Persons don't have their own status; lifecycle lives on claims. See [lifecycle](/docs/onboarding/claims#lifecycle).
+Persons don't have their own status; status lives on each claim's versions. See [claims and versions](/docs/onboarding/claims#claims-and-versions).
 </Note>
 
 <Warning>
@@ -298,10 +298,10 @@ curl https://api.engine.usesophic.com/persons/per_m4k7r9s2 \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
-Use [`GET /persons/{person_id}/claims`](/api-reference/customers/list-claims-for-a-person) to list the person's claims, filtered by `claim_type` or `status`. By default you get every row for the person (current and historical) newest-first. Pass `include_history=false` to collapse to just the current rows (`active` + `in_flight`) per type. See [listing and retrieving claims](/docs/onboarding/claims#listing-and-retrieving-claims).
+Use [`GET /persons/{person_id}/claims`](/api-reference/customers/list-claims-for-a-person) to list the person's claims that still apply, optionally filtered by `claim_type`. Each claim carries its latest version and its latest verified version; pass `include_history=true` for every version. See [listing and retrieving claims](/docs/onboarding/claims#listing-and-retrieving-claims).
 
 ```bash
-curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?status=verified" \
+curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?claim_type=residence" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 

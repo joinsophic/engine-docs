@@ -8,6 +8,25 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="November 5, 2026" description="2026-11-04">
+  ## Claims now carry their versions, and you can archive a claim
+
+  <Info>New API version `2026-11-04`. See [Versioning](/api-reference/versioning) to migrate.</Info>
+
+  Person claims now model a claim (`clm_`) with its versions (`clmv_`) instead of a row per value. You can append a new version to an existing claim, list a claim's full history, and archive a claim that no longer applies.
+
+  **Breaking**
+  - [List claims for a person](/api-reference/customers/list-claims-for-a-person) and [Retrieve a person claim](/api-reference/customers/retrieve-a-person-claim) return claims (`clm_`) carrying `claim_type`, `person`, `archived_at`, `created_at`, `is_archivable`, `latest_version` and `latest_verified_version`, with every version under `versions` when `include_history` is set (default `false`).
+  - [Write a claim value for a person](/api-reference/customers/write-a-claim-value-for-a-person) returns the version written (`clmv_`): `number`, `status` (`unverified` or `verified`), `data`, `verified_at`, `sources`, `created_at` and its `claim`. A value equal to the latest one writes no version: you get the latest version back, with your call added to its `sources` as `confirms`.
+  - The `status` query parameter, the `pending` status, and the `superseded_at` and `lifecycle` fields are removed. Requests pinned to `2026-11-01` or earlier keep a row per value.
+
+  **Added**
+  - [Add a version to a claim](/api-reference/customers/add-a-version-to-a-claim) (`POST /persons/{person_id}/claims/{claim_id}/versions`) writes a new value to an existing claim. Claim writes accept `based_on` and `reference` beside the value, and an `Idempotency-Key` header.
+  - [List a claim's versions](/api-reference/customers/list-a-claim-s-versions) (`GET /persons/{person_id}/claims/{claim_id}/versions`) returns every version, highest number first.
+  - [Archive a claim](/api-reference/customers/archive-a-claim) (`DELETE /persons/{person_id}/claims/{claim_id}`) retires a claim that no longer applies. Its versions are kept, and a later value of the same type starts a new claim. `identity`, `nationalities`, `residence`, `tax_residencies`, `contact_details` and `registration` can't be archived (`is_archivable: false`).
+  - New error codes on the claim routes: `claim_version_conflict` (409, the claim moved on from the version in `based_on`), `claim_type_mismatch` (400, the value is for another claim type or the claim is archived), and `claim_archive_not_allowed` (400, a person of this type must have the claim, or it is already archived).
+</Update>
+
 <Update label="November 5, 2026" description="2026-11-01">
   ## Signed uploads check content type, and stricter webhook URLs
 
