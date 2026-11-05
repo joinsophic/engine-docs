@@ -9,7 +9,7 @@ based on the date when the API version was released. For example, the API versio
 
 ## Current version
 
-The current API version is **2026-11-01**.
+The current API version is **2026-11-04**.
 
 ## Specifying a version
 
@@ -18,7 +18,7 @@ Specify the API version using the `Api-Version` header:
 ```shell
 curl https://api.engine.usesophic.com/me \
   -H "Authorization: Bearer BEARER_TOKEN" \
-  -H "Api-Version: 2026-11-01"
+  -H "Api-Version: 2026-11-04"
 ```
 
 ## Version history
@@ -28,6 +28,7 @@ changes it introduced and how to migrate.
 
 | Version | Released | Summary |
 |---|---|---|
+| `2026-11-04` | November 4, 2026 | Person claim routes return claims with their versions instead of a row per value; writes return the version written. |
 | `2026-11-01` | November 1, 2026 | Signed uploads validate `content_type` against the upload purpose. |
 | `2026-10-29` | October 29, 2026 | Returns nest `cumulative` and `annualised` figures under `mwrr` and `twrr`, replacing the `annualised` flag. |
 | `2026-10-01` | October 1, 2026 | Instrument `trading_configuration` replaces the legacy trading rule fields, rule violations return `trading_rule_violated`, and quotes return sizing rule violations as blockers. |
