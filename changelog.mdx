@@ -8,6 +8,26 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="November 5, 2026" description="2026-11-04">
+  ## Claim versioning and archived state
+
+  <Info>New API version `2026-11-04`. See [Versioning](/api-reference/versioning) to migrate.</Info>
+
+  Claims now support versioning. You can read a claim's version history, write new versions, and archive claims when they stop applying. Write requests include an optional `based_on` field to guard against concurrent updates: we'll return 409 if the claim has moved on since you read it.
+
+  **Breaking**
+  - [Write a claim value for a person](/api-reference/customers/write-a-claim-value-for-a-person) request schemas are renamed and restructured. `{Type}PersonClaim` schemas are now `{Type}ClaimWriteRequest` with an optional `based_on` field for optimistic concurrency control. When the claim has moved on from the version you based your update on, we return `claim_version_conflict` (409).
+  - Responses from [Write a claim value for a person](/api-reference/customers/write-a-claim-value-for-a-person) now return a `ClaimVersion` object (the written version with its timestamp and parent claim) instead of the claim itself. Requests pinned to `2026-11-01` or earlier keep the legacy response.
+
+  **Added**
+  - [Archive a claim](/api-reference/customers/archive-a-claim) (DELETE): archives a person's claim so it no longer applies. Its versions are kept, and a later claim value of the same type starts a new claim. A claim that a person of its type must have cannot be archived. Use `based_on` to have the request fail with 409 if the claim has moved on.
+  - [List a claim's versions](/api-reference/customers/list-a-claim-s-versions) (GET): returns every version of a person's claim, highest version number first.
+  - [Add a version to a claim](/api-reference/customers/add-a-version-to-a-claim) (POST): writes a new value to a person's claim. The value must be of the claim's type, and the claim must still apply. Otherwise behaves like a new claim write.
+  - `claim_archive_not_allowed` error code, returned by [Archive a claim](/api-reference/customers/archive-a-claim) when the claim cannot be archived.
+  - `claim_type_mismatch` error code, returned by [Write a claim value for a person](/api-reference/customers/write-a-claim-value-for-a-person) and [Add a version to a claim](/api-reference/customers/add-a-version-to-a-claim) when the claim type doesn't match or the claim is archived.
+  - `claim_version_conflict` error code, returned by [Archive a claim](/api-reference/customers/archive-a-claim), [Write a claim value for a person](/api-reference/customers/write-a-claim-value-for-a-person), and [Add a version to a claim](/api-reference/customers/add-a-version-to-a-claim) when the claim has moved on from the version you based your update on (409).
+</Update>
+
 <Update label="November 5, 2026" description="2026-11-01">
   ## Signed uploads check content type, and stricter webhook URLs
 
