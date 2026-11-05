@@ -137,45 +137,4 @@ We model our documentation after [Stripe's API docs](https://docs.stripe.com/api
 
 Pushing to the default branch automatically deploys via the [Mintlify GitHub app](https://dashboard.mintlify.com/settings/organization/github-app).
 
-### Automatic docs updates
-
-Docs validation runs in the `CI` workflow on pull requests and pushes to
-`main`. The `update-docs` workflow only generates documentation updates: it
-listens for a `production-deployed` repository dispatch with this payload:
-
-```json
-{
-  "event_type": "production-deployed",
-  "client_payload": {
-    "render_deploy_id": "dep-..."
-  }
-}
-```
-
-Set the `ENGINE_API_RENDER_SERVICE_ID` repository variable, plus these
-repository secrets, before running the workflow:
-
-| Secret / variable | Purpose |
-|---|---|
-| `RENDER_API_KEY` | Verify the Render deployment and resolve backend revisions |
-| `DOCS_REPO_WRITE_TOKEN` | Push the automation branch and open the PR (must be a PAT or GitHub App token so the PR can trigger CI) |
-| `ANTHROPIC_API_KEY` | Run the changelog agent |
-| `BACKEND_REPO_READ_TOKEN` | Check out `joinsophic/backend` when forced to inspect a no-artifact deploy range |
-| `SLACK_BOT_TOKEN` (secret) / `DOCS_SLACK_CHANNEL_ID` (variable) | Optional: notify Slack when the changelog changes |
-
-`SLACK_BOT_TOKEN` must be a Bot User OAuth token (`xoxb-`) with `chat:write`.
-App-level tokens (`xapp-`) cannot post messages. A Slack failure will not fail
-the job.
-
-The workflow resolves the current and previous backend revisions from Render
-deployment history, then syncs production artifacts with
-`scripts/sync-metadata.mjs` (which checks that `/.meta/docs` and
-`/openapi.json` agree on `openapi_sha256`). If generated artifacts changed (or
-the run is forced), it commits them to an `automation/api-docs-*` branch, runs
-the changelog agent, and opens a pull request. CI validates that PR.
-
-The workflow skips the branch and changelog agent when `openapi.json`,
-`metadata/docs.json`, and the generated snippets are unchanged. To run the
-agent for a behavioral change that does not affect those files, set
-`client_payload.force_docs_update` to `true` or run the workflow manually with
-**Run the docs agent even when generated artifacts are unchanged** selected.
+Docs validation runs in the `CI` workflow on pull requests and pushes to `main`.
