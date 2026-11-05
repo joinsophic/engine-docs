@@ -1,75 +1,30 @@
 ---
 title: Claims
-description: "Typed, versioned data points attached to a person"
+description: "Facts about a person, each with its versions"
 ---
 
-A **claim** (`clm_...`) is a typed data point on a [person](/docs/onboarding/persons). Each has a `claim_type`, a `status`, and the fields defined for that type, validated against a strict schema. Applications validate against claims.
-
-## Lifecycle
-
-Every claim row carries a `status` plus two retirement timestamps (`archived_at` (pending-only) and `superseded_at` (verified-only)) plus a convenience `lifecycle` discriminator derived from them.
-
-### `status`
-
-| Value | Description |
-|---|---|
-| `pending` | Submitted, not yet confirmed by compliance. |
-| `verified` | Confirmed by compliance. `verified_at` is set. |
-
-### Retirement timestamps
-
-| Field | Set on | Meaning |
-|---|---|---|
-| `archived_at` | pending rows only | Stamped when a subsequent `POST /persons/{id}/claims` for the same `(person, claim_type)` replaces this pending row. |
-| `superseded_at` | verified rows only | Stamped when compliance approves a newer pending and displaces this verified row as the authoritative value. |
-
-At most one row per `(person, claim_type)` is "current" for each status; the current pending (`status=pending AND archived_at IS NULL`) and the current verified (`status=verified AND superseded_at IS NULL`).
-
-### `lifecycle`
-
-`lifecycle` is a convenience discriminator that tells you, in one field, where a claim sits.
-
-| Value | Meaning |
-|---|---|
-| `active` | The most recent verified claim for its type; the currently authoritative value. |
-| `in_flight` | A pending claim waiting for compliance to verify it. |
-| `historical` | A claim (pending or verified) that's been replaced by a newer one. Kept for audit. |
-
-### State transitions
-
-```
-pending ──▶ verified
-```
-
-| From | To | Trigger |
-|---|---|---|
-| *(none)* | `pending` | [`POST /persons`](/api-reference/customers/create-a-person) or [`POST /persons/{person_id}/claims`](/api-reference/customers/write-a-claim-value-for-a-person). The new row is `in_flight`. If a current pending for the same `claim_type` already exists, its `archived_at` is stamped in the same transaction and it becomes `historical`. Verified rows are not touched. |
-| `pending` | `verified` | Compliance review. If a prior `active` verified of the same type exists, its `superseded_at` is stamped in the same step and it becomes `historical`. Not self-service. |
+A **claim** (`clm_...`) is a fact about a [person](/docs/onboarding/persons), such as their residence or their identity. Its values are **versions** (`clmv_...`): every time the value changes, we add a version and keep the ones before it. Applications validate against claims.
 
 <Note>
-A person can have more than one claim of the same `claim_type`. The current value is the row whose `lifecycle` is `active`. Submitting a new claim of the same type archives the current pending (if any) atomically and inserts a fresh `in_flight` pending. That new row takes over as `active` once compliance verifies it; which also stamps `superseded_at` on the prior active row.
+This page describes API version `2026-11-04` and later. If you pin `2026-11-01` or earlier, claim routes return one row per value instead; see [older API versions](#older-api-versions).
 </Note>
 
-### Updating a claim value
+## Claims and versions
 
-Post a new claim of the same type. Any current pending for that type is archived atomically (its `archived_at` is stamped; its `status` stays `pending` and it remains retrievable). The new row starts as `pending` with `lifecycle: in_flight`, and becomes the current `active` value once compliance verifies it.
+A person has at most one claim of each `claim_type` that applies. Each claim holds its versions, numbered from 1 in the order they were written.
 
-```bash
-curl -X POST https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "claim_type": "residence",
-    "line1": "42 New Street",
-    "postal_code": "EC2A 4RQ",
-    "city": "London",
-    "country_code": "GB"
-  }'
-```
+| Term | Meaning |
+|---|---|
+| Latest version | The highest-numbered version, verified or not. Returned as `latest_version`. |
+| Latest verified version | The highest-numbered version with `status: verified`, which can be the latest one. Returned as `latest_verified_version`, or `null` when no version is verified. |
+| `status` | `unverified` when we haven't checked the value against a verification source, `verified` once a check passed (`verified_at` is set). Verification isn't self-service: our checks set it. |
+| `archived_at` | Set on a claim that no longer applies. See [archiving a claim](#archiving-a-claim). |
 
-## Creating a claim
+Versions are never edited. A newer value doesn't overwrite the old one, so you can always read what a claim held before.
 
-`POST /persons/{person_id}/claims` with the claim as the body. `claim_type` tells us which claim you're sending.
+## Writing a claim value
+
+`POST /persons/{person_id}/claims` with the value as the body. `claim_type` tells us which claim you're writing. If the person has no claim of that type yet, we create it with version 1; otherwise we add the next version to it.
 
 <CodeGroup>
 ```python Python
@@ -87,7 +42,7 @@ response = requests.post(
         "has_pep_association": False,
     },
 )
-claim = response.json()
+version = response.json()
 ```
 
 ```javascript Node.js
@@ -106,7 +61,7 @@ const response = await fetch(
     }),
   }
 );
-const claim = await response.json();
+const version = await response.json();
 ```
 
 ```go Go
@@ -152,49 +107,89 @@ var response = await client.PostAsJsonAsync(
 ```
 </CodeGroup>
 
-The response is the full claim:
+The response is the version written, with the claim it belongs to:
 
 ```json
 {
-  "id": "clm_abc123",
-  "person": "per_m4k7r9s2",
-  "created_at": "2026-04-18T09:30:00Z",
-  "status": "pending",
-  "lifecycle": "in_flight",
+  "id": "clmv_7f2k9d1q",
+  "number": 1,
+  "status": "unverified",
+  "data": {
+    "claim_type": "pep_status",
+    "is_pep": false,
+    "pep_role": null,
+    "pep_role_start_date": null,
+    "pep_role_end_date": null,
+    "has_pep_association": false,
+    "pep_associate_name": null,
+    "pep_associate_relationship": null
+  },
   "verified_at": null,
-  "superseded_at": null,
-  "archived_at": null,
-  "claim_type": "pep_status",
-  "is_pep": false,
-  "has_pep_association": false,
-  "pep_role": null,
-  "pep_role_start_date": null,
-  "pep_role_end_date": null,
-  "pep_associate_name": null,
-  "pep_associate_relationship": null
+  "sources": [
+    {
+      "source_type": "api",
+      "source": null,
+      "locator": {
+        "actor_id": "svc_4h8s2m",
+        "actor_type": "service",
+        "oauth_client_id": "client_9x2c7p",
+        "reference": null
+      },
+      "role": "supports"
+    }
+  ],
+  "created_at": "2026-11-05T09:30:00Z",
+  "claim": {
+    "id": "clm_abc123",
+    "claim_type": "pep_status",
+    "person": "per_m4k7r9s2",
+    "archived_at": null,
+    "created_at": "2026-11-05T09:30:00Z"
+  }
 }
 ```
 
 | Field | Description |
 |---|---|
-| `id` | The claim's unique ID, prefix `clm_`. |
-| `person` | ID of the person this claim belongs to. |
-| `created_at` | ISO-8601 timestamp of when the claim was submitted. |
-| `status` | `pending` or `verified`. See [lifecycle](#lifecycle). |
-| `lifecycle` | `active`, `in_flight`, or `historical`. Derived per row; tells you whether this is the current value, the current pending update, or history. See [lifecycle](#lifecycle). |
-| `verified_at` | ISO-8601 timestamp of verification, or `null` if still pending. |
-| `superseded_at` | ISO-8601 timestamp stamped by compliance when a newer verified claim of the same type displaces this verified row. `null` while this is the current `active` verified. Only ever set on verified rows. |
-| `archived_at` | ISO-8601 timestamp stamped when a subsequent `POST /persons/{id}/claims` for the same `claim_type` replaces this pending row. `null` while this is the current `in_flight` pending. Only ever set on pending rows. |
-| `claim_type` | The claim's type. Determines which other fields are present. |
-| _other fields_ | Depend on `claim_type` (e.g. `is_pep`, `pep_role`, …). See [claim type reference](#claim-type-reference). |
+| `id` | The version's ID, prefix `clmv_`. |
+| `number` | Its position in the claim's history, from 1. |
+| `status` | `unverified` or `verified`. See [claims and versions](#claims-and-versions). |
+| `data` | The value, in the claim type's schema. See [claim type reference](#claim-type-reference). |
+| `verified_at` | When the value was verified, or `null`. |
+| `sources` | Where the value came from. For your calls, the actor and OAuth client that made the call, and your `reference` if you sent one. |
+| `claim` | The claim this is a version of, without its versions. |
+
+### Writing the same value again
+
+If the value you send equals the latest version, we don't add a version. We return the latest version as it stands, with your call added to its `sources` with `role: confirms`. Check `number` rather than assuming it went up.
+
+### Avoiding lost updates with `based_on`
+
+Send `based_on` with the version `number` you read. If someone else wrote a newer version since, we write nothing and return `409 claim_version_conflict`; read the claim again and retry. `based_on` and your own `reference` sit beside the value's fields in the body:
+
+```bash
+curl -X POST https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: 6c1f2e0a-residence-update" \
+  -d '{
+    "claim_type": "residence",
+    "line1": "42 New Street",
+    "postal_code": "EC2A 4RQ",
+    "city": "London",
+    "country_code": "GB",
+    "based_on": 1,
+    "reference": "crm-update-8812"
+  }'
+```
+
+### Retrying safely
+
+Send an `Idempotency-Key` header on writes. If you retry with the same key, for example after a timeout, we return the version the first attempt wrote or confirmed, and write nothing.
 
 ## Listing and retrieving claims
 
-List a person's claims, optionally filtered by type or status. By default the endpoint returns **every row** for the person (current and historical) newest-first by `created_at` (with `id` as a tiebreaker). This gives you an audit-ready view without a second request. Pass `?include_history=false` to collapse to at most two rows per `claim_type`: the current `active` verified (if any) and the current `in_flight` pending (if any).
-
-<Warning>
-**Breaking change.** `include_history` previously defaulted to `false` (bare GET returned only current rows). It now defaults to `true` (bare GET returns full history). If you were relying on the old behavior, pass `?include_history=false` explicitly.
-</Warning>
+[`GET /persons/{person_id}/claims`](/api-reference/customers/list-claims-for-a-person) lists the person's claims that still apply, newest first. Each claim carries its `latest_version` and `latest_verified_version`.
 
 ```bash
 curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?claim_type=residence" \
@@ -204,14 +199,57 @@ curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?claim_type=re
 | Query parameter | Values | Notes |
 |---|---|---|
 | `claim_type` | Any [`claim_type`](#claim-type-reference) | Optional. |
-| `status` | `pending`, `verified` | Optional. `status=pending` on the default view returns every pending (current + archived); `status=verified` returns every verified (current + superseded). Combine with `include_history=false` to get just the current pending or current verified per type. |
-| `include_history` | `true`, `false` | Optional, default `true`. Set to `false` to collapse to the current rows only (`active` + `in_flight`). |
+| `include_history` | `true`, `false` | Optional, default `false`. Set to `true` to get every version under `versions`, highest number first. |
 
-Retrieve a specific claim by ID via [`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/customers/retrieve-a-person-claim). This always returns the exact claim you asked for (including archived pendings and superseded verifieds) with `lifecycle` on the response.
+```json
+[
+  {
+    "id": "clm_r3s1d9",
+    "claim_type": "residence",
+    "person": "per_m4k7r9s2",
+    "archived_at": null,
+    "created_at": "2026-04-18T09:30:00Z",
+    "is_archivable": false,
+    "latest_version": {
+      "id": "clmv_8q2w5e",
+      "number": 2,
+      "status": "unverified",
+      "data": { "claim_type": "residence", "line1": "42 New Street", "line2": null, "line3": null, "district_county": null, "postal_code": "EC2A 4RQ", "city": "London", "country_code": "GB" },
+      "verified_at": null,
+      "sources": [ … ],
+      "created_at": "2026-11-05T09:30:00Z"
+    },
+    "latest_verified_version": {
+      "id": "clmv_1a7b3c",
+      "number": 1,
+      "status": "verified",
+      "data": { "claim_type": "residence", … },
+      "verified_at": "2026-04-19T11:00:00Z",
+      "sources": [ … ],
+      "created_at": "2026-04-18T09:30:00Z"
+    },
+    "versions": null
+  }
+]
+```
 
-<Note>
-Claims can't be deleted. To correct a pending submission (or update a previously verified one) post a new claim of the same type via [`POST /persons/{person_id}/claims`](/api-reference/customers/write-a-claim-value-for-a-person). Any current pending for that type is archived automatically. See [updating a claim value](#updating-a-claim-value).
-</Note>
+Use `latest_version` to show what the person told you most recently, and `latest_verified_version` where you need a value that passed a check.
+
+[`GET /persons/{person_id}/claims/{claim_id}`](/api-reference/customers/retrieve-a-person-claim) returns one claim, archived or not, and takes `include_history` too. [`GET /persons/{person_id}/claims/{claim_id}/versions`](/api-reference/customers/list-a-claim-s-versions) lists its versions, highest number first, each with its claim.
+
+## Adding a version to a claim
+
+[`POST /persons/{person_id}/claims/{claim_id}/versions`](/api-reference/customers/add-a-version-to-a-claim) writes a new value to a claim you name. It works like [writing a claim value](#writing-a-claim-value), including `based_on`, `reference` and `Idempotency-Key`. The value must be of the claim's type, and the claim must still apply; otherwise we return `400 claim_type_mismatch`.
+
+## Archiving a claim
+
+[`DELETE /persons/{person_id}/claims/{claim_id}`](/api-reference/customers/archive-a-claim) archives a claim that no longer applies, such as a tax residency the person has given up. We set `archived_at` and keep its versions, so you can still retrieve it by ID. It's no longer listed, and the next value of its type starts a new claim at version 1.
+
+Some claims can't be archived, because a person can't do without them: `identity`, `nationalities`, `residence`, `tax_residencies`, `contact_details` and `registration`. Each claim tells you with `is_archivable`. Archiving one of these, or a claim that's already archived, returns `400 claim_archive_not_allowed`. To change one, write a new value instead. You can send `based_on` as a query parameter to refuse the archive if the claim moved on.
+
+## Older API versions
+
+Clients pinned to `2026-11-01` or earlier get the same data in the shape from before: one row per value, with the value's fields at the top level, `status` as `pending` or `verified`, `superseded_at`, `archived_at` and `lifecycle` per row, and `include_history` defaulting to `true`. A value written since 5 Nov 2026 is identified there by its version ID (`clmv_`). See [versioning](/api-reference/versioning) to move to `2026-11-04`.
 
 ## Claim type reference
 
