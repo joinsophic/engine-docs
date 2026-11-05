@@ -243,7 +243,7 @@ Use `latest_version` to show what the person told you most recently, and `latest
 
 ## Archiving a claim
 
-[`DELETE /persons/{person_id}/claims/{claim_id}`](/api-reference/customers/archive-a-claim) archives a claim that no longer applies, such as a tax residency the person has given up. We set `archived_at` and keep its versions, so you can still retrieve it by ID. It's no longer listed, and the next value of its type starts a new claim at version 1.
+[`DELETE /persons/{person_id}/claims/{claim_id}`](/api-reference/customers/archive-a-claim) archives a claim that no longer applies, such as a registered address the entity has moved on from. We set `archived_at` and keep its versions, so you can still retrieve it by ID. It's no longer listed, and the next value of its type starts a new claim at version 1.
 
 Some claims can't be archived, because a person can't do without them: `identity`, `nationalities`, `residence`, `tax_residencies`, `contact_details` and `registration`. Each claim tells you with `is_archivable`. Archiving one of these, or a claim that's already archived, returns `400 claim_archive_not_allowed`. To change one, write a new value instead. You can send `based_on` as a query parameter to refuse the archive if the claim moved on.
 
