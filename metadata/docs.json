@@ -15,7 +15,7 @@
     },
     {
       "code": "claim_archive_not_allowed",
-      "detail": "The claim cannot be archived: a person of this type must have it, or it is already archived."
+      "detail": "This claim type cannot be archived, or the claim is already archived."
     },
     {
       "code": "claim_type_mismatch",
