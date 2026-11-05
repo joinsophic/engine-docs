@@ -14,6 +14,18 @@ export const errorCodes = [
     "detail": "Buy orders are not enabled for this account."
   },
   {
+    "code": "claim_archive_not_allowed",
+    "detail": "The claim cannot be archived: a person of this type must have it, or it is already archived."
+  },
+  {
+    "code": "claim_type_mismatch",
+    "detail": "The value is for another claim type, or the claim is archived."
+  },
+  {
+    "code": "claim_version_conflict",
+    "detail": "The claim has moved on from the version you based this on. Read it again and retry."
+  },
+  {
     "code": "client_request_id_too_long",
     "detail": "The Client-Request-Id header value exceeds the maximum length."
   },

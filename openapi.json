@@ -2853,27 +2853,27 @@
         "title": "BusinessNatureClaimSpec",
         "type": "object"
       },
-      "BusinessNaturePersonClaim": {
+      "BusinessNatureClaimWriteRequest": {
         "additionalProperties": false,
         "properties": {
           "annual_turnover_eur": {
             "$ref": "#/components/schemas/EurAmountBand"
           },
-          "archived_at": {
+          "based_on": {
             "anyOf": [
               {
-                "format": "date-time",
-                "type": "string"
+                "minimum": 1,
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
             "examples": [
-              "2026-07-20T08:15:00Z"
+              2
             ],
-            "title": "Archived At"
+            "title": "Based On"
           },
           "business_activity": {
             "$ref": "#/components/schemas/ClaimIndustry"
@@ -2894,15 +2894,6 @@
             "title": "Claim Type",
             "type": "string"
           },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
           "has_nominee_shareholders": {
             "title": "Has Nominee Shareholders",
             "type": "boolean"
@@ -2910,11 +2901,6 @@
           "has_shell_bank_relationships": {
             "title": "Has Shell Bank Relationships",
             "type": "boolean"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
           },
           "is_regulated": {
             "title": "Is Regulated",
@@ -2935,62 +2921,21 @@
             ],
             "title": "License Number"
           },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
-            "type": "string"
-          },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
-            "type": "string"
-          },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
+          "reference": {
             "anyOf": [
               {
-                "format": "date-time",
+                "maxLength": 255,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
+            "description": "Your own reference for the value, kept with its source.",
             "examples": [
-              "2026-08-01T12:00:00Z"
+              "crm-update-8812"
             ],
-            "title": "Superseded At"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
+            "title": "Reference"
           }
         },
         "required": [
@@ -3000,17 +2945,9 @@
           "is_regulated",
           "issues_bearer_shares",
           "has_nominee_shareholders",
-          "has_shell_bank_relationships",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "has_shell_bank_relationships"
         ],
-        "title": "BusinessNaturePersonClaim",
+        "title": "BusinessNatureClaimWriteRequest",
         "type": "object"
       },
       "BusinessNaturePersonClaimSummary": {
@@ -3307,6 +3244,90 @@
         "title": "CashValuation",
         "type": "object"
       },
+      "Claim": {
+        "properties": {
+          "archived_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When the claim stopped applying; `null` while it applies.",
+            "title": "Archived At"
+          },
+          "claim_type": {
+            "$ref": "#/components/schemas/ClaimType",
+            "description": "The claim's type."
+          },
+          "created_at": {
+            "description": "When the claim was first held.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "description": "Unique resource identifier.",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_archivable": {
+            "description": "Whether the claim can be archived. False for a claim a person cannot do without, such as identity or residence.",
+            "title": "Is Archivable",
+            "type": "boolean"
+          },
+          "latest_verified_version": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EmbeddedClaimVersion"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The highest-numbered verified version, which can be the current one; `null` when no version is verified."
+          },
+          "latest_version": {
+            "$ref": "#/components/schemas/EmbeddedClaimVersion",
+            "description": "The highest-numbered version, verified or not."
+          },
+          "person": {
+            "description": "ID of the person the claim is about.",
+            "title": "Person",
+            "type": "string"
+          },
+          "versions": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/EmbeddedClaimVersion"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Every version, highest number first, when `include_history` is set; otherwise `null`.",
+            "title": "Versions"
+          }
+        },
+        "required": [
+          "id",
+          "claim_type",
+          "person",
+          "archived_at",
+          "created_at",
+          "is_archivable",
+          "latest_version",
+          "latest_verified_version"
+        ],
+        "title": "Claim",
+        "type": "object"
+      },
       "ClaimAssetClass": {
         "enum": [
           "treasury_bills",
@@ -3422,6 +3443,65 @@
         "title": "ClaimRegistrationEntityType",
         "type": "string"
       },
+      "ClaimSource": {
+        "properties": {
+          "locator": {
+            "additionalProperties": true,
+            "description": "Where in that record, by source type. For an API call: the actor that made it and the caller's own `reference`.",
+            "title": "Locator",
+            "type": "object"
+          },
+          "role": {
+            "$ref": "#/components/schemas/ClaimSourceRole",
+            "description": "`supports` for the source a version was written with, `confirms` for a later source that gave the same value."
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The record the value came from, such as a form submission or a provider's application; `null` for an API call, which is its own record.",
+            "title": "Source"
+          },
+          "source_type": {
+            "$ref": "#/components/schemas/ClaimSourceType",
+            "description": "Where the value came from."
+          }
+        },
+        "required": [
+          "source_type",
+          "source",
+          "locator",
+          "role"
+        ],
+        "title": "ClaimSource",
+        "type": "object"
+      },
+      "ClaimSourceRole": {
+        "enum": [
+          "supports",
+          "confirms"
+        ],
+        "properties": {},
+        "title": "ClaimSourceRole",
+        "type": "string"
+      },
+      "ClaimSourceType": {
+        "enum": [
+          "form_submission",
+          "meeting_transcript",
+          "file",
+          "api",
+          "provider"
+        ],
+        "properties": {},
+        "title": "ClaimSourceType",
+        "type": "string"
+      },
       "ClaimStatus": {
         "enum": [
           "pending",
@@ -3430,6 +3510,52 @@
         "properties": {},
         "title": "ClaimStatus",
         "type": "string"
+      },
+      "ClaimSummary": {
+        "properties": {
+          "archived_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When the claim stopped applying; `null` while it applies.",
+            "title": "Archived At"
+          },
+          "claim_type": {
+            "$ref": "#/components/schemas/ClaimType",
+            "description": "The claim's type."
+          },
+          "created_at": {
+            "description": "When the claim was first held.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "description": "Unique resource identifier.",
+            "title": "Id",
+            "type": "string"
+          },
+          "person": {
+            "description": "ID of the person the claim is about.",
+            "title": "Person",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "claim_type",
+          "person",
+          "archived_at",
+          "created_at"
+        ],
+        "title": "ClaimSummary",
+        "type": "object"
       },
       "ClaimType": {
         "enum": [
@@ -3455,6 +3581,158 @@
         "properties": {},
         "title": "ClaimType",
         "type": "string"
+      },
+      "ClaimVersion": {
+        "properties": {
+          "claim": {
+            "$ref": "#/components/schemas/ClaimSummary",
+            "description": "The claim this is a version of, without its versions."
+          },
+          "created_at": {
+            "description": "When the version was written.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "data": {
+            "description": "The value, in the claim type's schema.",
+            "discriminator": {
+              "mapping": {
+                "business_nature": "#/components/schemas/BusinessNatureClaimSpec",
+                "contact_details": "#/components/schemas/ContactDetailsClaimSpec",
+                "education_level": "#/components/schemas/EducationLevelClaimSpec",
+                "employment": "#/components/schemas/EmploymentClaimSpec",
+                "expected_activity": "#/components/schemas/ExpectedActivityClaimSpec",
+                "fatca_status": "#/components/schemas/FatcaStatusClaimSpec",
+                "financial_profile": "#/components/schemas/FinancialProfileClaimSpec",
+                "identity": "#/components/schemas/IdentityClaimSpec",
+                "investment_experience": "#/components/schemas/InvestmentExperienceClaimSpec",
+                "lei": "#/components/schemas/LeiClaimSpec",
+                "nationalities": "#/components/schemas/NationalitiesClaimSpec",
+                "operating_address": "#/components/schemas/OperatingAddressClaimSpec",
+                "pep_status": "#/components/schemas/PepStatusClaimSpec",
+                "registered_address": "#/components/schemas/RegisteredAddressClaimSpec",
+                "registration": "#/components/schemas/RegistrationClaimSpec",
+                "relationships": "#/components/schemas/RelationshipsClaimSpec-Output",
+                "residence": "#/components/schemas/ResidenceClaimSpec",
+                "tax_residencies": "#/components/schemas/TaxResidenciesClaimSpec"
+              },
+              "propertyName": "claim_type"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/IdentityClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/NationalitiesClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/ResidenceClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/TaxResidenciesClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/FatcaStatusClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/PepStatusClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/EducationLevelClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/EmploymentClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/FinancialProfileClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/InvestmentExperienceClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/ExpectedActivityClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/RelationshipsClaimSpec-Output"
+              },
+              {
+                "$ref": "#/components/schemas/RegistrationClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/ContactDetailsClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/LeiClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/RegisteredAddressClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/OperatingAddressClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/BusinessNatureClaimSpec"
+              }
+            ],
+            "title": "Data"
+          },
+          "id": {
+            "description": "Unique resource identifier.",
+            "title": "Id",
+            "type": "string"
+          },
+          "number": {
+            "description": "Position in the claim's history, from 1. The highest is current.",
+            "examples": [
+              2
+            ],
+            "title": "Number",
+            "type": "integer"
+          },
+          "sources": {
+            "description": "Where the value came from, the first one that supports it first.",
+            "items": {
+              "$ref": "#/components/schemas/ClaimSource"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "status": {
+            "description": "`verified` once a check against a verification source passed; `unverified` otherwise.",
+            "enum": [
+              "unverified",
+              "verified"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "verified_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When the value was verified; `null` while unverified.",
+            "title": "Verified At"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "status",
+          "data",
+          "verified_at",
+          "sources",
+          "created_at",
+          "claim"
+        ],
+        "title": "ClaimVersion",
+        "type": "object"
       },
       "ClaimWealthSource": {
         "enum": [
@@ -3545,37 +3823,28 @@
         "title": "ContactDetailsClaimSpec",
         "type": "object"
       },
-      "ContactDetailsPersonClaim": {
+      "ContactDetailsClaimWriteRequest": {
         "additionalProperties": false,
         "properties": {
-          "archived_at": {
+          "based_on": {
             "anyOf": [
               {
-                "format": "date-time",
-                "type": "string"
+                "minimum": 1,
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
             "examples": [
-              "2026-07-20T08:15:00Z"
+              2
             ],
-            "title": "Archived At"
+            "title": "Based On"
           },
           "claim_type": {
             "const": "contact_details",
             "title": "Claim Type",
-            "type": "string"
-          },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
             "type": "string"
           },
           "email": {
@@ -3589,86 +3858,32 @@
             ],
             "title": "Email"
           },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
-            "type": "string"
-          },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
-            "type": "string"
-          },
           "phone_number": {
             "title": "Phone Number",
             "type": "string"
           },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
+          "reference": {
             "anyOf": [
               {
-                "format": "date-time",
+                "maxLength": 255,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
+            "description": "Your own reference for the value, kept with its source.",
             "examples": [
-              "2026-08-01T12:00:00Z"
+              "crm-update-8812"
             ],
-            "title": "Superseded At"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
+            "title": "Reference"
           }
         },
         "required": [
           "claim_type",
-          "phone_number",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "phone_number"
         ],
-        "title": "ContactDetailsPersonClaim",
+        "title": "ContactDetailsClaimWriteRequest",
         "type": "object"
       },
       "ContactDetailsPersonClaimSummary": {
@@ -3834,7 +4049,7 @@
                   "$ref": "#/components/schemas/ExpectedActivityClaimSpec"
                 },
                 {
-                  "$ref": "#/components/schemas/RelationshipsClaimSpec"
+                  "$ref": "#/components/schemas/RelationshipsClaimSpec-Input"
                 },
                 {
                   "$ref": "#/components/schemas/RegistrationClaimSpec"
@@ -5120,118 +5335,55 @@
         "title": "EducationLevelClaimSpec",
         "type": "object"
       },
-      "EducationLevelPersonClaim": {
+      "EducationLevelClaimWriteRequest": {
         "additionalProperties": false,
         "properties": {
-          "archived_at": {
+          "based_on": {
             "anyOf": [
               {
-                "format": "date-time",
-                "type": "string"
+                "minimum": 1,
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
             "examples": [
-              "2026-07-20T08:15:00Z"
+              2
             ],
-            "title": "Archived At"
+            "title": "Based On"
           },
           "claim_type": {
             "const": "education_level",
             "title": "Claim Type",
             "type": "string"
           },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
           "education_level": {
             "$ref": "#/components/schemas/ClaimEducationLevel"
           },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
-            "type": "string"
-          },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
-            "type": "string"
-          },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
+          "reference": {
             "anyOf": [
               {
-                "format": "date-time",
+                "maxLength": 255,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
+            "description": "Your own reference for the value, kept with its source.",
             "examples": [
-              "2026-08-01T12:00:00Z"
+              "crm-update-8812"
             ],
-            "title": "Superseded At"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
+            "title": "Reference"
           }
         },
         "required": [
           "claim_type",
-          "education_level",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "education_level"
         ],
-        "title": "EducationLevelPersonClaim",
+        "title": "EducationLevelClaimWriteRequest",
         "type": "object"
       },
       "EducationLevelPersonClaimSummary": {
@@ -5279,6 +5431,154 @@
         "title": "EducationLevelPersonClaimSummary",
         "type": "object"
       },
+      "EmbeddedClaimVersion": {
+        "description": "A version inside its claim, without the claim again.",
+        "properties": {
+          "created_at": {
+            "description": "When the version was written.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "data": {
+            "description": "The value, in the claim type's schema.",
+            "discriminator": {
+              "mapping": {
+                "business_nature": "#/components/schemas/BusinessNatureClaimSpec",
+                "contact_details": "#/components/schemas/ContactDetailsClaimSpec",
+                "education_level": "#/components/schemas/EducationLevelClaimSpec",
+                "employment": "#/components/schemas/EmploymentClaimSpec",
+                "expected_activity": "#/components/schemas/ExpectedActivityClaimSpec",
+                "fatca_status": "#/components/schemas/FatcaStatusClaimSpec",
+                "financial_profile": "#/components/schemas/FinancialProfileClaimSpec",
+                "identity": "#/components/schemas/IdentityClaimSpec",
+                "investment_experience": "#/components/schemas/InvestmentExperienceClaimSpec",
+                "lei": "#/components/schemas/LeiClaimSpec",
+                "nationalities": "#/components/schemas/NationalitiesClaimSpec",
+                "operating_address": "#/components/schemas/OperatingAddressClaimSpec",
+                "pep_status": "#/components/schemas/PepStatusClaimSpec",
+                "registered_address": "#/components/schemas/RegisteredAddressClaimSpec",
+                "registration": "#/components/schemas/RegistrationClaimSpec",
+                "relationships": "#/components/schemas/RelationshipsClaimSpec-Output",
+                "residence": "#/components/schemas/ResidenceClaimSpec",
+                "tax_residencies": "#/components/schemas/TaxResidenciesClaimSpec"
+              },
+              "propertyName": "claim_type"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/IdentityClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/NationalitiesClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/ResidenceClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/TaxResidenciesClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/FatcaStatusClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/PepStatusClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/EducationLevelClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/EmploymentClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/FinancialProfileClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/InvestmentExperienceClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/ExpectedActivityClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/RelationshipsClaimSpec-Output"
+              },
+              {
+                "$ref": "#/components/schemas/RegistrationClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/ContactDetailsClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/LeiClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/RegisteredAddressClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/OperatingAddressClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/BusinessNatureClaimSpec"
+              }
+            ],
+            "title": "Data"
+          },
+          "id": {
+            "description": "Unique resource identifier.",
+            "title": "Id",
+            "type": "string"
+          },
+          "number": {
+            "description": "Position in the claim's history, from 1. The highest is current.",
+            "examples": [
+              2
+            ],
+            "title": "Number",
+            "type": "integer"
+          },
+          "sources": {
+            "description": "Where the value came from, the first one that supports it first.",
+            "items": {
+              "$ref": "#/components/schemas/ClaimSource"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "status": {
+            "description": "`verified` once a check against a verification source passed; `unverified` otherwise.",
+            "enum": [
+              "unverified",
+              "verified"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "verified_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When the value was verified; `null` while unverified.",
+            "title": "Verified At"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "status",
+          "data",
+          "verified_at",
+          "sources",
+          "created_at"
+        ],
+        "title": "EmbeddedClaimVersion",
+        "type": "object"
+      },
       "EmploymentClaimSpec": {
         "additionalProperties": false,
         "description": "Employment status and industry (MiFID II suitability).",
@@ -5320,46 +5620,32 @@
         "title": "EmploymentClaimSpec",
         "type": "object"
       },
-      "EmploymentPersonClaim": {
+      "EmploymentClaimWriteRequest": {
         "additionalProperties": false,
         "properties": {
-          "archived_at": {
+          "based_on": {
             "anyOf": [
               {
-                "format": "date-time",
-                "type": "string"
+                "minimum": 1,
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
             "examples": [
-              "2026-07-20T08:15:00Z"
+              2
             ],
-            "title": "Archived At"
+            "title": "Based On"
           },
           "claim_type": {
             "const": "employment",
             "title": "Claim Type",
             "type": "string"
           },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
           "employment_status": {
             "$ref": "#/components/schemas/ClaimEmploymentStatus"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
           },
           "industry": {
             "anyOf": [
@@ -5382,77 +5668,28 @@
             ],
             "title": "Industry Other"
           },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
-            "type": "string"
-          },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
-            "type": "string"
-          },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
+          "reference": {
             "anyOf": [
               {
-                "format": "date-time",
+                "maxLength": 255,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
+            "description": "Your own reference for the value, kept with its source.",
             "examples": [
-              "2026-08-01T12:00:00Z"
+              "crm-update-8812"
             ],
-            "title": "Superseded At"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
+            "title": "Reference"
           }
         },
         "required": [
           "claim_type",
-          "employment_status",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "employment_status"
         ],
-        "title": "EmploymentPersonClaim",
+        "title": "EmploymentClaimWriteRequest",
         "type": "object"
       },
       "EmploymentPersonClaimSummary": {
@@ -6501,28 +6738,12 @@
         "title": "ExpectedActivityClaimSpec",
         "type": "object"
       },
-      "ExpectedActivityPersonClaim": {
+      "ExpectedActivityClaimWriteRequest": {
         "additionalProperties": false,
         "properties": {
           "annual_transactions": {
             "title": "Annual Transactions",
             "type": "string"
-          },
-          "archived_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
-            "examples": [
-              "2026-07-20T08:15:00Z"
-            ],
-            "title": "Archived At"
           },
           "asset_classes": {
             "items": {
@@ -6531,89 +6752,50 @@
             "title": "Asset Classes",
             "type": "array"
           },
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
           "claim_type": {
             "const": "expected_activity",
             "title": "Claim Type",
-            "type": "string"
-          },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
             "type": "string"
           },
           "funding_currency": {
             "title": "Funding Currency",
             "type": "string"
           },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
           "investment_amount": {
             "title": "Investment Amount",
             "type": "string"
           },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
-            "type": "string"
-          },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
-            "type": "string"
-          },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
+          "reference": {
             "anyOf": [
               {
-                "format": "date-time",
+                "maxLength": 255,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
+            "description": "Your own reference for the value, kept with its source.",
             "examples": [
-              "2026-08-01T12:00:00Z"
+              "crm-update-8812"
             ],
-            "title": "Superseded At"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
+            "title": "Reference"
           }
         },
         "required": [
@@ -6621,17 +6803,9 @@
           "funding_currency",
           "asset_classes",
           "annual_transactions",
-          "investment_amount",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "investment_amount"
         ],
-        "title": "ExpectedActivityPersonClaim",
+        "title": "ExpectedActivityClaimWriteRequest",
         "type": "object"
       },
       "ExpectedActivityPersonClaimSummary": {
@@ -6719,119 +6893,56 @@
         "title": "FatcaStatusClaimSpec",
         "type": "object"
       },
-      "FatcaStatusPersonClaim": {
+      "FatcaStatusClaimWriteRequest": {
         "additionalProperties": false,
         "properties": {
-          "archived_at": {
+          "based_on": {
             "anyOf": [
               {
-                "format": "date-time",
-                "type": "string"
+                "minimum": 1,
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
             "examples": [
-              "2026-07-20T08:15:00Z"
+              2
             ],
-            "title": "Archived At"
+            "title": "Based On"
           },
           "claim_type": {
             "const": "fatca_status",
             "title": "Claim Type",
             "type": "string"
           },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
           "is_us_person": {
             "title": "Is Us Person",
             "type": "boolean"
           },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
-            "type": "string"
-          },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
-            "type": "string"
-          },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
+          "reference": {
             "anyOf": [
               {
-                "format": "date-time",
+                "maxLength": 255,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
+            "description": "Your own reference for the value, kept with its source.",
             "examples": [
-              "2026-08-01T12:00:00Z"
+              "crm-update-8812"
             ],
-            "title": "Superseded At"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
+            "title": "Reference"
           }
         },
         "required": [
           "claim_type",
-          "is_us_person",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "is_us_person"
         ],
-        "title": "FatcaStatusPersonClaim",
+        "title": "FatcaStatusClaimWriteRequest",
         "type": "object"
       },
       "FatcaStatusPersonClaimSummary": {
@@ -7501,45 +7612,31 @@
         "title": "FinancialProfileClaimSpec",
         "type": "object"
       },
-      "FinancialProfilePersonClaim": {
+      "FinancialProfileClaimWriteRequest": {
         "additionalProperties": false,
         "properties": {
           "annual_income_eur": {
             "$ref": "#/components/schemas/EurAmountBand"
           },
-          "archived_at": {
+          "based_on": {
             "anyOf": [
               {
-                "format": "date-time",
-                "type": "string"
+                "minimum": 1,
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
             "examples": [
-              "2026-07-20T08:15:00Z"
+              2
             ],
-            "title": "Archived At"
+            "title": "Based On"
           },
           "claim_type": {
             "const": "financial_profile",
             "title": "Claim Type",
-            "type": "string"
-          },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
             "type": "string"
           },
           "income_sources": {
@@ -7550,65 +7647,24 @@
             "title": "Income Sources",
             "type": "array"
           },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
-            "type": "string"
-          },
           "net_worth_eur": {
             "$ref": "#/components/schemas/EurAmountBand"
           },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
-            "type": "string"
-          },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
+          "reference": {
             "anyOf": [
               {
-                "format": "date-time",
+                "maxLength": 255,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
+            "description": "Your own reference for the value, kept with its source.",
             "examples": [
-              "2026-08-01T12:00:00Z"
+              "crm-update-8812"
             ],
-            "title": "Superseded At"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
+            "title": "Reference"
           },
           "wealth_sources": {
             "items": {
@@ -7624,17 +7680,9 @@
           "annual_income_eur",
           "income_sources",
           "net_worth_eur",
-          "wealth_sources",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "wealth_sources"
         ],
-        "title": "FinancialProfilePersonClaim",
+        "title": "FinancialProfileClaimWriteRequest",
         "type": "object"
       },
       "FinancialProfilePersonClaimSummary": {
@@ -7846,37 +7894,28 @@
         "title": "IdentityClaimSpec",
         "type": "object"
       },
-      "IdentityPersonClaim": {
+      "IdentityClaimWriteRequest": {
         "additionalProperties": false,
         "properties": {
-          "archived_at": {
+          "based_on": {
             "anyOf": [
               {
-                "format": "date-time",
-                "type": "string"
+                "minimum": 1,
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
             "examples": [
-              "2026-07-20T08:15:00Z"
+              2
             ],
-            "title": "Archived At"
+            "title": "Based On"
           },
           "claim_type": {
             "const": "identity",
             "title": "Claim Type",
-            "type": "string"
-          },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
             "type": "string"
           },
           "date_of_birth": {
@@ -7888,88 +7927,34 @@
             "title": "First Name",
             "type": "string"
           },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
           "last_name": {
             "title": "Last Name",
             "type": "string"
           },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
-            "type": "string"
-          },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
-            "type": "string"
-          },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
+          "reference": {
             "anyOf": [
               {
-                "format": "date-time",
+                "maxLength": 255,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
+            "description": "Your own reference for the value, kept with its source.",
             "examples": [
-              "2026-08-01T12:00:00Z"
+              "crm-update-8812"
             ],
-            "title": "Superseded At"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
+            "title": "Reference"
           }
         },
         "required": [
           "claim_type",
           "first_name",
           "last_name",
-          "date_of_birth",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "date_of_birth"
         ],
-        "title": "IdentityPersonClaim",
+        "title": "IdentityClaimWriteRequest",
         "type": "object"
       },
       "IdentityPersonClaimSummary": {
@@ -8366,25 +8351,9 @@
         "title": "InvestmentExperienceClaimSpec",
         "type": "object"
       },
-      "InvestmentExperiencePersonClaim": {
+      "InvestmentExperienceClaimWriteRequest": {
         "additionalProperties": false,
         "properties": {
-          "archived_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
-            "examples": [
-              "2026-07-20T08:15:00Z"
-            ],
-            "title": "Archived At"
-          },
           "asset_classes": {
             "items": {
               "$ref": "#/components/schemas/ClaimAssetClass"
@@ -8392,100 +8361,53 @@
             "title": "Asset Classes",
             "type": "array"
           },
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
           "claim_type": {
             "const": "investment_experience",
             "title": "Claim Type",
-            "type": "string"
-          },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
             "type": "string"
           },
           "has_prior_experience": {
             "title": "Has Prior Experience",
             "type": "boolean"
           },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
-            "type": "string"
-          },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
-            "type": "string"
-          },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
+          "reference": {
             "anyOf": [
               {
-                "format": "date-time",
+                "maxLength": 255,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
+            "description": "Your own reference for the value, kept with its source.",
             "examples": [
-              "2026-08-01T12:00:00Z"
+              "crm-update-8812"
             ],
-            "title": "Superseded At"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
+            "title": "Reference"
           }
         },
         "required": [
           "claim_type",
-          "has_prior_experience",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "has_prior_experience"
         ],
-        "title": "InvestmentExperiencePersonClaim",
+        "title": "InvestmentExperienceClaimWriteRequest",
         "type": "object"
       },
       "InvestmentExperiencePersonClaimSummary": {
@@ -9080,37 +9002,28 @@
         "title": "LeiClaimSpec",
         "type": "object"
       },
-      "LeiPersonClaim": {
+      "LeiClaimWriteRequest": {
         "additionalProperties": false,
         "properties": {
-          "archived_at": {
+          "based_on": {
             "anyOf": [
               {
-                "format": "date-time",
-                "type": "string"
+                "minimum": 1,
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
             "examples": [
-              "2026-07-20T08:15:00Z"
+              2
             ],
-            "title": "Archived At"
+            "title": "Based On"
           },
           "claim_type": {
             "const": "lei",
             "title": "Claim Type",
-            "type": "string"
-          },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
             "type": "string"
           },
           "expiry_date": {
@@ -9118,87 +9031,33 @@
             "title": "Expiry Date",
             "type": "string"
           },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
           "identifier": {
             "title": "Identifier",
             "type": "string"
           },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
-            "type": "string"
-          },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
-            "type": "string"
-          },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
+          "reference": {
             "anyOf": [
               {
-                "format": "date-time",
+                "maxLength": 255,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
+            "description": "Your own reference for the value, kept with its source.",
             "examples": [
-              "2026-08-01T12:00:00Z"
+              "crm-update-8812"
             ],
-            "title": "Superseded At"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
+            "title": "Reference"
           }
         },
         "required": [
           "claim_type",
           "identifier",
-          "expiry_date",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "expiry_date"
         ],
-        "title": "LeiPersonClaim",
+        "title": "LeiClaimWriteRequest",
         "type": "object"
       },
       "LeiPersonClaimSummary": {
@@ -9829,53 +9688,28 @@
         "title": "NationalitiesClaimSpec",
         "type": "object"
       },
-      "NationalitiesPersonClaim": {
+      "NationalitiesClaimWriteRequest": {
         "additionalProperties": false,
         "properties": {
-          "archived_at": {
+          "based_on": {
             "anyOf": [
               {
-                "format": "date-time",
-                "type": "string"
+                "minimum": 1,
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
             "examples": [
-              "2026-07-20T08:15:00Z"
+              2
             ],
-            "title": "Archived At"
+            "title": "Based On"
           },
           "claim_type": {
             "const": "nationalities",
             "title": "Claim Type",
-            "type": "string"
-          },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
             "type": "string"
           },
           "nationalities": {
@@ -9885,65 +9719,27 @@
             "title": "Nationalities",
             "type": "array"
           },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
-            "type": "string"
-          },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
+          "reference": {
             "anyOf": [
               {
-                "format": "date-time",
+                "maxLength": 255,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
+            "description": "Your own reference for the value, kept with its source.",
             "examples": [
-              "2026-08-01T12:00:00Z"
+              "crm-update-8812"
             ],
-            "title": "Superseded At"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
+            "title": "Reference"
           }
         },
         "required": [
-          "claim_type",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "claim_type"
         ],
-        "title": "NationalitiesPersonClaim",
+        "title": "NationalitiesClaimWriteRequest",
         "type": "object"
       },
       "NationalitiesPersonClaimSummary": {
@@ -10496,24 +10292,24 @@
         "title": "OperatingAddressClaimSpec",
         "type": "object"
       },
-      "OperatingAddressPersonClaim": {
+      "OperatingAddressClaimWriteRequest": {
         "additionalProperties": false,
         "properties": {
-          "archived_at": {
+          "based_on": {
             "anyOf": [
               {
-                "format": "date-time",
-                "type": "string"
+                "minimum": 1,
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
             "examples": [
-              "2026-07-20T08:15:00Z"
+              2
             ],
-            "title": "Archived At"
+            "title": "Based On"
           },
           "city": {
             "title": "City",
@@ -10528,15 +10324,6 @@
             "title": "Country Code",
             "type": "string"
           },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
           "district_county": {
             "anyOf": [
               {
@@ -10547,22 +10334,6 @@
               }
             ],
             "title": "District County"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
-            "type": "string"
           },
           "line1": {
             "title": "Line1",
@@ -10590,55 +10361,25 @@
             ],
             "title": "Line3"
           },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
-            "type": "string"
-          },
           "postal_code": {
             "title": "Postal Code",
             "type": "string"
           },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
+          "reference": {
             "anyOf": [
               {
-                "format": "date-time",
+                "maxLength": 255,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
+            "description": "Your own reference for the value, kept with its source.",
             "examples": [
-              "2026-08-01T12:00:00Z"
+              "crm-update-8812"
             ],
-            "title": "Superseded At"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
+            "title": "Reference"
           }
         },
         "required": [
@@ -10646,17 +10387,9 @@
           "postal_code",
           "city",
           "country_code",
-          "claim_type",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "claim_type"
         ],
-        "title": "OperatingAddressPersonClaim",
+        "title": "OperatingAddressClaimWriteRequest",
         "type": "object"
       },
       "OperatingAddressPersonClaimSummary": {
@@ -11875,62 +11608,37 @@
         "title": "PepStatusClaimSpec",
         "type": "object"
       },
-      "PepStatusPersonClaim": {
+      "PepStatusClaimWriteRequest": {
         "additionalProperties": false,
         "properties": {
-          "archived_at": {
+          "based_on": {
             "anyOf": [
               {
-                "format": "date-time",
-                "type": "string"
+                "minimum": 1,
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
             "examples": [
-              "2026-07-20T08:15:00Z"
+              2
             ],
-            "title": "Archived At"
+            "title": "Based On"
           },
           "claim_type": {
             "const": "pep_status",
             "title": "Claim Type",
             "type": "string"
           },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
           "has_pep_association": {
             "title": "Has Pep Association",
             "type": "boolean"
           },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
           "is_pep": {
             "title": "Is Pep",
             "type": "boolean"
-          },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
-            "type": "string"
           },
           "pep_associate_name": {
             "anyOf": [
@@ -11989,67 +11697,29 @@
             ],
             "title": "Pep Role Start Date"
           },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
-            "type": "string"
-          },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
+          "reference": {
             "anyOf": [
               {
-                "format": "date-time",
+                "maxLength": 255,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
+            "description": "Your own reference for the value, kept with its source.",
             "examples": [
-              "2026-08-01T12:00:00Z"
+              "crm-update-8812"
             ],
-            "title": "Superseded At"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
+            "title": "Reference"
           }
         },
         "required": [
           "claim_type",
           "is_pep",
-          "has_pep_association",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "has_pep_association"
         ],
-        "title": "PepStatusPersonClaim",
+        "title": "PepStatusClaimWriteRequest",
         "type": "object"
       },
       "PepStatusPersonClaimSummary": {
@@ -13429,24 +13099,24 @@
         "title": "RegisteredAddressClaimSpec",
         "type": "object"
       },
-      "RegisteredAddressPersonClaim": {
+      "RegisteredAddressClaimWriteRequest": {
         "additionalProperties": false,
         "properties": {
-          "archived_at": {
+          "based_on": {
             "anyOf": [
               {
-                "format": "date-time",
-                "type": "string"
+                "minimum": 1,
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
             "examples": [
-              "2026-07-20T08:15:00Z"
+              2
             ],
-            "title": "Archived At"
+            "title": "Based On"
           },
           "city": {
             "title": "City",
@@ -13461,15 +13131,6 @@
             "title": "Country Code",
             "type": "string"
           },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
           "district_county": {
             "anyOf": [
               {
@@ -13480,22 +13141,6 @@
               }
             ],
             "title": "District County"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
-            "type": "string"
           },
           "line1": {
             "title": "Line1",
@@ -13528,55 +13173,25 @@
             "title": "Operating Address Is Same",
             "type": "boolean"
           },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
-            "type": "string"
-          },
           "postal_code": {
             "title": "Postal Code",
             "type": "string"
           },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
+          "reference": {
             "anyOf": [
               {
-                "format": "date-time",
+                "maxLength": 255,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
+            "description": "Your own reference for the value, kept with its source.",
             "examples": [
-              "2026-08-01T12:00:00Z"
+              "crm-update-8812"
             ],
-            "title": "Superseded At"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
+            "title": "Reference"
           }
         },
         "required": [
@@ -13584,17 +13199,9 @@
           "postal_code",
           "city",
           "country_code",
-          "claim_type",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "claim_type"
         ],
-        "title": "RegisteredAddressPersonClaim",
+        "title": "RegisteredAddressClaimWriteRequest",
         "type": "object"
       },
       "RegisteredAddressPersonClaimSummary": {
@@ -13748,24 +13355,24 @@
         "title": "RegistrationClaimSpec",
         "type": "object"
       },
-      "RegistrationPersonClaim": {
+      "RegistrationClaimWriteRequest": {
         "additionalProperties": false,
         "properties": {
-          "archived_at": {
+          "based_on": {
             "anyOf": [
               {
-                "format": "date-time",
-                "type": "string"
+                "minimum": 1,
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
             "examples": [
-              "2026-07-20T08:15:00Z"
+              2
             ],
-            "title": "Archived At"
+            "title": "Based On"
           },
           "claim_type": {
             "const": "registration",
@@ -13776,15 +13383,6 @@
             "title": "Country Of Incorporation",
             "type": "string"
           },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
           "date_of_incorporation": {
             "format": "date",
             "title": "Date Of Incorporation",
@@ -13793,59 +13391,29 @@
           "entity_type": {
             "$ref": "#/components/schemas/ClaimRegistrationEntityType"
           },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
           "legal_name": {
             "title": "Legal Name",
             "type": "string"
           },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
-            "type": "string"
-          },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
-            "type": "string"
-          },
-          "registration_number": {
-            "title": "Registration Number",
-            "type": "string"
-          },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
+          "reference": {
             "anyOf": [
               {
-                "format": "date-time",
+                "maxLength": 255,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
+            "description": "Your own reference for the value, kept with its source.",
             "examples": [
-              "2026-08-01T12:00:00Z"
+              "crm-update-8812"
             ],
-            "title": "Superseded At"
+            "title": "Reference"
+          },
+          "registration_number": {
+            "title": "Registration Number",
+            "type": "string"
           },
           "trading_name": {
             "anyOf": [
@@ -13857,22 +13425,6 @@
               }
             ],
             "title": "Trading Name"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
           }
         },
         "required": [
@@ -13881,17 +13433,9 @@
           "registration_number",
           "date_of_incorporation",
           "country_of_incorporation",
-          "entity_type",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "entity_type"
         ],
-        "title": "RegistrationPersonClaim",
+        "title": "RegistrationClaimWriteRequest",
         "type": "object"
       },
       "RegistrationPersonClaimSummary": {
@@ -14146,7 +13690,7 @@
         "title": "RelationshipEntry",
         "type": "object"
       },
-      "RelationshipsClaimSpec": {
+      "RelationshipsClaimSpec-Input": {
         "additionalProperties": false,
         "description": "Directors, owners, UBOs and signatories of a legal person.",
         "properties": {
@@ -14171,58 +13715,13 @@
         "title": "RelationshipsClaimSpec",
         "type": "object"
       },
-      "RelationshipsPersonClaim": {
+      "RelationshipsClaimSpec-Output": {
         "additionalProperties": false,
+        "description": "Directors, owners, UBOs and signatories of a legal person.",
         "properties": {
-          "archived_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
-            "examples": [
-              "2026-07-20T08:15:00Z"
-            ],
-            "title": "Archived At"
-          },
           "claim_type": {
             "const": "relationships",
             "title": "Claim Type",
-            "type": "string"
-          },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
-            "type": "string"
-          },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
             "type": "string"
           },
           "relationships": {
@@ -14232,62 +13731,69 @@
             "minItems": 1,
             "title": "Relationships",
             "type": "array"
-          },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
-            "examples": [
-              "2026-08-01T12:00:00Z"
-            ],
-            "title": "Superseded At"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
           }
         },
         "required": [
           "claim_type",
-          "relationships",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "relationships"
         ],
-        "title": "RelationshipsPersonClaim",
+        "title": "RelationshipsClaimSpec",
+        "type": "object"
+      },
+      "RelationshipsClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "relationships",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          },
+          "relationships": {
+            "items": {
+              "$ref": "#/components/schemas/RelationshipEntry-Input"
+            },
+            "minItems": 1,
+            "title": "Relationships",
+            "type": "array"
+          }
+        },
+        "required": [
+          "claim_type",
+          "relationships"
+        ],
+        "title": "RelationshipsClaimWriteRequest",
         "type": "object"
       },
       "RelationshipsPersonClaimSummary": {
@@ -14418,24 +13924,24 @@
         "title": "ResidenceClaimSpec",
         "type": "object"
       },
-      "ResidencePersonClaim": {
+      "ResidenceClaimWriteRequest": {
         "additionalProperties": false,
         "properties": {
-          "archived_at": {
+          "based_on": {
             "anyOf": [
               {
-                "format": "date-time",
-                "type": "string"
+                "minimum": 1,
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
             "examples": [
-              "2026-07-20T08:15:00Z"
+              2
             ],
-            "title": "Archived At"
+            "title": "Based On"
           },
           "city": {
             "title": "City",
@@ -14450,15 +13956,6 @@
             "title": "Country Code",
             "type": "string"
           },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
           "district_county": {
             "anyOf": [
               {
@@ -14469,22 +13966,6 @@
               }
             ],
             "title": "District County"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
-            "type": "string"
           },
           "line1": {
             "title": "Line1",
@@ -14512,55 +13993,25 @@
             ],
             "title": "Line3"
           },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
-            "type": "string"
-          },
           "postal_code": {
             "title": "Postal Code",
             "type": "string"
           },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
+          "reference": {
             "anyOf": [
               {
-                "format": "date-time",
+                "maxLength": 255,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
+            "description": "Your own reference for the value, kept with its source.",
             "examples": [
-              "2026-08-01T12:00:00Z"
+              "crm-update-8812"
             ],
-            "title": "Superseded At"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
+            "title": "Reference"
           }
         },
         "required": [
@@ -14568,17 +14019,9 @@
           "postal_code",
           "city",
           "country_code",
-          "claim_type",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "claim_type"
         ],
-        "title": "ResidencePersonClaim",
+        "title": "ResidenceClaimWriteRequest",
         "type": "object"
       },
       "ResidencePersonClaimSummary": {
@@ -15148,84 +14591,45 @@
         "title": "TaxResidenciesClaimSpec",
         "type": "object"
       },
-      "TaxResidenciesPersonClaim": {
+      "TaxResidenciesClaimWriteRequest": {
         "additionalProperties": false,
         "properties": {
-          "archived_at": {
+          "based_on": {
             "anyOf": [
               {
-                "format": "date-time",
-                "type": "string"
+                "minimum": 1,
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer pending claim replaced this row; `null` if this is the current pending row.",
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
             "examples": [
-              "2026-07-20T08:15:00Z"
+              2
             ],
-            "title": "Archived At"
+            "title": "Based On"
           },
           "claim_type": {
             "const": "tax_residencies",
             "title": "Claim Type",
             "type": "string"
           },
-          "created_at": {
-            "description": "Date and time the claim was created.",
-            "examples": [
-              "2026-07-14T09:30:00Z"
-            ],
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "id": {
-            "description": "Unique resource identifier.",
-            "title": "Id",
-            "type": "string"
-          },
-          "lifecycle": {
-            "description": "Derived lifecycle role from `status`, `archived_at`, and `superseded_at`.",
-            "enum": [
-              "active",
-              "in_flight",
-              "historical"
-            ],
-            "readOnly": true,
-            "title": "Lifecycle",
-            "type": "string"
-          },
-          "person": {
-            "description": "ID of the person this claim belongs to.",
-            "title": "Person",
-            "type": "string"
-          },
-          "status": {
-            "description": "Claim status (`pending` or `verified`). Non-null `superseded_at` means a newer verified claim replaced this row.",
-            "enum": [
-              "pending",
-              "verified"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "superseded_at": {
+          "reference": {
             "anyOf": [
               {
-                "format": "date-time",
+                "maxLength": 255,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Date and time a newer verified claim replaced this row; `null` if this is the current row.",
+            "description": "Your own reference for the value, kept with its source.",
             "examples": [
-              "2026-08-01T12:00:00Z"
+              "crm-update-8812"
             ],
-            "title": "Superseded At"
+            "title": "Reference"
           },
           "tax_residencies": {
             "items": {
@@ -15233,36 +14637,12 @@
             },
             "title": "Tax Residencies",
             "type": "array"
-          },
-          "verified_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Date and time the claim was verified; `null` while pending.",
-            "examples": [
-              "2026-07-14T10:00:00Z"
-            ],
-            "title": "Verified At"
           }
         },
         "required": [
-          "claim_type",
-          "id",
-          "person",
-          "created_at",
-          "status",
-          "verified_at",
-          "superseded_at",
-          "archived_at",
-          "lifecycle"
+          "claim_type"
         ],
-        "title": "TaxResidenciesPersonClaim",
+        "title": "TaxResidenciesClaimWriteRequest",
         "type": "object"
       },
       "TaxResidenciesPersonClaimSummary": {
@@ -19363,7 +18743,7 @@
     },
     "/persons/{person_id}/claims": {
       "get": {
-        "description": "List claims for a person by ID.",
+        "description": "Lists the person's claims that still apply, newest first, each with its latest version and its latest verified version. Set `include_history` for every version.",
         "operationId": "list_person_claims_persons__person_id__claims_get",
         "parameters": [
           {
@@ -19396,7 +18776,7 @@
             }
           },
           {
-            "description": "Filter by claim status (pending or verified). If omitted, claims of all statuses are returned.",
+            "description": "Before `ClaimsV2` only: filter rows by status (`pending` or `verified`).",
             "in": "query",
             "name": "status",
             "required": false,
@@ -19409,20 +18789,26 @@
                   "type": "null"
                 }
               ],
-              "description": "Filter by claim status (pending or verified). If omitted, claims of all statuses are returned.",
+              "description": "Before `ClaimsV2` only: filter rows by status (`pending` or `verified`).",
               "title": "Status"
             }
           },
           {
-            "description": "Default `true`: every row for this person is returned (archived pendings and superseded verifieds included), newest-first. Set to `false` to collapse to the two current rows per claim type -- the `active` verified row and the `in_flight` pending update, if any.",
+            "description": "Include every version under `versions` (default `false`). Before `ClaimsV2`: every row is returned unless set to `false`.",
             "in": "query",
             "name": "include_history",
             "required": false,
             "schema": {
-              "default": true,
-              "description": "Default `true`: every row for this person is returned (archived pendings and superseded verifieds included), newest-first. Set to `false` to collapse to the two current rows per claim type -- the `active` verified row and the `in_flight` pending update, if any.",
-              "title": "Include History",
-              "type": "boolean"
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Include every version under `versions` (default `false`). Before `ClaimsV2`: every row is returned unless set to `false`.",
+              "title": "Include History"
             }
           }
         ],
@@ -19432,92 +18818,14 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "discriminator": {
-                      "mapping": {
-                        "business_nature": "#/components/schemas/BusinessNaturePersonClaim",
-                        "contact_details": "#/components/schemas/ContactDetailsPersonClaim",
-                        "education_level": "#/components/schemas/EducationLevelPersonClaim",
-                        "employment": "#/components/schemas/EmploymentPersonClaim",
-                        "expected_activity": "#/components/schemas/ExpectedActivityPersonClaim",
-                        "fatca_status": "#/components/schemas/FatcaStatusPersonClaim",
-                        "financial_profile": "#/components/schemas/FinancialProfilePersonClaim",
-                        "identity": "#/components/schemas/IdentityPersonClaim",
-                        "investment_experience": "#/components/schemas/InvestmentExperiencePersonClaim",
-                        "lei": "#/components/schemas/LeiPersonClaim",
-                        "nationalities": "#/components/schemas/NationalitiesPersonClaim",
-                        "operating_address": "#/components/schemas/OperatingAddressPersonClaim",
-                        "pep_status": "#/components/schemas/PepStatusPersonClaim",
-                        "registered_address": "#/components/schemas/RegisteredAddressPersonClaim",
-                        "registration": "#/components/schemas/RegistrationPersonClaim",
-                        "relationships": "#/components/schemas/RelationshipsPersonClaim",
-                        "residence": "#/components/schemas/ResidencePersonClaim",
-                        "tax_residencies": "#/components/schemas/TaxResidenciesPersonClaim"
-                      },
-                      "propertyName": "claim_type"
-                    },
-                    "oneOf": [
-                      {
-                        "$ref": "#/components/schemas/IdentityPersonClaim"
-                      },
-                      {
-                        "$ref": "#/components/schemas/NationalitiesPersonClaim"
-                      },
-                      {
-                        "$ref": "#/components/schemas/ResidencePersonClaim"
-                      },
-                      {
-                        "$ref": "#/components/schemas/TaxResidenciesPersonClaim"
-                      },
-                      {
-                        "$ref": "#/components/schemas/FatcaStatusPersonClaim"
-                      },
-                      {
-                        "$ref": "#/components/schemas/PepStatusPersonClaim"
-                      },
-                      {
-                        "$ref": "#/components/schemas/EducationLevelPersonClaim"
-                      },
-                      {
-                        "$ref": "#/components/schemas/EmploymentPersonClaim"
-                      },
-                      {
-                        "$ref": "#/components/schemas/FinancialProfilePersonClaim"
-                      },
-                      {
-                        "$ref": "#/components/schemas/InvestmentExperiencePersonClaim"
-                      },
-                      {
-                        "$ref": "#/components/schemas/RegistrationPersonClaim"
-                      },
-                      {
-                        "$ref": "#/components/schemas/ContactDetailsPersonClaim"
-                      },
-                      {
-                        "$ref": "#/components/schemas/LeiPersonClaim"
-                      },
-                      {
-                        "$ref": "#/components/schemas/RegisteredAddressPersonClaim"
-                      },
-                      {
-                        "$ref": "#/components/schemas/OperatingAddressPersonClaim"
-                      },
-                      {
-                        "$ref": "#/components/schemas/BusinessNaturePersonClaim"
-                      },
-                      {
-                        "$ref": "#/components/schemas/ExpectedActivityPersonClaim"
-                      },
-                      {
-                        "$ref": "#/components/schemas/RelationshipsPersonClaim"
-                      }
-                    ]
+                    "$ref": "#/components/schemas/Claim"
                   },
-                  "title": "Response List Person Claims Persons  Person Id  Claims Get",
+                  "title": "Response 200 List Person Claims Persons  Person Id  Claims Get",
                   "type": "array"
                 }
               }
             },
-            "description": "OK"
+            "description": "Successful Response"
           },
           "400": {
             "content": {
@@ -19541,7 +18849,7 @@
         ]
       },
       "post": {
-        "description": "Submit a claim of any type for a person. The claim is created with pending status and will need verification.",
+        "description": "Writes a value to the person's claim of its type, creating the claim with its first version when the person has none. The value is unverified. A value equal to the current one writes no version: the latest version gains your call as a source. Send `based_on` to have the write refused with 409 when the claim has moved on, and `Idempotency-Key` to make a retry return the first attempt's version.",
         "operationId": "create_person_claim_persons__person_id__claims_post",
         "parameters": [
           {
@@ -19554,6 +18862,22 @@
               "title": "Person Id",
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
           }
         ],
         "requestBody": {
@@ -19562,61 +18886,61 @@
               "schema": {
                 "anyOf": [
                   {
-                    "$ref": "#/components/schemas/IdentityClaimSpec"
+                    "$ref": "#/components/schemas/IdentityClaimWriteRequest"
                   },
                   {
-                    "$ref": "#/components/schemas/NationalitiesClaimSpec"
+                    "$ref": "#/components/schemas/NationalitiesClaimWriteRequest"
                   },
                   {
-                    "$ref": "#/components/schemas/ResidenceClaimSpec"
+                    "$ref": "#/components/schemas/ResidenceClaimWriteRequest"
                   },
                   {
-                    "$ref": "#/components/schemas/TaxResidenciesClaimSpec"
+                    "$ref": "#/components/schemas/TaxResidenciesClaimWriteRequest"
                   },
                   {
-                    "$ref": "#/components/schemas/FatcaStatusClaimSpec"
+                    "$ref": "#/components/schemas/FatcaStatusClaimWriteRequest"
                   },
                   {
-                    "$ref": "#/components/schemas/PepStatusClaimSpec"
+                    "$ref": "#/components/schemas/PepStatusClaimWriteRequest"
                   },
                   {
-                    "$ref": "#/components/schemas/EducationLevelClaimSpec"
+                    "$ref": "#/components/schemas/EducationLevelClaimWriteRequest"
                   },
                   {
-                    "$ref": "#/components/schemas/EmploymentClaimSpec"
+                    "$ref": "#/components/schemas/EmploymentClaimWriteRequest"
                   },
                   {
-                    "$ref": "#/components/schemas/FinancialProfileClaimSpec"
+                    "$ref": "#/components/schemas/FinancialProfileClaimWriteRequest"
                   },
                   {
-                    "$ref": "#/components/schemas/InvestmentExperienceClaimSpec"
+                    "$ref": "#/components/schemas/InvestmentExperienceClaimWriteRequest"
                   },
                   {
-                    "$ref": "#/components/schemas/ExpectedActivityClaimSpec"
+                    "$ref": "#/components/schemas/ExpectedActivityClaimWriteRequest"
                   },
                   {
-                    "$ref": "#/components/schemas/RelationshipsClaimSpec"
+                    "$ref": "#/components/schemas/RelationshipsClaimWriteRequest"
                   },
                   {
-                    "$ref": "#/components/schemas/RegistrationClaimSpec"
+                    "$ref": "#/components/schemas/RegistrationClaimWriteRequest"
                   },
                   {
-                    "$ref": "#/components/schemas/ContactDetailsClaimSpec"
+                    "$ref": "#/components/schemas/ContactDetailsClaimWriteRequest"
                   },
                   {
-                    "$ref": "#/components/schemas/LeiClaimSpec"
+                    "$ref": "#/components/schemas/LeiClaimWriteRequest"
                   },
                   {
-                    "$ref": "#/components/schemas/RegisteredAddressClaimSpec"
+                    "$ref": "#/components/schemas/RegisteredAddressClaimWriteRequest"
                   },
                   {
-                    "$ref": "#/components/schemas/OperatingAddressClaimSpec"
+                    "$ref": "#/components/schemas/OperatingAddressClaimWriteRequest"
                   },
                   {
-                    "$ref": "#/components/schemas/BusinessNatureClaimSpec"
+                    "$ref": "#/components/schemas/BusinessNatureClaimWriteRequest"
                   }
                 ],
-                "description": "The claim payload, discriminated by claim_type.",
+                "description": "The claim value, discriminated by claim_type.",
                 "title": "Body"
               }
             }
@@ -19628,90 +18952,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "discriminator": {
-                    "mapping": {
-                      "business_nature": "#/components/schemas/BusinessNaturePersonClaim",
-                      "contact_details": "#/components/schemas/ContactDetailsPersonClaim",
-                      "education_level": "#/components/schemas/EducationLevelPersonClaim",
-                      "employment": "#/components/schemas/EmploymentPersonClaim",
-                      "expected_activity": "#/components/schemas/ExpectedActivityPersonClaim",
-                      "fatca_status": "#/components/schemas/FatcaStatusPersonClaim",
-                      "financial_profile": "#/components/schemas/FinancialProfilePersonClaim",
-                      "identity": "#/components/schemas/IdentityPersonClaim",
-                      "investment_experience": "#/components/schemas/InvestmentExperiencePersonClaim",
-                      "lei": "#/components/schemas/LeiPersonClaim",
-                      "nationalities": "#/components/schemas/NationalitiesPersonClaim",
-                      "operating_address": "#/components/schemas/OperatingAddressPersonClaim",
-                      "pep_status": "#/components/schemas/PepStatusPersonClaim",
-                      "registered_address": "#/components/schemas/RegisteredAddressPersonClaim",
-                      "registration": "#/components/schemas/RegistrationPersonClaim",
-                      "relationships": "#/components/schemas/RelationshipsPersonClaim",
-                      "residence": "#/components/schemas/ResidencePersonClaim",
-                      "tax_residencies": "#/components/schemas/TaxResidenciesPersonClaim"
-                    },
-                    "propertyName": "claim_type"
-                  },
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/IdentityPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/NationalitiesPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ResidencePersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/TaxResidenciesPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/FatcaStatusPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/PepStatusPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/EducationLevelPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/EmploymentPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/FinancialProfilePersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvestmentExperiencePersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/RegistrationPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ContactDetailsPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/LeiPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/RegisteredAddressPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/OperatingAddressPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/BusinessNaturePersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ExpectedActivityPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/RelationshipsPersonClaim"
-                    }
-                  ],
-                  "title": "Response Create Person Claim Persons  Person Id  Claims Post"
+                  "$ref": "#/components/schemas/ClaimVersion"
                 }
               }
             },
-            "description": "Created"
+            "description": "Successful Response"
           },
           "400": {
             "content": {
@@ -19729,16 +18974,167 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create a claim for a person",
+        "summary": "Write a claim value for a person",
         "tags": [
           "customers"
         ]
       }
     },
     "/persons/{person_id}/claims/{claim_id}": {
+      "delete": {
+        "description": "Archives one of the person's claims: it no longer applies. Its versions are kept, and a later value of the same type starts a new claim. A claim a person of its type must have cannot be archived (400). Send `based_on` to have it refused with 409 when the claim has moved on.",
+        "operationId": "archive_person_claim_persons__person_id__claims__claim_id__delete",
+        "parameters": [
+          {
+            "description": "The ID of the person.",
+            "in": "path",
+            "name": "person_id",
+            "required": true,
+            "schema": {
+              "description": "The ID of the person.",
+              "title": "Person Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "The ID of the claim.",
+            "in": "path",
+            "name": "claim_id",
+            "required": true,
+            "schema": {
+              "description": "The ID of the claim.",
+              "title": "Claim Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "The version number you read.",
+            "in": "query",
+            "name": "based_on",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The version number you read.",
+              "title": "Based On"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Claim"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Bad Request"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Archive a claim",
+        "tags": [
+          "customers"
+        ]
+      },
       "get": {
-        "description": "Retrieve a single claim for a person by person ID and claim ID.",
+        "description": "Retrieves one of the person's claims, archived or not, with its current and latest verified versions. Set `include_history` for every version.",
         "operationId": "get_person_claim_persons__person_id__claims__claim_id__get",
+        "parameters": [
+          {
+            "description": "The ID of the person.",
+            "in": "path",
+            "name": "person_id",
+            "required": true,
+            "schema": {
+              "description": "The ID of the person.",
+              "title": "Person Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "The ID of the claim.",
+            "in": "path",
+            "name": "claim_id",
+            "required": true,
+            "schema": {
+              "description": "The ID of the claim.",
+              "title": "Claim Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Include every version under `versions`.",
+            "in": "query",
+            "name": "include_history",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "Include every version under `versions`.",
+              "title": "Include History",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Claim"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Bad Request"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Retrieve a person claim",
+        "tags": [
+          "customers"
+        ]
+      }
+    },
+    "/persons/{person_id}/claims/{claim_id}/versions": {
+      "get": {
+        "description": "Lists every version of one of the person's claims, highest number first.",
+        "operationId": "list_person_claim_versions_persons__person_id__claims__claim_id__versions_get",
         "parameters": [
           {
             "description": "The ID of the person.",
@@ -19768,86 +19164,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "discriminator": {
-                    "mapping": {
-                      "business_nature": "#/components/schemas/BusinessNaturePersonClaim",
-                      "contact_details": "#/components/schemas/ContactDetailsPersonClaim",
-                      "education_level": "#/components/schemas/EducationLevelPersonClaim",
-                      "employment": "#/components/schemas/EmploymentPersonClaim",
-                      "expected_activity": "#/components/schemas/ExpectedActivityPersonClaim",
-                      "fatca_status": "#/components/schemas/FatcaStatusPersonClaim",
-                      "financial_profile": "#/components/schemas/FinancialProfilePersonClaim",
-                      "identity": "#/components/schemas/IdentityPersonClaim",
-                      "investment_experience": "#/components/schemas/InvestmentExperiencePersonClaim",
-                      "lei": "#/components/schemas/LeiPersonClaim",
-                      "nationalities": "#/components/schemas/NationalitiesPersonClaim",
-                      "operating_address": "#/components/schemas/OperatingAddressPersonClaim",
-                      "pep_status": "#/components/schemas/PepStatusPersonClaim",
-                      "registered_address": "#/components/schemas/RegisteredAddressPersonClaim",
-                      "registration": "#/components/schemas/RegistrationPersonClaim",
-                      "relationships": "#/components/schemas/RelationshipsPersonClaim",
-                      "residence": "#/components/schemas/ResidencePersonClaim",
-                      "tax_residencies": "#/components/schemas/TaxResidenciesPersonClaim"
-                    },
-                    "propertyName": "claim_type"
+                  "items": {
+                    "$ref": "#/components/schemas/ClaimVersion"
                   },
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/IdentityPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/NationalitiesPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ResidencePersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/TaxResidenciesPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/FatcaStatusPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/PepStatusPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/EducationLevelPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/EmploymentPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/FinancialProfilePersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvestmentExperiencePersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/RegistrationPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ContactDetailsPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/LeiPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/RegisteredAddressPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/OperatingAddressPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/BusinessNaturePersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ExpectedActivityPersonClaim"
-                    },
-                    {
-                      "$ref": "#/components/schemas/RelationshipsPersonClaim"
-                    }
-                  ],
-                  "title": "Response Get Person Claim Persons  Person Id  Claims  Claim Id  Get"
+                  "title": "Response List Person Claim Versions Persons  Person Id  Claims  Claim Id  Versions Get",
+                  "type": "array"
                 }
               }
             },
@@ -19869,7 +19190,149 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retrieve a person claim",
+        "summary": "List a claim's versions",
+        "tags": [
+          "customers"
+        ]
+      },
+      "post": {
+        "description": "Writes a new value to one of the person's claims. The value must be of the claim's type, and the claim must still apply. Otherwise as POST /persons/{person_id}/claims.",
+        "operationId": "add_person_claim_version_persons__person_id__claims__claim_id__versions_post",
+        "parameters": [
+          {
+            "description": "The ID of the person.",
+            "in": "path",
+            "name": "person_id",
+            "required": true,
+            "schema": {
+              "description": "The ID of the person.",
+              "title": "Person Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "The ID of the claim.",
+            "in": "path",
+            "name": "claim_id",
+            "required": true,
+            "schema": {
+              "description": "The ID of the claim.",
+              "title": "Claim Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/IdentityClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/NationalitiesClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ResidenceClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/TaxResidenciesClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FatcaStatusClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PepStatusClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/EducationLevelClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/EmploymentClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FinancialProfileClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/InvestmentExperienceClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ExpectedActivityClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/RelationshipsClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/RegistrationClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ContactDetailsClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/LeiClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/RegisteredAddressClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/OperatingAddressClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/BusinessNatureClaimWriteRequest"
+                  }
+                ],
+                "description": "The claim value, discriminated by claim_type.",
+                "title": "Body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimVersion"
+                }
+              }
+            },
+            "description": "Created"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Bad Request"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Add a version to a claim",
         "tags": [
           "customers"
         ]
