@@ -31,7 +31,7 @@ Versions are never edited. A newer value doesn't overwrite the old one, so you c
 import requests
 
 response = requests.post(
-    "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims",
+    "https://api.joinsophic.com/persons/per_m4k7r9s2/claims",
     headers={
         "Authorization": "Bearer YOUR_ACCESS_TOKEN",
         "Content-Type": "application/json",
@@ -47,7 +47,7 @@ version = response.json()
 
 ```javascript Node.js
 const response = await fetch(
-  "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims",
+  "https://api.joinsophic.com/persons/per_m4k7r9s2/claims",
   {
     method: "POST",
     headers: {
@@ -71,7 +71,7 @@ body, _ := json.Marshal(map[string]interface{}{
     "has_pep_association": false,
 })
 req, _ := http.NewRequest("POST",
-    "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims",
+    "https://api.joinsophic.com/persons/per_m4k7r9s2/claims",
     bytes.NewBuffer(body))
 req.Header.Set("Authorization", "Bearer YOUR_ACCESS_TOKEN")
 req.Header.Set("Content-Type", "application/json")
@@ -87,7 +87,7 @@ String json = """
     """;
 
 HttpRequest request = HttpRequest.newBuilder()
-   .uri(URI.create("https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims"))
+   .uri(URI.create("https://api.joinsophic.com/persons/per_m4k7r9s2/claims"))
    .header("Authorization", "Bearer YOUR_ACCESS_TOKEN")
    .header("Content-Type", "application/json")
    .POST(HttpRequest.BodyPublishers.ofString(json))
@@ -102,7 +102,7 @@ var payload = new {
 };
 
 var response = await client.PostAsJsonAsync(
-    "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims",
+    "https://api.joinsophic.com/persons/per_m4k7r9s2/claims",
     payload);
 ```
 </CodeGroup>
@@ -168,7 +168,7 @@ If the value you send equals the latest version, we don't add a version. We retu
 Send `based_on` with the version `number` you read. If someone else wrote a newer version since, we write nothing and return `409 claim_version_conflict`; read the claim again and retry. `based_on` and your own `reference` sit beside the value's fields in the body:
 
 ```bash
-curl -X POST https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims \
+curl -X POST https://api.joinsophic.com/persons/per_m4k7r9s2/claims \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -H "Idempotency-Key: 6c1f2e0a-residence-update" \
@@ -192,7 +192,7 @@ Send an `Idempotency-Key` header on writes. If you retry with the same key, for 
 [`GET /persons/{person_id}/claims`](/api-reference/customers/list-claims-for-a-person) lists the person's claims that still apply, newest first. Each claim carries its `latest_version` and `latest_verified_version`.
 
 ```bash
-curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?claim_type=residence" \
+curl "https://api.joinsophic.com/persons/per_m4k7r9s2/claims?claim_type=residence" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 

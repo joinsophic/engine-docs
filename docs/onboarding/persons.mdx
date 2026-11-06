@@ -38,7 +38,7 @@ Claim types are enforced against `person_type`: mismatches on `POST /persons` or
 import requests
 
 response = requests.post(
-    "https://api.engine.usesophic.com/persons",
+    "https://api.joinsophic.com/persons",
     headers={
         "Authorization": "Bearer YOUR_ACCESS_TOKEN",
         "Content-Type": "application/json",
@@ -72,7 +72,7 @@ person = response.json()
 
 ```javascript Node.js
 const response = await fetch(
-  "https://api.engine.usesophic.com/persons",
+  "https://api.joinsophic.com/persons",
   {
     method: "POST",
     headers: {
@@ -142,7 +142,7 @@ func main() {
 	})
 
 	req, _ := http.NewRequest("POST",
-		"https://api.engine.usesophic.com/persons",
+		"https://api.joinsophic.com/persons",
 		bytes.NewBuffer(body))
 	req.Header.Set("Authorization", "Bearer YOUR_ACCESS_TOKEN")
 	req.Header.Set("Content-Type", "application/json")
@@ -184,7 +184,7 @@ String json = """
     """;
 
 HttpRequest request = HttpRequest.newBuilder()
-   .uri(URI.create("https://api.engine.usesophic.com/persons"))
+   .uri(URI.create("https://api.joinsophic.com/persons"))
    .header("Authorization", "Bearer YOUR_ACCESS_TOKEN")
    .header("Content-Type", "application/json")
    .POST(HttpRequest.BodyPublishers.ofString(json))
@@ -223,7 +223,7 @@ var payload = new {
 };
 
 var response = await client.PostAsJsonAsync(
-    "https://api.engine.usesophic.com/persons",
+    "https://api.joinsophic.com/persons",
     payload);
 ```
 </CodeGroup>
@@ -294,14 +294,14 @@ Persons don't have their own status; status lives on each claim's versions. See 
 Use [`GET /persons/{id}`](/api-reference/customers/retrieve-a-person) to fetch the person record. Claims aren't included; list them separately.
 
 ```bash
-curl https://api.engine.usesophic.com/persons/per_m4k7r9s2 \
+curl https://api.joinsophic.com/persons/per_m4k7r9s2 \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
 Use [`GET /persons/{person_id}/claims`](/api-reference/customers/list-claims-for-a-person) to list the person's claims that still apply, optionally filtered by `claim_type`. Each claim carries its latest version and its latest verified version; pass `include_history=true` for every version. See [listing and retrieving claims](/docs/onboarding/claims#listing-and-retrieving-claims).
 
 ```bash
-curl "https://api.engine.usesophic.com/persons/per_m4k7r9s2/claims?claim_type=residence" \
+curl "https://api.joinsophic.com/persons/per_m4k7r9s2/claims?claim_type=residence" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 

@@ -6,8 +6,8 @@ import { dirname, resolve } from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
 import { pathToFileURL } from "node:url";
 
-const DEFAULT_METADATA_URL = "https://api.engine.usesophic.com/.meta/docs";
-const DEFAULT_OPENAPI_URL = "https://api.engine.usesophic.com/openapi.json";
+const DEFAULT_METADATA_URL = "https://api.joinsophic.com/.meta/docs";
+const DEFAULT_OPENAPI_URL = "https://api.joinsophic.com/openapi.json";
 const SHA256_PATTERN = /^[0-9a-f]{64}$/;
 
 function parseArguments(argv) {

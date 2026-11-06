@@ -54,7 +54,7 @@ The same triggers work for **currency pairs**. Statuses and webhooks match the t
 import requests
 
 response = requests.post(
-    "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+    "https://api.joinsophic.com/accounts/{account_id}/orders",
     headers={
         "Authorization": "Bearer YOUR_ACCESS_TOKEN",
         "Content-Type": "application/json",
@@ -71,7 +71,7 @@ order = response.json()
 
 ```javascript Node.js
 const response = await fetch(
-  "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+  "https://api.joinsophic.com/accounts/{account_id}/orders",
   {
     method: "POST",
     headers: {
@@ -99,7 +99,7 @@ Expect `order.cancelled` and a terminal status of `cancelled`. No `trade.execute
 import requests
 
 response = requests.post(
-    "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+    "https://api.joinsophic.com/accounts/{account_id}/orders",
     headers={
         "Authorization": "Bearer YOUR_ACCESS_TOKEN",
         "Content-Type": "application/json",
@@ -116,7 +116,7 @@ order = response.json()
 
 ```javascript Node.js
 const response = await fetch(
-  "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+  "https://api.joinsophic.com/accounts/{account_id}/orders",
   {
     method: "POST",
     headers: {
@@ -146,7 +146,7 @@ Use `quantity: "20"` and omit `cash_amount`:
 import requests
 
 response = requests.post(
-    "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+    "https://api.joinsophic.com/accounts/{account_id}/orders",
     headers={
         "Authorization": "Bearer YOUR_ACCESS_TOKEN",
         "Content-Type": "application/json",
@@ -163,7 +163,7 @@ order = response.json()
 
 ```javascript Node.js
 const response = await fetch(
-  "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+  "https://api.joinsophic.com/accounts/{account_id}/orders",
   {
     method: "POST",
     headers: {
@@ -193,7 +193,7 @@ Use a quantity of `"12"` or less (for example `"10"`) and omit `cash_amount`:
 import requests
 
 response = requests.post(
-    "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+    "https://api.joinsophic.com/accounts/{account_id}/orders",
     headers={
         "Authorization": "Bearer YOUR_ACCESS_TOKEN",
         "Content-Type": "application/json",
@@ -210,7 +210,7 @@ order = response.json()
 
 ```javascript Node.js
 const response = await fetch(
-  "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+  "https://api.joinsophic.com/accounts/{account_id}/orders",
   {
     method: "POST",
     headers: {
