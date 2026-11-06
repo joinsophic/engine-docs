@@ -8,6 +8,13 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="November 6, 2026" description="additions">
+  ## Fee charges settled by refunds now show as collected
+
+  **Fixed**
+  - `collected_at` on [Retrieve a fee charge](/api-reference/billing/retrieve-a-fee-charge) is now set when a charge is paid off by a mix of collections and refunds, stamped with the moment the collection or refund cleared it. A charge partly refunded and partly collected used to stay `null` and read as uncollected forever. A charge refunded in full before any payment still counts as uncollected.
+</Update>
+
 <Update label="November 5, 2026" description="2026-11-04">
   ## Claims now carry their versions, and you can archive a claim
 
