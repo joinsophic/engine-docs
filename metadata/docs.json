@@ -15,7 +15,7 @@
     },
     {
       "code": "claim_archive_not_allowed",
-      "detail": "The claim cannot be archived: a person of this type must have it, or it is already archived."
+      "detail": "This claim type cannot be archived, or the claim is already archived."
     },
     {
       "code": "claim_type_mismatch",
@@ -238,7 +238,7 @@
       "detail": "Withdrawals are not enabled for this account."
     }
   ],
-  "openapi_sha256": "a5e067208f9ae5886bcb022b9fcdeea23561708c44760381ee2cfebbb551434b",
+  "openapi_sha256": "298e32a1defb823eeaaefd4666a2ed3c841b03ad86eb003eb4dabda01d291aea",
   "schema_version": 1,
   "webhook_events": [
     {
