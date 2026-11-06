@@ -7146,7 +7146,7 @@
                 "type": "null"
               }
             ],
-            "description": "Date and time the charge was collected.",
+            "description": "Date and time the charge was fully collected, or settled by collections and refunds.",
             "examples": [
               "2026-02-01T09:30:00Z"
             ],
