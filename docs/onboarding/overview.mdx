@@ -42,7 +42,7 @@ Individual end-to-end. For a business, create a person for the legal entity plus
 <Steps>
   <Step title="Create the person with their claims">
     ```bash
-    curl -X POST https://api.engine.usesophic.com/persons \
+    curl -X POST https://api.joinsophic.com/persons \
       -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
       -H "Content-Type: application/json" \
       -d '{
@@ -70,7 +70,7 @@ Individual end-to-end. For a business, create a person for the legal entity plus
   </Step>
   <Step title="Submit the onboarding application">
     ```bash
-    curl -X POST https://api.engine.usesophic.com/onboarding-applications \
+    curl -X POST https://api.joinsophic.com/onboarding-applications \
       -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
       -H "Content-Type: application/json" \
       -d '{

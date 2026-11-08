@@ -19,7 +19,7 @@ Sandbox and Live are completely isolated. Each environment has its own databases
 
 | | **Sandbox** | **Live** |
 |---|---|---|
-| **API base URL** | `https://api-sandbox.engine.usesophic.com` | `https://api.engine.usesophic.com` |
+| **API base URL** | `https://api.sandbox.joinsophic.com` | `https://api.joinsophic.com` |
 | **Credentials** | Sandbox client ID and secret (issued at onboarding) | Live client ID and secret (issued separately) |
 | **Data** | Isolated test data | Production customer data |
 | **Order execution** | Deterministic; trigger outcomes with specific order fields. See [Testing](/docs/orders/testing). | Real market routing and execution |
@@ -33,7 +33,7 @@ All endpoints share the same paths in both environments. Only the host changes.
 
 | Resource | Sandbox | Live |
 |---|---|---|
-| Engine API | `https://api-sandbox.engine.usesophic.com` | `https://api.engine.usesophic.com` |
+| Engine API | `https://api.sandbox.joinsophic.com` | `https://api.joinsophic.com` |
 | Token endpoint | `POST /auth/token` | `POST /auth/token` |
 | OpenAPI spec | `{base_url}/openapi.json` | `{base_url}/openapi.json` |
 
@@ -44,7 +44,7 @@ Point your HTTP client at the Sandbox base URL while you're building, then switc
 Obtain a token the same way you would in Live, but call the Sandbox base URL with your **Sandbox** client credentials:
 
 ```bash
-curl -X POST https://api-sandbox.engine.usesophic.com/auth/token \
+curl -X POST https://api.sandbox.joinsophic.com/auth/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "client_id=YOUR_SANDBOX_CLIENT_ID" \
   -d "client_secret=YOUR_SANDBOX_CLIENT_SECRET" \

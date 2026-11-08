@@ -33,7 +33,7 @@ Buy orders are **cash-based**: you specify how much money to invest, not how man
 import requests
 
 response = requests.post(
-    "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+    "https://api.joinsophic.com/accounts/{account_id}/orders",
     headers={
         "Authorization": "Bearer YOUR_ACCESS_TOKEN",
         "Content-Type": "application/json",
@@ -50,7 +50,7 @@ order = response.json()
 
 ```javascript Node.js
 const response = await fetch(
-  "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+  "https://api.joinsophic.com/accounts/{account_id}/orders",
   {
     method: "POST",
     headers: {
@@ -86,7 +86,7 @@ func main() {
 	})
 
 	req, _ := http.NewRequest("POST",
-		"https://api.engine.usesophic.com/accounts/{account_id}/orders",
+		"https://api.joinsophic.com/accounts/{account_id}/orders",
 		bytes.NewBuffer(body))
 	req.Header.Set("Authorization", "Bearer YOUR_ACCESS_TOKEN")
 	req.Header.Set("Content-Type", "application/json")
@@ -111,7 +111,7 @@ String json = """
     """;
 
 HttpRequest request = HttpRequest.newBuilder()
-   .uri(URI.create("https://api.engine.usesophic.com/accounts/{account_id}/orders"))
+   .uri(URI.create("https://api.joinsophic.com/accounts/{account_id}/orders"))
    .header("Authorization", "Bearer YOUR_ACCESS_TOKEN")
    .header("Content-Type", "application/json")
    .POST(HttpRequest.BodyPublishers.ofString(json))
@@ -133,7 +133,7 @@ var payload = new {
 };
 
 var response = await client.PostAsJsonAsync(
-    "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+    "https://api.joinsophic.com/accounts/{account_id}/orders",
     payload);
 ```
 </CodeGroup>
@@ -147,7 +147,7 @@ Sell orders are **unit-based**: you specify how many units to sell, not how much
 import requests
 
 response = requests.post(
-    "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+    "https://api.joinsophic.com/accounts/{account_id}/orders",
     headers={
         "Authorization": "Bearer YOUR_ACCESS_TOKEN",
         "Content-Type": "application/json",
@@ -164,7 +164,7 @@ order = response.json()
 
 ```javascript Node.js
 const response = await fetch(
-  "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+  "https://api.joinsophic.com/accounts/{account_id}/orders",
   {
     method: "POST",
     headers: {
@@ -200,7 +200,7 @@ func main() {
 	})
 
 	req, _ := http.NewRequest("POST",
-		"https://api.engine.usesophic.com/accounts/{account_id}/orders",
+		"https://api.joinsophic.com/accounts/{account_id}/orders",
 		bytes.NewBuffer(body))
 	req.Header.Set("Authorization", "Bearer YOUR_ACCESS_TOKEN")
 	req.Header.Set("Content-Type", "application/json")
@@ -225,7 +225,7 @@ String json = """
     """;
 
 HttpRequest request = HttpRequest.newBuilder()
-   .uri(URI.create("https://api.engine.usesophic.com/accounts/{account_id}/orders"))
+   .uri(URI.create("https://api.joinsophic.com/accounts/{account_id}/orders"))
    .header("Authorization", "Bearer YOUR_ACCESS_TOKEN")
    .header("Content-Type", "application/json")
    .POST(HttpRequest.BodyPublishers.ofString(json))
@@ -247,7 +247,7 @@ var payload = new {
 };
 
 var response = await client.PostAsJsonAsync(
-    "https://api.engine.usesophic.com/accounts/{account_id}/orders",
+    "https://api.joinsophic.com/accounts/{account_id}/orders",
     payload);
 ```
 </CodeGroup>
@@ -333,7 +333,7 @@ Order creation is synchronous; we validate the request and return the order imme
 You can check an order's current status at any time:
 
 ```bash
-curl https://api.engine.usesophic.com/accounts/{account_id}/orders/{order_id} \
+curl https://api.joinsophic.com/accounts/{account_id}/orders/{order_id} \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 

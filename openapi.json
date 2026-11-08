@@ -20069,7 +20069,7 @@
   },
   "servers": [
     {
-      "url": "https://api.engine.usesophic.com"
+      "url": "https://api.joinsophic.com"
     }
   ],
   "tags": [
