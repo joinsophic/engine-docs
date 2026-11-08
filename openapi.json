@@ -3445,6 +3445,12 @@
       },
       "ClaimSource": {
         "properties": {
+          "created_at": {
+            "description": "When the source was recorded on the version. A `confirms` source is recorded after the version was written.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
           "locator": {
             "additionalProperties": true,
             "description": "Where in that record, by source type. For an API call: the actor that made it and the caller's own `reference`.",
@@ -3476,7 +3482,8 @@
           "source_type",
           "source",
           "locator",
-          "role"
+          "role",
+          "created_at"
         ],
         "title": "ClaimSource",
         "type": "object"
