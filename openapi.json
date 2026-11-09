@@ -3583,7 +3583,8 @@
           "lei",
           "registered_address",
           "operating_address",
-          "business_nature"
+          "business_nature",
+          "planning.priority"
         ],
         "properties": {},
         "title": "ClaimType",
@@ -3618,6 +3619,7 @@
                 "nationalities": "#/components/schemas/NationalitiesClaimSpec",
                 "operating_address": "#/components/schemas/OperatingAddressClaimSpec",
                 "pep_status": "#/components/schemas/PepStatusClaimSpec",
+                "planning.priority": "#/components/schemas/PlanningPriorityClaimSpec",
                 "registered_address": "#/components/schemas/RegisteredAddressClaimSpec",
                 "registration": "#/components/schemas/RegistrationClaimSpec",
                 "relationships": "#/components/schemas/RelationshipsClaimSpec-Output",
@@ -3680,6 +3682,9 @@
               },
               {
                 "$ref": "#/components/schemas/BusinessNatureClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/PlanningPriorityClaimSpec"
               }
             ],
             "title": "Data"
@@ -4075,6 +4080,9 @@
                 },
                 {
                   "$ref": "#/components/schemas/BusinessNatureClaimSpec"
+                },
+                {
+                  "$ref": "#/components/schemas/PlanningPriorityClaimSpec"
                 }
               ]
             },
@@ -5464,6 +5472,7 @@
                 "nationalities": "#/components/schemas/NationalitiesClaimSpec",
                 "operating_address": "#/components/schemas/OperatingAddressClaimSpec",
                 "pep_status": "#/components/schemas/PepStatusClaimSpec",
+                "planning.priority": "#/components/schemas/PlanningPriorityClaimSpec",
                 "registered_address": "#/components/schemas/RegisteredAddressClaimSpec",
                 "registration": "#/components/schemas/RegistrationClaimSpec",
                 "relationships": "#/components/schemas/RelationshipsClaimSpec-Output",
@@ -5526,6 +5535,9 @@
               },
               {
                 "$ref": "#/components/schemas/BusinessNatureClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/PlanningPriorityClaimSpec"
               }
             ],
             "title": "Data"
@@ -12147,6 +12159,90 @@
           "side"
         ],
         "title": "PlaceOrderRequest",
+        "type": "object"
+      },
+      "PlanningPriority": {
+        "enum": [
+          "grow_wealth",
+          "retirement",
+          "home",
+          "support_family",
+          "income",
+          "preserve_wealth"
+        ],
+        "properties": {},
+        "title": "PlanningPriority",
+        "type": "string"
+      },
+      "PlanningPriorityClaimSpec": {
+        "additionalProperties": false,
+        "description": "One thing the person wants their money to help with.",
+        "properties": {
+          "claim_type": {
+            "const": "planning.priority",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/PlanningPriority"
+          }
+        },
+        "required": [
+          "claim_type",
+          "priority"
+        ],
+        "title": "PlanningPriorityClaimSpec",
+        "type": "object"
+      },
+      "PlanningPriorityClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "planning.priority",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/PlanningPriority"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          }
+        },
+        "required": [
+          "claim_type",
+          "priority"
+        ],
+        "title": "PlanningPriorityClaimWriteRequest",
         "type": "object"
       },
       "Portal": {
@@ -18945,6 +19041,9 @@
                   },
                   {
                     "$ref": "#/components/schemas/BusinessNatureClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PlanningPriorityClaimWriteRequest"
                   }
                 ],
                 "description": "The claim value, discriminated by claim_type.",
@@ -19303,6 +19402,9 @@
                   },
                   {
                     "$ref": "#/components/schemas/BusinessNatureClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PlanningPriorityClaimWriteRequest"
                   }
                 ],
                 "description": "The claim value, discriminated by claim_type.",
