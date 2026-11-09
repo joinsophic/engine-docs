@@ -9,6 +9,17 @@ Track what's new and what's changed in our API. We publish an entry for every us
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
 <Update label="November 9, 2026" description="additions">
+  ## A fuller picture of the person: advice claim types
+
+  You can now record a natural person's finances, household, investing experience and preferences as claims, alongside their planning priorities.
+
+  **Added**
+  - Seventeen new claim types on the claim routes, for natural persons: `indicative.age` and `indicative.liquid_assets` (self-reported age and savings band), `experience.general` and `experience.past_downturn` (investing history and behaviour in a market fall), `finances.income`, `finances.expense`, `finances.asset`, `finances.liability`, `finances.emergency_reserve` and `finances.source_of_wealth`, `household.marital_status`, `household.dependant` and `household.income`, `planning.goal`, `planning.future_expense`, `planning.future_inflow` and `planning.intended_investment`, and `preferences.sustainability`. Send them to [Create a person](/api-reference/customers/create-a-person), [Write a claim value for a person](/api-reference/customers/write-a-claim-value-for-a-person) and [Add a version to a claim](/api-reference/customers/add-a-version-to-a-claim), and read them back from [List claims for a person](/api-reference/customers/list-claims-for-a-person) and [Retrieve a person claim](/api-reference/customers/retrieve-a-person-claim).
+  - Like `planning.priority`, several of these are per-item: a person can hold several `experience.past_downturn`, `finances.asset`, `household.dependant`, `planning.goal`, `planning.future_expense` and `planning.future_inflow` claims at once, and `finances.asset`, `household.dependant`, `planning.future_expense` and `planning.future_inflow` match repeat writes onto the same item (`asset_class` or `kind`). `based_on` on writes and archives, and `Idempotency-Key` on writes, apply to the individual claim.
+  - `planning.priority` now also accepts `exploring` and `other` as a `priority`.
+</Update>
+
+<Update label="November 9, 2026" description="additions">
   ## Record what a person wants their money to help with
 
   You can now record planning priorities for a natural person, one claim per priority.
