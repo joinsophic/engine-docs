@@ -9,6 +9,16 @@ Track what's new and what's changed in our API. We publish an entry for every us
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
 <Update label="November 9, 2026" description="additions">
+  ## FX trades settle on their value date, and ETF prices carry honest quality labels
+
+  Currency conversions now behave like spot FX, and price quotes tell you how fresh they really are.
+
+  **Changed**
+  - A currency-pair trade now carries a `settlement_date` (its spot value date) and settles on that date, not at execution time. On [Retrieve an order](/api-reference/trading/retrieve-an-order) and [List orders](/api-reference/trading/list-orders), a filled currency-pair order's `trades` can read unsettled until the value date, and a trade whose hedge hasn't delivered yet waits rather than releasing currency early.
+  - `quality` on [Retrieve prices](/api-reference/market-data/retrieve-prices) now reports `delayed` for intraday ETF quotes (lagging at least 15 minutes) and `closing` for quotes that are the listing venue's previous close, instead of `realtime`. Existing stored prices keep their label until they're refreshed.
+</Update>
+
+<Update label="November 9, 2026" description="additions">
   ## A fuller picture of the person: advice claim types
 
   You can now record a natural person's finances, household, investing experience and preferences as claims, alongside their planning priorities.
