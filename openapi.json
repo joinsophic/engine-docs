@@ -3584,7 +3584,25 @@
           "registered_address",
           "operating_address",
           "business_nature",
-          "planning.priority"
+          "indicative.age",
+          "indicative.liquid_assets",
+          "experience.general",
+          "experience.past_downturn",
+          "finances.income",
+          "finances.expense",
+          "finances.asset",
+          "finances.liability",
+          "finances.emergency_reserve",
+          "finances.source_of_wealth",
+          "household.marital_status",
+          "household.dependant",
+          "household.income",
+          "planning.priority",
+          "planning.goal",
+          "planning.future_expense",
+          "planning.future_inflow",
+          "planning.intended_investment",
+          "preferences.sustainability"
         ],
         "properties": {},
         "title": "ClaimType",
@@ -3611,15 +3629,33 @@
                 "education_level": "#/components/schemas/EducationLevelClaimSpec",
                 "employment": "#/components/schemas/EmploymentClaimSpec",
                 "expected_activity": "#/components/schemas/ExpectedActivityClaimSpec",
+                "experience.general": "#/components/schemas/ExperienceGeneralClaimSpec",
+                "experience.past_downturn": "#/components/schemas/ExperiencePastDownturnClaimSpec",
                 "fatca_status": "#/components/schemas/FatcaStatusClaimSpec",
+                "finances.asset": "#/components/schemas/FinancesAssetClaimSpec-Output",
+                "finances.emergency_reserve": "#/components/schemas/FinancesEmergencyReserveClaimSpec",
+                "finances.expense": "#/components/schemas/FinancesExpenseClaimSpec-Output",
+                "finances.income": "#/components/schemas/FinancesIncomeClaimSpec-Output",
+                "finances.liability": "#/components/schemas/FinancesLiabilityClaimSpec-Output",
+                "finances.source_of_wealth": "#/components/schemas/FinancesSourceOfWealthClaimSpec",
                 "financial_profile": "#/components/schemas/FinancialProfileClaimSpec",
+                "household.dependant": "#/components/schemas/HouseholdDependantClaimSpec",
+                "household.income": "#/components/schemas/HouseholdIncomeClaimSpec-Output",
+                "household.marital_status": "#/components/schemas/HouseholdMaritalStatusClaimSpec",
                 "identity": "#/components/schemas/IdentityClaimSpec",
+                "indicative.age": "#/components/schemas/IndicativeAgeClaimSpec",
+                "indicative.liquid_assets": "#/components/schemas/IndicativeLiquidAssetsClaimSpec",
                 "investment_experience": "#/components/schemas/InvestmentExperienceClaimSpec",
                 "lei": "#/components/schemas/LeiClaimSpec",
                 "nationalities": "#/components/schemas/NationalitiesClaimSpec",
                 "operating_address": "#/components/schemas/OperatingAddressClaimSpec",
                 "pep_status": "#/components/schemas/PepStatusClaimSpec",
+                "planning.future_expense": "#/components/schemas/PlanningFutureExpenseClaimSpec-Output",
+                "planning.future_inflow": "#/components/schemas/PlanningFutureInflowClaimSpec",
+                "planning.goal": "#/components/schemas/PlanningGoalClaimSpec-Output",
+                "planning.intended_investment": "#/components/schemas/PlanningIntendedInvestmentClaimSpec",
                 "planning.priority": "#/components/schemas/PlanningPriorityClaimSpec",
+                "preferences.sustainability": "#/components/schemas/PreferencesSustainabilityClaimSpec",
                 "registered_address": "#/components/schemas/RegisteredAddressClaimSpec",
                 "registration": "#/components/schemas/RegistrationClaimSpec",
                 "relationships": "#/components/schemas/RelationshipsClaimSpec-Output",
@@ -3684,7 +3720,61 @@
                 "$ref": "#/components/schemas/BusinessNatureClaimSpec"
               },
               {
+                "$ref": "#/components/schemas/IndicativeAgeClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/IndicativeLiquidAssetsClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/ExperienceGeneralClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/ExperiencePastDownturnClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/FinancesIncomeClaimSpec-Output"
+              },
+              {
+                "$ref": "#/components/schemas/FinancesExpenseClaimSpec-Output"
+              },
+              {
+                "$ref": "#/components/schemas/FinancesAssetClaimSpec-Output"
+              },
+              {
+                "$ref": "#/components/schemas/FinancesLiabilityClaimSpec-Output"
+              },
+              {
+                "$ref": "#/components/schemas/FinancesEmergencyReserveClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/FinancesSourceOfWealthClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/HouseholdMaritalStatusClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/HouseholdDependantClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/HouseholdIncomeClaimSpec-Output"
+              },
+              {
                 "$ref": "#/components/schemas/PlanningPriorityClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/PlanningGoalClaimSpec-Output"
+              },
+              {
+                "$ref": "#/components/schemas/PlanningFutureExpenseClaimSpec-Output"
+              },
+              {
+                "$ref": "#/components/schemas/PlanningFutureInflowClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/PlanningIntendedInvestmentClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/PreferencesSustainabilityClaimSpec"
               }
             ],
             "title": "Data"
@@ -3955,6 +4045,16 @@
         "title": "ContactDetailsPersonClaimSummary",
         "type": "object"
       },
+      "ContributionFrequency": {
+        "enum": [
+          "monthly",
+          "annual",
+          "other"
+        ],
+        "properties": {},
+        "title": "ContributionFrequency",
+        "type": "string"
+      },
       "ControlType": {
         "enum": [
           "ownership",
@@ -4082,7 +4182,61 @@
                   "$ref": "#/components/schemas/BusinessNatureClaimSpec"
                 },
                 {
+                  "$ref": "#/components/schemas/IndicativeAgeClaimSpec"
+                },
+                {
+                  "$ref": "#/components/schemas/IndicativeLiquidAssetsClaimSpec"
+                },
+                {
+                  "$ref": "#/components/schemas/ExperienceGeneralClaimSpec"
+                },
+                {
+                  "$ref": "#/components/schemas/ExperiencePastDownturnClaimSpec"
+                },
+                {
+                  "$ref": "#/components/schemas/FinancesIncomeClaimSpec-Input"
+                },
+                {
+                  "$ref": "#/components/schemas/FinancesExpenseClaimSpec-Input"
+                },
+                {
+                  "$ref": "#/components/schemas/FinancesAssetClaimSpec-Input"
+                },
+                {
+                  "$ref": "#/components/schemas/FinancesLiabilityClaimSpec-Input"
+                },
+                {
+                  "$ref": "#/components/schemas/FinancesEmergencyReserveClaimSpec"
+                },
+                {
+                  "$ref": "#/components/schemas/FinancesSourceOfWealthClaimSpec"
+                },
+                {
+                  "$ref": "#/components/schemas/HouseholdMaritalStatusClaimSpec"
+                },
+                {
+                  "$ref": "#/components/schemas/HouseholdDependantClaimSpec"
+                },
+                {
+                  "$ref": "#/components/schemas/HouseholdIncomeClaimSpec-Input"
+                },
+                {
                   "$ref": "#/components/schemas/PlanningPriorityClaimSpec"
+                },
+                {
+                  "$ref": "#/components/schemas/PlanningGoalClaimSpec-Input"
+                },
+                {
+                  "$ref": "#/components/schemas/PlanningFutureExpenseClaimSpec-Input"
+                },
+                {
+                  "$ref": "#/components/schemas/PlanningFutureInflowClaimSpec"
+                },
+                {
+                  "$ref": "#/components/schemas/PlanningIntendedInvestmentClaimSpec"
+                },
+                {
+                  "$ref": "#/components/schemas/PreferencesSustainabilityClaimSpec"
                 }
               ]
             },
@@ -4520,6 +4674,18 @@
         "title": "DayCountConvention",
         "type": "string"
       },
+      "DependantKind": {
+        "enum": [
+          "children",
+          "partner",
+          "parents",
+          "someone_else",
+          "none"
+        ],
+        "properties": {},
+        "title": "DependantKind",
+        "type": "string"
+      },
       "Deposit": {
         "properties": {
           "account": {
@@ -4757,6 +4923,18 @@
         ],
         "properties": {},
         "title": "DocumentType",
+        "type": "string"
+      },
+      "DownturnAction": {
+        "enum": [
+          "sold",
+          "reduced",
+          "held",
+          "added",
+          "unsure"
+        ],
+        "properties": {},
+        "title": "DownturnAction",
         "type": "string"
       },
       "ETF": {
@@ -5288,6 +5466,16 @@
         "title": "ETFReplicationMethod",
         "type": "string"
       },
+      "EarlyNeedLikelihood": {
+        "enum": [
+          "quite_likely",
+          "possibly",
+          "unlikely"
+        ],
+        "properties": {},
+        "title": "EarlyNeedLikelihood",
+        "type": "string"
+      },
       "EarningsAttribution": {
         "properties": {
           "currency": {
@@ -5464,15 +5652,33 @@
                 "education_level": "#/components/schemas/EducationLevelClaimSpec",
                 "employment": "#/components/schemas/EmploymentClaimSpec",
                 "expected_activity": "#/components/schemas/ExpectedActivityClaimSpec",
+                "experience.general": "#/components/schemas/ExperienceGeneralClaimSpec",
+                "experience.past_downturn": "#/components/schemas/ExperiencePastDownturnClaimSpec",
                 "fatca_status": "#/components/schemas/FatcaStatusClaimSpec",
+                "finances.asset": "#/components/schemas/FinancesAssetClaimSpec-Output",
+                "finances.emergency_reserve": "#/components/schemas/FinancesEmergencyReserveClaimSpec",
+                "finances.expense": "#/components/schemas/FinancesExpenseClaimSpec-Output",
+                "finances.income": "#/components/schemas/FinancesIncomeClaimSpec-Output",
+                "finances.liability": "#/components/schemas/FinancesLiabilityClaimSpec-Output",
+                "finances.source_of_wealth": "#/components/schemas/FinancesSourceOfWealthClaimSpec",
                 "financial_profile": "#/components/schemas/FinancialProfileClaimSpec",
+                "household.dependant": "#/components/schemas/HouseholdDependantClaimSpec",
+                "household.income": "#/components/schemas/HouseholdIncomeClaimSpec-Output",
+                "household.marital_status": "#/components/schemas/HouseholdMaritalStatusClaimSpec",
                 "identity": "#/components/schemas/IdentityClaimSpec",
+                "indicative.age": "#/components/schemas/IndicativeAgeClaimSpec",
+                "indicative.liquid_assets": "#/components/schemas/IndicativeLiquidAssetsClaimSpec",
                 "investment_experience": "#/components/schemas/InvestmentExperienceClaimSpec",
                 "lei": "#/components/schemas/LeiClaimSpec",
                 "nationalities": "#/components/schemas/NationalitiesClaimSpec",
                 "operating_address": "#/components/schemas/OperatingAddressClaimSpec",
                 "pep_status": "#/components/schemas/PepStatusClaimSpec",
+                "planning.future_expense": "#/components/schemas/PlanningFutureExpenseClaimSpec-Output",
+                "planning.future_inflow": "#/components/schemas/PlanningFutureInflowClaimSpec",
+                "planning.goal": "#/components/schemas/PlanningGoalClaimSpec-Output",
+                "planning.intended_investment": "#/components/schemas/PlanningIntendedInvestmentClaimSpec",
                 "planning.priority": "#/components/schemas/PlanningPriorityClaimSpec",
+                "preferences.sustainability": "#/components/schemas/PreferencesSustainabilityClaimSpec",
                 "registered_address": "#/components/schemas/RegisteredAddressClaimSpec",
                 "registration": "#/components/schemas/RegistrationClaimSpec",
                 "relationships": "#/components/schemas/RelationshipsClaimSpec-Output",
@@ -5537,7 +5743,61 @@
                 "$ref": "#/components/schemas/BusinessNatureClaimSpec"
               },
               {
+                "$ref": "#/components/schemas/IndicativeAgeClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/IndicativeLiquidAssetsClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/ExperienceGeneralClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/ExperiencePastDownturnClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/FinancesIncomeClaimSpec-Output"
+              },
+              {
+                "$ref": "#/components/schemas/FinancesExpenseClaimSpec-Output"
+              },
+              {
+                "$ref": "#/components/schemas/FinancesAssetClaimSpec-Output"
+              },
+              {
+                "$ref": "#/components/schemas/FinancesLiabilityClaimSpec-Output"
+              },
+              {
+                "$ref": "#/components/schemas/FinancesEmergencyReserveClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/FinancesSourceOfWealthClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/HouseholdMaritalStatusClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/HouseholdDependantClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/HouseholdIncomeClaimSpec-Output"
+              },
+              {
                 "$ref": "#/components/schemas/PlanningPriorityClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/PlanningGoalClaimSpec-Output"
+              },
+              {
+                "$ref": "#/components/schemas/PlanningFutureExpenseClaimSpec-Output"
+              },
+              {
+                "$ref": "#/components/schemas/PlanningFutureInflowClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/PlanningIntendedInvestmentClaimSpec"
+              },
+              {
+                "$ref": "#/components/schemas/PreferencesSustainabilityClaimSpec"
               }
             ],
             "title": "Data"
@@ -6891,6 +7151,314 @@
         "title": "ExpectedActivityPersonClaimSummary",
         "type": "object"
       },
+      "ExperienceGeneralClaimSpec": {
+        "additionalProperties": false,
+        "description": "The person's investing history and experience of working in finance.",
+        "properties": {
+          "claim_type": {
+            "const": "experience.general",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "finance_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finance Role"
+          },
+          "finance_work": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FinanceWorkRecency"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "investing_duration": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InvestingDuration"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "self_description": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InvestorSelfDescription"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "services_used": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/PastService"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Services Used"
+          },
+          "trade_frequency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TradeFrequency"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "claim_type"
+        ],
+        "title": "ExperienceGeneralClaimSpec",
+        "type": "object"
+      },
+      "ExperienceGeneralClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "experience.general",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "finance_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finance Role"
+          },
+          "finance_work": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FinanceWorkRecency"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "investing_duration": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InvestingDuration"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          },
+          "self_description": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InvestorSelfDescription"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "services_used": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/PastService"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Services Used"
+          },
+          "trade_frequency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TradeFrequency"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "claim_type"
+        ],
+        "title": "ExperienceGeneralClaimWriteRequest",
+        "type": "object"
+      },
+      "ExperiencePastDownturnClaimSpec": {
+        "additionalProperties": false,
+        "description": "A market fall the person lived through and what they did; or that they have not\nlived through one.",
+        "properties": {
+          "action": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DownturnAction"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "claim_type": {
+            "const": "experience.past_downturn",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "experienced": {
+            "title": "Experienced",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "claim_type",
+          "experienced"
+        ],
+        "title": "ExperiencePastDownturnClaimSpec",
+        "type": "object"
+      },
+      "ExperiencePastDownturnClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DownturnAction"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "experience.past_downturn",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "experienced": {
+            "title": "Experienced",
+            "type": "boolean"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          }
+        },
+        "required": [
+          "claim_type",
+          "experienced"
+        ],
+        "title": "ExperiencePastDownturnClaimWriteRequest",
+        "type": "object"
+      },
       "FatcaStatusClaimSpec": {
         "additionalProperties": false,
         "description": "Whether the person is a US person under FATCA.",
@@ -7589,6 +8157,661 @@
         "title": "File",
         "type": "object"
       },
+      "FinanceWorkRecency": {
+        "enum": [
+          "no",
+          "last_5y",
+          "over_5y"
+        ],
+        "properties": {},
+        "title": "FinanceWorkRecency",
+        "type": "string"
+      },
+      "FinancesAssetClaimSpec-Input": {
+        "additionalProperties": false,
+        "description": "What the person holds in one class of assets, as a total.",
+        "properties": {
+          "asset_class": {
+            "$ref": "#/components/schemas/WealthAssetClass"
+          },
+          "claim_type": {
+            "const": "finances.asset",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "value": {
+            "$ref": "#/components/schemas/Money-Input"
+          }
+        },
+        "required": [
+          "claim_type",
+          "asset_class",
+          "value"
+        ],
+        "title": "FinancesAssetClaimSpec",
+        "type": "object"
+      },
+      "FinancesAssetClaimSpec-Output": {
+        "additionalProperties": false,
+        "description": "What the person holds in one class of assets, as a total.",
+        "properties": {
+          "asset_class": {
+            "$ref": "#/components/schemas/WealthAssetClass"
+          },
+          "claim_type": {
+            "const": "finances.asset",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "value": {
+            "$ref": "#/components/schemas/Money-Output"
+          }
+        },
+        "required": [
+          "claim_type",
+          "asset_class",
+          "value"
+        ],
+        "title": "FinancesAssetClaimSpec",
+        "type": "object"
+      },
+      "FinancesAssetClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "asset_class": {
+            "$ref": "#/components/schemas/WealthAssetClass"
+          },
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "finances.asset",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          },
+          "value": {
+            "$ref": "#/components/schemas/Money-Input"
+          }
+        },
+        "required": [
+          "claim_type",
+          "asset_class",
+          "value"
+        ],
+        "title": "FinancesAssetClaimWriteRequest",
+        "type": "object"
+      },
+      "FinancesEmergencyReserveClaimSpec": {
+        "additionalProperties": false,
+        "description": "How many months of essential outgoings the person's cash covers, as they confirmed\nit.",
+        "properties": {
+          "claim_type": {
+            "const": "finances.emergency_reserve",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "months": {
+            "$ref": "#/components/schemas/ReserveMonths"
+          }
+        },
+        "required": [
+          "claim_type",
+          "months"
+        ],
+        "title": "FinancesEmergencyReserveClaimSpec",
+        "type": "object"
+      },
+      "FinancesEmergencyReserveClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "finances.emergency_reserve",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "months": {
+            "$ref": "#/components/schemas/ReserveMonths"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          }
+        },
+        "required": [
+          "claim_type",
+          "months"
+        ],
+        "title": "FinancesEmergencyReserveClaimWriteRequest",
+        "type": "object"
+      },
+      "FinancesExpenseClaimSpec-Input": {
+        "additionalProperties": false,
+        "description": "The person's essential outgoings for a year, not counting debt payments.",
+        "properties": {
+          "claim_type": {
+            "const": "finances.expense",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "essential_outgoings": {
+            "$ref": "#/components/schemas/Money-Input"
+          }
+        },
+        "required": [
+          "claim_type",
+          "essential_outgoings"
+        ],
+        "title": "FinancesExpenseClaimSpec",
+        "type": "object"
+      },
+      "FinancesExpenseClaimSpec-Output": {
+        "additionalProperties": false,
+        "description": "The person's essential outgoings for a year, not counting debt payments.",
+        "properties": {
+          "claim_type": {
+            "const": "finances.expense",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "essential_outgoings": {
+            "$ref": "#/components/schemas/Money-Output"
+          }
+        },
+        "required": [
+          "claim_type",
+          "essential_outgoings"
+        ],
+        "title": "FinancesExpenseClaimSpec",
+        "type": "object"
+      },
+      "FinancesExpenseClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "finances.expense",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "essential_outgoings": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          }
+        },
+        "required": [
+          "claim_type",
+          "essential_outgoings"
+        ],
+        "title": "FinancesExpenseClaimWriteRequest",
+        "type": "object"
+      },
+      "FinancesIncomeClaimSpec-Input": {
+        "additionalProperties": false,
+        "description": "The person's own income for a year, its main source and how steady it is.",
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "basis": {
+            "$ref": "#/components/schemas/IncomeBasis",
+            "default": "net"
+          },
+          "claim_type": {
+            "const": "finances.income",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "main_source": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OwnIncomeSource"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Note"
+          },
+          "stability": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/IncomeStability"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "claim_type",
+          "amount"
+        ],
+        "title": "FinancesIncomeClaimSpec",
+        "type": "object"
+      },
+      "FinancesIncomeClaimSpec-Output": {
+        "additionalProperties": false,
+        "description": "The person's own income for a year, its main source and how steady it is.",
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/Money-Output"
+          },
+          "basis": {
+            "$ref": "#/components/schemas/IncomeBasis",
+            "default": "net"
+          },
+          "claim_type": {
+            "const": "finances.income",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "main_source": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OwnIncomeSource"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Note"
+          },
+          "stability": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/IncomeStability"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "claim_type",
+          "amount"
+        ],
+        "title": "FinancesIncomeClaimSpec",
+        "type": "object"
+      },
+      "FinancesIncomeClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "basis": {
+            "$ref": "#/components/schemas/IncomeBasis",
+            "default": "net"
+          },
+          "claim_type": {
+            "const": "finances.income",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "main_source": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OwnIncomeSource"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          },
+          "source_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Note"
+          },
+          "stability": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/IncomeStability"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "claim_type",
+          "amount"
+        ],
+        "title": "FinancesIncomeClaimWriteRequest",
+        "type": "object"
+      },
+      "FinancesLiabilityClaimSpec-Input": {
+        "additionalProperties": false,
+        "description": "What the person owes on all loans and mortgages, and repays in a year.",
+        "properties": {
+          "claim_type": {
+            "const": "finances.liability",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "outstanding": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "repayment": {
+            "$ref": "#/components/schemas/Money-Input"
+          }
+        },
+        "required": [
+          "claim_type",
+          "outstanding",
+          "repayment"
+        ],
+        "title": "FinancesLiabilityClaimSpec",
+        "type": "object"
+      },
+      "FinancesLiabilityClaimSpec-Output": {
+        "additionalProperties": false,
+        "description": "What the person owes on all loans and mortgages, and repays in a year.",
+        "properties": {
+          "claim_type": {
+            "const": "finances.liability",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "outstanding": {
+            "$ref": "#/components/schemas/Money-Output"
+          },
+          "repayment": {
+            "$ref": "#/components/schemas/Money-Output"
+          }
+        },
+        "required": [
+          "claim_type",
+          "outstanding",
+          "repayment"
+        ],
+        "title": "FinancesLiabilityClaimSpec",
+        "type": "object"
+      },
+      "FinancesLiabilityClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "finances.liability",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "outstanding": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          },
+          "repayment": {
+            "$ref": "#/components/schemas/Money-Input"
+          }
+        },
+        "required": [
+          "claim_type",
+          "outstanding",
+          "repayment"
+        ],
+        "title": "FinancesLiabilityClaimWriteRequest",
+        "type": "object"
+      },
+      "FinancesSourceOfWealthClaimSpec": {
+        "additionalProperties": false,
+        "description": "Where the person's wealth came from.",
+        "properties": {
+          "claim_type": {
+            "const": "finances.source_of_wealth",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/ClaimWealthSource"
+            },
+            "minItems": 1,
+            "title": "Sources",
+            "type": "array"
+          }
+        },
+        "required": [
+          "claim_type",
+          "sources"
+        ],
+        "title": "FinancesSourceOfWealthClaimSpec",
+        "type": "object"
+      },
+      "FinancesSourceOfWealthClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "finances.source_of_wealth",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/ClaimWealthSource"
+            },
+            "minItems": 1,
+            "title": "Sources",
+            "type": "array"
+          }
+        },
+        "required": [
+          "claim_type",
+          "sources"
+        ],
+        "title": "FinancesSourceOfWealthClaimWriteRequest",
+        "type": "object"
+      },
       "FinancialProfileClaimSpec": {
         "additionalProperties": false,
         "description": "AML income and wealth, in bands, with their sources.",
@@ -7840,6 +9063,34 @@
         "title": "FundingAccount",
         "type": "object"
       },
+      "FutureExpenseKind": {
+        "enum": [
+          "property",
+          "education_family",
+          "business",
+          "major_purchase",
+          "retirement_employment_change",
+          "income_responsibility_change",
+          "other",
+          "none"
+        ],
+        "properties": {},
+        "title": "FutureExpenseKind",
+        "type": "string"
+      },
+      "FutureInflowKind": {
+        "enum": [
+          "bonus",
+          "inheritance_gift",
+          "sale_property_business",
+          "pension_lump_sum",
+          "other",
+          "none"
+        ],
+        "properties": {},
+        "title": "FutureInflowKind",
+        "type": "string"
+      },
       "GenerateAccountStatementRequest": {
         "properties": {
           "period_end": {
@@ -7868,6 +9119,108 @@
         "title": "GenerateAccountStatementRequest",
         "type": "object"
       },
+      "GoalContribution-Input": {
+        "additionalProperties": false,
+        "description": "Money the person adds to a goal, and how often.",
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "frequency": {
+            "$ref": "#/components/schemas/ContributionFrequency"
+          }
+        },
+        "required": [
+          "amount",
+          "frequency"
+        ],
+        "title": "GoalContribution",
+        "type": "object"
+      },
+      "GoalContribution-Output": {
+        "additionalProperties": false,
+        "description": "Money the person adds to a goal, and how often.",
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/Money-Output"
+          },
+          "frequency": {
+            "$ref": "#/components/schemas/ContributionFrequency"
+          }
+        },
+        "required": [
+          "amount",
+          "frequency"
+        ],
+        "title": "GoalContribution",
+        "type": "object"
+      },
+      "GoalCurrency": {
+        "enum": [
+          "EUR",
+          "GBP",
+          "USD",
+          "other"
+        ],
+        "properties": {},
+        "title": "GoalCurrency",
+        "type": "string"
+      },
+      "GoalHorizon": {
+        "enum": [
+          "lt_1y",
+          "1_3y",
+          "3_5y",
+          "5_8y",
+          "8_15y",
+          "gt_15y"
+        ],
+        "properties": {},
+        "title": "GoalHorizon",
+        "type": "string"
+      },
+      "GoalImportance": {
+        "enum": [
+          "essential",
+          "important",
+          "nice_to_have"
+        ],
+        "properties": {},
+        "title": "GoalImportance",
+        "type": "string"
+      },
+      "GoalShortfallResponse": {
+        "enum": [
+          "wait_longer",
+          "accept_less",
+          "contribute_more",
+          "none"
+        ],
+        "properties": {},
+        "title": "GoalShortfallResponse",
+        "type": "string"
+      },
+      "GoalTargetKind": {
+        "enum": [
+          "exact",
+          "range",
+          "no_fixed_target"
+        ],
+        "properties": {},
+        "title": "GoalTargetKind",
+        "type": "string"
+      },
+      "GoalWithdrawal": {
+        "enum": [
+          "all_at_once",
+          "over_years",
+          "regular_income",
+          "uncertain"
+        ],
+        "properties": {},
+        "title": "GoalWithdrawal",
+        "type": "string"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -7879,6 +9232,239 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HouseholdDependantClaimSpec": {
+        "additionalProperties": false,
+        "description": "One kind of person who depends on the person financially; or that no one does.",
+        "properties": {
+          "claim_type": {
+            "const": "household.dependant",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/DependantKind"
+          }
+        },
+        "required": [
+          "claim_type",
+          "kind"
+        ],
+        "title": "HouseholdDependantClaimSpec",
+        "type": "object"
+      },
+      "HouseholdDependantClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "household.dependant",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/DependantKind"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          }
+        },
+        "required": [
+          "claim_type",
+          "kind"
+        ],
+        "title": "HouseholdDependantClaimWriteRequest",
+        "type": "object"
+      },
+      "HouseholdIncomeClaimSpec-Input": {
+        "additionalProperties": false,
+        "description": "The household's income for a year, after tax.",
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "claim_type": {
+            "const": "household.income",
+            "title": "Claim Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "claim_type",
+          "amount"
+        ],
+        "title": "HouseholdIncomeClaimSpec",
+        "type": "object"
+      },
+      "HouseholdIncomeClaimSpec-Output": {
+        "additionalProperties": false,
+        "description": "The household's income for a year, after tax.",
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/Money-Output"
+          },
+          "claim_type": {
+            "const": "household.income",
+            "title": "Claim Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "claim_type",
+          "amount"
+        ],
+        "title": "HouseholdIncomeClaimSpec",
+        "type": "object"
+      },
+      "HouseholdIncomeClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "household.income",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          }
+        },
+        "required": [
+          "claim_type",
+          "amount"
+        ],
+        "title": "HouseholdIncomeClaimWriteRequest",
+        "type": "object"
+      },
+      "HouseholdMaritalStatusClaimSpec": {
+        "additionalProperties": false,
+        "description": "The person's relationship status.",
+        "properties": {
+          "claim_type": {
+            "const": "household.marital_status",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MaritalStatus"
+          }
+        },
+        "required": [
+          "claim_type",
+          "status"
+        ],
+        "title": "HouseholdMaritalStatusClaimSpec",
+        "type": "object"
+      },
+      "HouseholdMaritalStatusClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "household.marital_status",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MaritalStatus"
+          }
+        },
+        "required": [
+          "claim_type",
+          "status"
+        ],
+        "title": "HouseholdMaritalStatusClaimWriteRequest",
         "type": "object"
       },
       "IdentityClaimSpec": {
@@ -8031,6 +9617,169 @@
           "status"
         ],
         "title": "IdentityPersonClaimSummary",
+        "type": "object"
+      },
+      "IncomeBasis": {
+        "enum": [
+          "net",
+          "gross"
+        ],
+        "properties": {},
+        "title": "IncomeBasis",
+        "type": "string"
+      },
+      "IncomeStability": {
+        "enum": [
+          "stable",
+          "variable_reliable",
+          "irregular"
+        ],
+        "properties": {},
+        "title": "IncomeStability",
+        "type": "string"
+      },
+      "IndicativeAgeClaimSpec": {
+        "additionalProperties": false,
+        "description": "The person's age in years, as they gave it before their date of birth is known.",
+        "properties": {
+          "age": {
+            "title": "Age",
+            "type": "integer"
+          },
+          "claim_type": {
+            "const": "indicative.age",
+            "title": "Claim Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "claim_type",
+          "age"
+        ],
+        "title": "IndicativeAgeClaimSpec",
+        "type": "object"
+      },
+      "IndicativeAgeClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "age": {
+            "title": "Age",
+            "type": "integer"
+          },
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "indicative.age",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          }
+        },
+        "required": [
+          "claim_type",
+          "age"
+        ],
+        "title": "IndicativeAgeClaimWriteRequest",
+        "type": "object"
+      },
+      "IndicativeLiquidAssetsClaimSpec": {
+        "additionalProperties": false,
+        "description": "The person's savings and investments in their own name, as a band.",
+        "properties": {
+          "claim_type": {
+            "const": "indicative.liquid_assets",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "liquid_assets": {
+            "$ref": "#/components/schemas/EurAmountBand"
+          }
+        },
+        "required": [
+          "claim_type",
+          "liquid_assets"
+        ],
+        "title": "IndicativeLiquidAssetsClaimSpec",
+        "type": "object"
+      },
+      "IndicativeLiquidAssetsClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "indicative.liquid_assets",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "liquid_assets": {
+            "$ref": "#/components/schemas/EurAmountBand"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          }
+        },
+        "required": [
+          "claim_type",
+          "liquid_assets"
+        ],
+        "title": "IndicativeLiquidAssetsClaimWriteRequest",
         "type": "object"
       },
       "IndividualCustomer": {
@@ -8342,6 +10091,17 @@
         "title": "InvalidParam",
         "type": "object"
       },
+      "InvestingDuration": {
+        "enum": [
+          "lt_1y",
+          "1_3y",
+          "3_5y",
+          "gt_5y"
+        ],
+        "properties": {},
+        "title": "InvestingDuration",
+        "type": "string"
+      },
       "InvestmentExperienceClaimSpec": {
         "additionalProperties": false,
         "description": "Onboarding summary of prior investing.",
@@ -8481,6 +10241,18 @@
         ],
         "title": "InvestmentExperiencePersonClaimSummary",
         "type": "object"
+      },
+      "InvestorSelfDescription": {
+        "enum": [
+          "relatively_new",
+          "prefers_guidance",
+          "comfortable_own_decisions",
+          "extensive",
+          "not_sure"
+        ],
+        "properties": {},
+        "title": "InvestorSelfDescription",
+        "type": "string"
       },
       "JointCustomer": {
         "properties": {
@@ -9131,6 +10903,16 @@
         "title": "LeiPersonClaimSummary",
         "type": "object"
       },
+      "MaritalStatus": {
+        "enum": [
+          "married_or_civil_partnership",
+          "living_with_partner",
+          "single"
+        ],
+        "properties": {},
+        "title": "MaritalStatus",
+        "type": "string"
+      },
       "MmfMarketCashEstimate": {
         "properties": {
           "asof": {
@@ -9338,6 +11120,86 @@
           "estimate"
         ],
         "title": "MmfMarketCashQuote",
+        "type": "object"
+      },
+      "Money-Input": {
+        "additionalProperties": false,
+        "description": "An amount of money, exact or approximate, or a band or range with an upper amount.",
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Amount"
+          },
+          "currency": {
+            "default": "EUR",
+            "title": "Currency",
+            "type": "string"
+          },
+          "precision": {
+            "$ref": "#/components/schemas/MoneyPrecision",
+            "default": "exact"
+          },
+          "upper_amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upper Amount"
+          }
+        },
+        "required": [
+          "amount"
+        ],
+        "title": "Money",
+        "type": "object"
+      },
+      "Money-Output": {
+        "additionalProperties": false,
+        "description": "An amount of money, exact or approximate, or a band or range with an upper amount.",
+        "properties": {
+          "amount": {
+            "title": "Amount",
+            "type": "string"
+          },
+          "currency": {
+            "default": "EUR",
+            "title": "Currency",
+            "type": "string"
+          },
+          "precision": {
+            "$ref": "#/components/schemas/MoneyPrecision",
+            "default": "exact"
+          },
+          "upper_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upper Amount"
+          }
+        },
+        "required": [
+          "amount"
+        ],
+        "title": "Money",
         "type": "object"
       },
       "MoneyMarketFund": {
@@ -9683,6 +11545,17 @@
         ],
         "title": "MoneyMarketFund",
         "type": "object"
+      },
+      "MoneyPrecision": {
+        "enum": [
+          "exact",
+          "approx",
+          "band",
+          "range"
+        ],
+        "properties": {},
+        "title": "MoneyPrecision",
+        "type": "string"
       },
       "NationalitiesClaimSpec": {
         "additionalProperties": false,
@@ -11547,6 +13420,44 @@
         "title": "OrderType",
         "type": "string"
       },
+      "OwnIncomeSource": {
+        "enum": [
+          "salary",
+          "business",
+          "pension",
+          "rental_income",
+          "dividends",
+          "interest",
+          "other"
+        ],
+        "properties": {},
+        "title": "OwnIncomeSource",
+        "type": "string"
+      },
+      "PaiTheme": {
+        "enum": [
+          "greenhouse_gas_emissions",
+          "biodiversity",
+          "water_and_waste",
+          "workers_and_social_matters",
+          "human_rights",
+          "corruption_and_bribery"
+        ],
+        "properties": {},
+        "title": "PaiTheme",
+        "type": "string"
+      },
+      "PastService": {
+        "enum": [
+          "execution_only",
+          "investment_advice",
+          "discretionary_asset_management",
+          "none"
+        ],
+        "properties": {},
+        "title": "PastService",
+        "type": "string"
+      },
       "PepStatusClaimSpec": {
         "additionalProperties": false,
         "description": "Politically exposed person status and associations.",
@@ -12164,6 +14075,759 @@
         "title": "PlaceOrderRequest",
         "type": "object"
       },
+      "PlanningFutureExpenseClaimSpec-Input": {
+        "additionalProperties": false,
+        "description": "One kind of major expense the person expects; or that they expect nothing\nsignificant.",
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "claim_type": {
+            "const": "planning.future_expense",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/FutureExpenseKind"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          }
+        },
+        "required": [
+          "claim_type",
+          "kind"
+        ],
+        "title": "PlanningFutureExpenseClaimSpec",
+        "type": "object"
+      },
+      "PlanningFutureExpenseClaimSpec-Output": {
+        "additionalProperties": false,
+        "description": "One kind of major expense the person expects; or that they expect nothing\nsignificant.",
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "claim_type": {
+            "const": "planning.future_expense",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/FutureExpenseKind"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          }
+        },
+        "required": [
+          "claim_type",
+          "kind"
+        ],
+        "title": "PlanningFutureExpenseClaimSpec",
+        "type": "object"
+      },
+      "PlanningFutureExpenseClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "planning.future_expense",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/FutureExpenseKind"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          }
+        },
+        "required": [
+          "claim_type",
+          "kind"
+        ],
+        "title": "PlanningFutureExpenseClaimWriteRequest",
+        "type": "object"
+      },
+      "PlanningFutureInflowClaimSpec": {
+        "additionalProperties": false,
+        "description": "One kind of money the person expects to receive; or that they expect none.",
+        "properties": {
+          "claim_type": {
+            "const": "planning.future_inflow",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/FutureInflowKind"
+          }
+        },
+        "required": [
+          "claim_type",
+          "kind"
+        ],
+        "title": "PlanningFutureInflowClaimSpec",
+        "type": "object"
+      },
+      "PlanningFutureInflowClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "planning.future_inflow",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/FutureInflowKind"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          }
+        },
+        "required": [
+          "claim_type",
+          "kind"
+        ],
+        "title": "PlanningFutureInflowClaimWriteRequest",
+        "type": "object"
+      },
+      "PlanningGoalClaimSpec-Input": {
+        "additionalProperties": false,
+        "description": "One thing the person is investing for, with its target, time and how they would\nhandle it.",
+        "properties": {
+          "claim_type": {
+            "const": "planning.goal",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "contribution": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalContribution-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "currency": {
+            "$ref": "#/components/schemas/GoalCurrency",
+            "default": "EUR"
+          },
+          "early_need": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EarlyNeedLikelihood"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "horizon": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalHorizon"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "importance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalImportance"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "initial_amount": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "purpose": {
+            "title": "Purpose",
+            "type": "string"
+          },
+          "return_hoped_for": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Hoped For"
+          },
+          "shortfall_responses": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/GoalShortfallResponse"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shortfall Responses"
+          },
+          "target_amount": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "target_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Date"
+          },
+          "target_kind": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalTargetKind"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "withdrawal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalWithdrawal"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "claim_type",
+          "purpose"
+        ],
+        "title": "PlanningGoalClaimSpec",
+        "type": "object"
+      },
+      "PlanningGoalClaimSpec-Output": {
+        "additionalProperties": false,
+        "description": "One thing the person is investing for, with its target, time and how they would\nhandle it.",
+        "properties": {
+          "claim_type": {
+            "const": "planning.goal",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "contribution": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalContribution-Output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "currency": {
+            "$ref": "#/components/schemas/GoalCurrency",
+            "default": "EUR"
+          },
+          "early_need": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EarlyNeedLikelihood"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "horizon": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalHorizon"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "importance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalImportance"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "initial_amount": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "purpose": {
+            "title": "Purpose",
+            "type": "string"
+          },
+          "return_hoped_for": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Hoped For"
+          },
+          "shortfall_responses": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/GoalShortfallResponse"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shortfall Responses"
+          },
+          "target_amount": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "target_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Date"
+          },
+          "target_kind": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalTargetKind"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "withdrawal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalWithdrawal"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "claim_type",
+          "purpose"
+        ],
+        "title": "PlanningGoalClaimSpec",
+        "type": "object"
+      },
+      "PlanningGoalClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "planning.goal",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "contribution": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalContribution-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "currency": {
+            "$ref": "#/components/schemas/GoalCurrency",
+            "default": "EUR"
+          },
+          "early_need": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EarlyNeedLikelihood"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "horizon": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalHorizon"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "importance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalImportance"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "initial_amount": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "purpose": {
+            "title": "Purpose",
+            "type": "string"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          },
+          "return_hoped_for": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Hoped For"
+          },
+          "shortfall_responses": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/GoalShortfallResponse"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shortfall Responses"
+          },
+          "target_amount": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "target_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Date"
+          },
+          "target_kind": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalTargetKind"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "withdrawal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalWithdrawal"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "claim_type",
+          "purpose"
+        ],
+        "title": "PlanningGoalClaimWriteRequest",
+        "type": "object"
+      },
+      "PlanningIntendedInvestmentClaimSpec": {
+        "additionalProperties": false,
+        "description": "How much the person is considering investing with Sophic, as a band.",
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/EurAmountBand"
+          },
+          "claim_type": {
+            "const": "planning.intended_investment",
+            "title": "Claim Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "claim_type",
+          "amount"
+        ],
+        "title": "PlanningIntendedInvestmentClaimSpec",
+        "type": "object"
+      },
+      "PlanningIntendedInvestmentClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/EurAmountBand"
+          },
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "planning.intended_investment",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          }
+        },
+        "required": [
+          "claim_type",
+          "amount"
+        ],
+        "title": "PlanningIntendedInvestmentClaimWriteRequest",
+        "type": "object"
+      },
       "PlanningPriority": {
         "enum": [
           "grow_wealth",
@@ -12171,7 +14835,9 @@
           "home",
           "support_family",
           "income",
-          "preserve_wealth"
+          "preserve_wealth",
+          "exploring",
+          "other"
         ],
         "properties": {},
         "title": "PlanningPriority",
@@ -12799,6 +15465,145 @@
           "asof"
         ],
         "title": "PositionValuation",
+        "type": "object"
+      },
+      "PreferencesSustainabilityClaimSpec": {
+        "additionalProperties": false,
+        "description": "The person's sustainability preferences for their investments.",
+        "properties": {
+          "claim_type": {
+            "const": "preferences.sustainability",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "eu_taxonomy_min": {
+            "$ref": "#/components/schemas/SustainabilityMinimum"
+          },
+          "explanation_confirmed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation Confirmed"
+          },
+          "pai_consideration": {
+            "title": "Pai Consideration",
+            "type": "boolean"
+          },
+          "pai_themes": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/PaiTheme"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pai Themes"
+          },
+          "sfdr_sustainable_min": {
+            "$ref": "#/components/schemas/SustainabilityMinimum"
+          }
+        },
+        "required": [
+          "claim_type",
+          "eu_taxonomy_min",
+          "sfdr_sustainable_min",
+          "pai_consideration"
+        ],
+        "title": "PreferencesSustainabilityClaimSpec",
+        "type": "object"
+      },
+      "PreferencesSustainabilityClaimWriteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "based_on": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The version number you read. When the claim has moved on, nothing is written and the response is 409.",
+            "examples": [
+              2
+            ],
+            "title": "Based On"
+          },
+          "claim_type": {
+            "const": "preferences.sustainability",
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "eu_taxonomy_min": {
+            "$ref": "#/components/schemas/SustainabilityMinimum"
+          },
+          "explanation_confirmed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation Confirmed"
+          },
+          "pai_consideration": {
+            "title": "Pai Consideration",
+            "type": "boolean"
+          },
+          "pai_themes": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/PaiTheme"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pai Themes"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your own reference for the value, kept with its source.",
+            "examples": [
+              "crm-update-8812"
+            ],
+            "title": "Reference"
+          },
+          "sfdr_sustainable_min": {
+            "$ref": "#/components/schemas/SustainabilityMinimum"
+          }
+        },
+        "required": [
+          "claim_type",
+          "eu_taxonomy_min",
+          "sfdr_sustainable_min",
+          "pai_consideration"
+        ],
+        "title": "PreferencesSustainabilityClaimWriteRequest",
         "type": "object"
       },
       "Price": {
@@ -13952,6 +16757,17 @@
         "title": "RelationshipsPersonClaimSummary",
         "type": "object"
       },
+      "ReserveMonths": {
+        "enum": [
+          "lt_3m",
+          "3_6m",
+          "6_12m",
+          "gt_12m"
+        ],
+        "properties": {},
+        "title": "ReserveMonths",
+        "type": "string"
+      },
       "ReservedDenomination": {
         "enum": [
           "cash",
@@ -14660,6 +17476,17 @@
         "title": "SubmitOnboardingApplicationRequest",
         "type": "object"
       },
+      "SustainabilityMinimum": {
+        "enum": [
+          "none",
+          "10",
+          "25",
+          "50"
+        ],
+        "properties": {},
+        "title": "SustainabilityMinimum",
+        "type": "string"
+      },
       "SyntheticRiskIndicator": {
         "enum": [
           1,
@@ -14843,6 +17670,18 @@
         ],
         "properties": {},
         "title": "TinExemptionReason",
+        "type": "string"
+      },
+      "TradeFrequency": {
+        "enum": [
+          "never",
+          "rarely",
+          "occasionally",
+          "frequently",
+          "very_frequently"
+        ],
+        "properties": {},
+        "title": "TradeFrequency",
         "type": "string"
       },
       "TradingConfiguration": {
@@ -15398,6 +18237,19 @@
         ],
         "title": "ValuationHistory",
         "type": "object"
+      },
+      "WealthAssetClass": {
+        "enum": [
+          "main_home",
+          "other_property",
+          "cash",
+          "traded_securities",
+          "other",
+          "pension"
+        ],
+        "properties": {},
+        "title": "WealthAssetClass",
+        "type": "string"
       },
       "Webhook": {
         "properties": {
@@ -19046,7 +21898,61 @@
                     "$ref": "#/components/schemas/BusinessNatureClaimWriteRequest"
                   },
                   {
+                    "$ref": "#/components/schemas/IndicativeAgeClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/IndicativeLiquidAssetsClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ExperienceGeneralClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ExperiencePastDownturnClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FinancesIncomeClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FinancesExpenseClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FinancesAssetClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FinancesLiabilityClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FinancesEmergencyReserveClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FinancesSourceOfWealthClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/HouseholdMaritalStatusClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/HouseholdDependantClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/HouseholdIncomeClaimWriteRequest"
+                  },
+                  {
                     "$ref": "#/components/schemas/PlanningPriorityClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PlanningGoalClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PlanningFutureExpenseClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PlanningFutureInflowClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PlanningIntendedInvestmentClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PreferencesSustainabilityClaimWriteRequest"
                   }
                 ],
                 "description": "The claim value, discriminated by claim_type.",
@@ -19407,7 +22313,61 @@
                     "$ref": "#/components/schemas/BusinessNatureClaimWriteRequest"
                   },
                   {
+                    "$ref": "#/components/schemas/IndicativeAgeClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/IndicativeLiquidAssetsClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ExperienceGeneralClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ExperiencePastDownturnClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FinancesIncomeClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FinancesExpenseClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FinancesAssetClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FinancesLiabilityClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FinancesEmergencyReserveClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FinancesSourceOfWealthClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/HouseholdMaritalStatusClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/HouseholdDependantClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/HouseholdIncomeClaimWriteRequest"
+                  },
+                  {
                     "$ref": "#/components/schemas/PlanningPriorityClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PlanningGoalClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PlanningFutureExpenseClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PlanningFutureInflowClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PlanningIntendedInvestmentClaimWriteRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PreferencesSustainabilityClaimWriteRequest"
                   }
                 ],
                 "description": "The claim value, discriminated by claim_type.",
