@@ -10073,7 +10073,8 @@
         "enum": [
           "approved",
           "rejected",
-          "expired"
+          "expired",
+          "withdrawn"
         ],
         "properties": {},
         "title": "OnboardingApplicationOutcome",
@@ -10137,8 +10138,10 @@
       },
       "OnboardingApplicationStatus": {
         "enum": [
+          "collecting",
           "pending",
           "processing",
+          "in_review",
           "completed"
         ],
         "properties": {},
