@@ -8,6 +8,16 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
 
+<Update label="November 9, 2026" description="additions">
+  ## Record what a person wants their money to help with
+
+  You can now record planning priorities for a natural person, one claim per priority.
+
+  **Added**
+  - `planning.priority` claim type, carrying a `priority` of `grow_wealth`, `retirement`, `home`, `support_family`, `income`, or `preserve_wealth`. You can send it to [Create a person](/api-reference/customers/create-a-person), [Write a claim value for a person](/api-reference/customers/write-a-claim-value-for-a-person), and [Add a version to a claim](/api-reference/customers/add-a-version-to-a-claim), and you'll see it from [List claims for a person](/api-reference/customers/list-claims-for-a-person) and [Retrieve a person claim](/api-reference/customers/retrieve-a-person-claim).
+  - A person can hold several `planning.priority` claims at once, one per priority item. Writing the same `priority` again targets that item's claim instead of creating another one, so repeat writes add a confirming source to its latest version. `based_on` on writes and archives, and `Idempotency-Key` on writes, apply to the individual priority claim rather than every `planning.priority` claim on the person.
+</Update>
+
 <Update label="November 8, 2026" description="additions">
   ## Claim sources show when they were recorded
 
