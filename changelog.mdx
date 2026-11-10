@@ -9,6 +9,18 @@ Track what's new and what's changed in our API. We publish an entry for every us
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.engine.usesophic.com/changelog/rss.xml).
 
 <Update label="November 10, 2026" description="additions">
+  ## Onboarding approvals now verify claims and complete the application
+
+  When your reviewer approves a person on an onboarding application, the claim values they approved now read as verified, and the application completes on its own once everyone is verified.
+
+  **Changed**
+  - Claim values pushed for review now show `status: verified` with `verified_at` set, and surface under `latest_verified_version`, once the person is approved. A value edited after it was pushed stays `unverified`: only what the reviewer saw is verified. Visible on [List claims for a person](/api-reference/customers/list-claims-for-a-person), [Retrieve a person claim](/api-reference/customers/retrieve-a-person-claim) and [List a claim's versions](/api-reference/customers/list-a-claims-versions).
+  - An application completes by itself once every person on it has their required claims verified: [Retrieve an onboarding application](/api-reference/onboarding/retrieve-an-onboarding-application) reads `status: completed` with `outcome: approved`, and the customer and account already exist by then.
+  - On a business application, signatories that aren't listed on the company's `relationships` claim are added as `authorised_signatory` related persons in a new version during the review push. You'll see the extra version on [List a claim's versions](/api-reference/customers/list-a-claims-versions).
+  - The business customer opened on completion now grants `signatory` authority to every signatory on the application, not only the primary one. Check `authorities` on [Retrieve a customer](/api-reference/customers/retrieve-a-customer) and [List authorities for a person](/api-reference/customers/list-authorities-for-a-person).
+</Update>
+
+<Update label="November 10, 2026" description="additions">
   ## Owed fees are now collected from more cash inflows
 
   **Changed**
