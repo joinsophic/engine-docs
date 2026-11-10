@@ -55,6 +55,7 @@ test("slugify keeps ampersands and collapses other punctuation like Mintlify", (
     "retrieve-account-returns-mwrr-twrr",
   );
   assert.equal(slugify("List on-the-run bills"), "list-on-the-run-bills");
+  assert.equal(slugify("List a claim's versions"), "list-a-claims-versions");
 });
 
 test("buildEndpointIndex uses tag and summary slugs", () => {
