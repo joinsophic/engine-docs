@@ -13,6 +13,7 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
 
   **Changed**
   - When a cash credit lands on an account balance, we now collect any fees the account owes on FX conversions, coupon payments, merger cash legs and book transfers in, in the received currency. Previously only deposits, maturities and sell fills triggered collection. You'll see the extra collection events in `collections` and `collected_at` on [Retrieve a fee charge](/api-reference/billing/retrieve-a-fee-charge), and as fee transactions on [List account transactions](/api-reference/activity/list-account-transactions). Nothing is collected when the account owes nothing, and credits that land on a managed portfolio's residual still collect nothing.
+  - ETF cash buys no longer wait on a same-day quote. When you place a market buy with a `cash_amount` on an ETF, we now size the order on the previous weekday's close at its listing exchange (in the exchange's time zone), instead of refusing or stalling while its quote is older than a few minutes. ETF quotes only refresh once a day, so a Monday order sizes on Friday's close. Other instrument types still size on a fresh quote. You'll see the difference in the `quantity` an ETF order reserves, on [Retrieve an order](/api-reference/trading/retrieve-an-order) and [List orders](/api-reference/trading/list-orders).
 </Update>
 
 <Update label="November 9, 2026" description="additions">
