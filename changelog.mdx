@@ -8,6 +8,16 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.engine.usesophic.com/changelog/rss.xml).
 
+<Update label="November 11, 2026" description="additions">
+  ## More values on investing experience and goal claims
+
+  **Added**
+  - `asset_classes` on `investment_experience` claims now accepts `hedge_funds`, `private_equity` and `commodities`.
+  - `contribution.frequency` on `planning.goal` claims now accepts `quarterly`, `semi_annual` and `ad_hoc`.
+
+  Both are accepted anywhere you write these claims: [Create a person](/api-reference/customers/create-a-person), [Write a claim value for a person](/api-reference/customers/write-a-claim-value-for-a-person) and [Add a version to a claim](/api-reference/customers/add-a-version-to-a-claim).
+</Update>
+
 <Update label="November 10, 2026" description="additions">
   ## Onboarding approvals now verify claims and complete the application
 
