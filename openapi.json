@@ -4795,13 +4795,15 @@
       },
       "DepositStatus": {
         "enum": [
+          "initiated",
           "open",
           "pending",
           "held",
           "returning",
           "completed",
           "returned",
-          "cancelled"
+          "cancelled",
+          "abandoned"
         ],
         "properties": {},
         "title": "DepositStatus",
