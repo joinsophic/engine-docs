@@ -3338,7 +3338,10 @@
           "fx",
           "cfds",
           "derivatives",
-          "crypto"
+          "crypto",
+          "hedge_funds",
+          "private_equity",
+          "commodities"
         ],
         "properties": {},
         "title": "ClaimAssetClass",
@@ -4048,7 +4051,10 @@
       "ContributionFrequency": {
         "enum": [
           "monthly",
+          "quarterly",
+          "semi_annual",
           "annual",
+          "ad_hoc",
           "other"
         ],
         "properties": {},
