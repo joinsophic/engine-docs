@@ -18,6 +18,15 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.eng
   Both are accepted anywhere you write these claims: [Create a person](/api-reference/customers/create-a-person), [Write a claim value for a person](/api-reference/customers/write-a-claim-value-for-a-person) and [Add a version to a claim](/api-reference/customers/add-a-version-to-a-claim).
 </Update>
 
+<Update label="November 11, 2026" description="additions">
+  ## Deposit status gains initiated and abandoned
+
+  We're adding pay by bank as a way to fund accounts. A deposit started through it waits on the customer's bank approval before it opens.
+
+  **Added**
+  - `status` on a deposit can now read `initiated` (a pay-by-bank payment awaiting the customer's approval at their bank) or `abandoned` (the attempt ended before approval). A deposit that makes it past approval follows the statuses you already know. Visible on [Retrieve a deposit](/api-reference/payments/retrieve-a-deposit).
+</Update>
+
 <Update label="November 10, 2026" description="additions">
   ## Onboarding approvals now verify claims and complete the application
 
