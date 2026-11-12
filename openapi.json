@@ -12735,6 +12735,7 @@
           "user_request",
           "rollover",
           "square_off",
+          "fx_hedge",
           "backfill",
           "portfolio_allocation"
         ],
