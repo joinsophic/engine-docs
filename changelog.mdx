@@ -8,6 +8,15 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.engine.usesophic.com/changelog/rss.xml).
 
+<Update label="November 12, 2026" description="2026-11-08">
+  ## Placing an order now checks customer eligibility
+
+  <Info>New API version `2026-11-08`. See [Versioning](/api-reference/versioning) to migrate.</Info>
+
+  **Breaking**
+  - [Place an order](/api-reference/trading/place-an-order) now validates the account customer's eligibility to buy the instrument on user-requested security buys. An ineligible customer gets a 403 `customer_not_eligible`; a customer eligible with a warning must send `accepted_appropriateness_warning` or gets a 400 `appropriateness_warning_not_accepted`. Quotes are unchanged: [Get an order quote](/api-reference/trading/get-an-order-quote) still prices the order without enforcing eligibility.
+</Update>
+
 <Update label="November 11, 2026" description="additions">
   ## More values on investing experience and goal claims
 
