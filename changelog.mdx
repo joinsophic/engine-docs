@@ -8,6 +8,16 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.engine.usesophic.com/changelog/rss.xml).
 
+<Update label="November 12, 2026" description="additions">
+  ## Orders gain an fx_hedge purpose, and FX trades can wait on hedges to settle
+
+  **Added**
+  - `purpose` on an order can now read `fx_hedge`: an order we place ourselves to bring our own FX buffers back to target, netting many client currency exchanges.
+
+  **Changed**
+  - A currency-pair trade can now stay unsettled until the FX hedges covering it settle (or its buffer is topped back up), so `settled_at` on the trade stays `null` while it waits. Previously a client FX trade settled on its value date regardless. Visible on [Retrieve an order](/api-reference/trading/retrieve-an-order) and [List orders](/api-reference/trading/list-orders).
+</Update>
+
 <Update label="November 12, 2026" description="2026-11-08">
   ## Placing an order now checks customer eligibility
 
