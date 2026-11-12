@@ -10,6 +10,10 @@ export const errorCodes = [
     "detail": "The Api-Version header refers to a version that is not supported."
   },
   {
+    "code": "appropriateness_warning_not_accepted",
+    "detail": "Accept the appropriateness warning before buying this instrument."
+  },
+  {
     "code": "buy_order_forbidden",
     "detail": "Buy orders are not enabled for this account."
   },
@@ -40,6 +44,10 @@ export const errorCodes = [
   {
     "code": "currency_not_supported",
     "detail": "The requested currency is not supported for this account."
+  },
+  {
+    "code": "customer_not_eligible",
+    "detail": "The customer is not eligible to buy this instrument."
   },
   {
     "code": "deposit_advance_forbidden",
