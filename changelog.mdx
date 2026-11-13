@@ -15,16 +15,6 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.eng
   - An account accruing more than one recurring fee had every fee run fail, so none of its recurring fees were ever charged. Runs now build and charge each recurring fee separately, so all of them land. You'll see the charges in `collections` and `collected_at` on [Retrieve a fee charge](/api-reference/billing/retrieve-a-fee-charge), and as fee transactions on [List account transactions](/api-reference/activity/list-account-transactions). Accounts with a single recurring fee were already charged correctly and are unchanged.
 </Update>
 
-<Update label="November 12, 2026" description="additions">
-  ## Orders gain an fx_hedge purpose, and FX trades can wait on hedges to settle
-
-  **Added**
-  - `purpose` on an order can now read `fx_hedge`: an order we place ourselves to bring our own FX buffers back to target, netting many client currency exchanges.
-
-  **Changed**
-  - A currency-pair trade can now stay unsettled until the FX hedges covering it settle (or its buffer is topped back up), so `settled_at` on the trade stays `null` while it waits. Previously a client FX trade settled on its value date regardless. Visible on [Retrieve an order](/api-reference/trading/retrieve-an-order) and [List orders](/api-reference/trading/list-orders).
-</Update>
-
 <Update label="November 12, 2026" description="2026-11-08">
   ## Placing an order now checks customer eligibility
 
