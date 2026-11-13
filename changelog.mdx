@@ -6,7 +6,105 @@ rss: true
 
 Track what's new and what's changed in our API. We publish an entry for every user-facing change, and we're explicit about whether a change is backwards compatible or requires a new [API version](/api-reference/versioning).
 
-Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.xml).
+Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.engine.usesophic.com/changelog/rss.xml).
+
+<Update label="November 13, 2026" description="additions">
+  ## Recurring fee runs charge every recurring fee on an account
+
+  **Fixed**
+  - An account accruing more than one recurring fee had every fee run fail, so none of its recurring fees were ever charged. Runs now build and charge each recurring fee separately, so all of them land. You'll see the charges in `collections` and `collected_at` on [Retrieve a fee charge](/api-reference/billing/retrieve-a-fee-charge), and as fee transactions on [List account transactions](/api-reference/activity/list-account-transactions). Accounts with a single recurring fee were already charged correctly and are unchanged.
+</Update>
+
+<Update label="November 12, 2026" description="2026-11-08">
+  ## Placing an order now checks customer eligibility
+
+  <Info>New API version `2026-11-08`. See [Versioning](/api-reference/versioning) to migrate.</Info>
+
+  **Breaking**
+  - [Place an order](/api-reference/trading/place-an-order) now validates the account customer's eligibility to buy the instrument on user-requested security buys. An ineligible customer gets a 403 `customer_not_eligible`; a customer eligible with a warning must send `accepted_appropriateness_warning` or gets a 400 `appropriateness_warning_not_accepted`. Quotes are unchanged: [Get an order quote](/api-reference/trading/get-an-order-quote) still prices the order without enforcing eligibility.
+</Update>
+
+<Update label="November 11, 2026" description="additions">
+  ## More values on investing experience and goal claims
+
+  **Added**
+  - `asset_classes` on `investment_experience` claims now accepts `hedge_funds`, `private_equity` and `commodities`.
+  - `contribution.frequency` on `planning.goal` claims now accepts `quarterly`, `semi_annual` and `ad_hoc`.
+
+  Both are accepted anywhere you write these claims: [Create a person](/api-reference/customers/create-a-person), [Write a claim value for a person](/api-reference/customers/write-a-claim-value-for-a-person) and [Add a version to a claim](/api-reference/customers/add-a-version-to-a-claim).
+</Update>
+
+<Update label="November 11, 2026" description="additions">
+  ## Deposit status gains initiated and abandoned
+
+  We're adding pay by bank as a way to fund accounts. A deposit started through it waits on the customer's bank approval before it opens.
+
+  **Added**
+  - `status` on a deposit can now read `initiated` (a pay-by-bank payment awaiting the customer's approval at their bank) or `abandoned` (the attempt ended before approval). A deposit that makes it past approval follows the statuses you already know. Visible on [Retrieve a deposit](/api-reference/payments/retrieve-a-deposit).
+</Update>
+
+<Update label="November 10, 2026" description="additions">
+  ## Onboarding approvals now verify claims and complete the application
+
+  When your reviewer approves a person on an onboarding application, the claim values they reviewed become verified, and the application completes on its own once everyone on it is verified.
+
+  **Changed**
+  - Approving a person marks each claim value that was sent for review as verified: the version keeps its number and now reads `status: verified` with `verified_at` set, and shows under `latest_verified_version`. A value you changed after the application was submitted stays `unverified`, because the reviewer didn't see it. Claims that aren't part of the review, such as `finances.*`, `household.*` and `planning.*`, are not verified by approval. Visible on [List claims for a person](/api-reference/customers/list-claims-for-a-person), [Retrieve a person claim](/api-reference/customers/retrieve-a-person-claim) and [List a claim's versions](/api-reference/customers/list-a-claims-versions).
+  - An application stays `processing` while anyone on it is still waiting for approval. Once every person's required claims are verified, it completes by itself: [Retrieve an onboarding application](/api-reference/onboarding/retrieve-an-onboarding-application) reads `status: completed` with `outcome: approved`, and the customer and account have been opened.
+</Update>
+
+<Update label="November 10, 2026" description="additions">
+  ## Owed fees are now collected from more cash inflows
+
+  **Changed**
+  - When a cash credit lands on an account balance, we now collect any fees the account owes on FX conversions, coupon payments, merger cash legs and book transfers in, in the received currency. Previously only deposits, maturities and sell fills triggered collection. You'll see the extra collection events in `collections` and `collected_at` on [Retrieve a fee charge](/api-reference/billing/retrieve-a-fee-charge), and as fee transactions on [List account transactions](/api-reference/activity/list-account-transactions). Nothing is collected when the account owes nothing, and credits that land on a managed portfolio's residual still collect nothing.
+  - ETF cash buys no longer wait on a same-day quote. When you place a market buy with a `cash_amount` on an ETF, we now size the order on the previous weekday's close at its listing exchange (in the exchange's time zone), instead of refusing or stalling while its quote is older than a few minutes. ETF quotes only refresh once a day, so a Monday order sizes on Friday's close. Other instrument types still size on a fresh quote. You'll see the difference in the `quantity` an ETF order reserves, on [Retrieve an order](/api-reference/trading/retrieve-an-order) and [List orders](/api-reference/trading/list-orders).
+</Update>
+
+<Update label="November 9, 2026" description="additions">
+  ## FX trades settle on their value date, and ETF prices carry honest quality labels
+
+  Currency conversions now behave like spot FX, and price quotes tell you how fresh they really are.
+
+  **Changed**
+  - A currency-pair trade now carries a `settlement_date` (its spot value date) and settles on that date.
+  - `quality` on [Retrieve prices](/api-reference/market-data/retrieve-prices) now reports `delayed` for intraday ETF quotes (lagging at least 15 minutes) and `closing` for quotes that are the listing venue's previous close, instead of `realtime`. Existing stored prices keep their label until they're refreshed.
+</Update>
+
+<Update label="November 9, 2026" description="additions">
+  ## A fuller picture of the person: advice claim types
+
+  You can now record a natural person's finances, household, investing experience and preferences as claims, alongside their planning priorities.
+
+  **Added**
+  - Seventeen new claim types on the claim routes, for natural persons: `indicative.age` and `indicative.liquid_assets` (self-reported age and savings band), `experience.general` and `experience.past_downturn` (investing history and behaviour in a market fall), `finances.income`, `finances.expense`, `finances.asset`, `finances.liability`, `finances.emergency_reserve` and `finances.source_of_wealth`, `household.marital_status`, `household.dependant` and `household.income`, `planning.goal`, `planning.future_expense`, `planning.future_inflow` and `planning.intended_investment`, and `preferences.sustainability`. Send them to [Create a person](/api-reference/customers/create-a-person), [Write a claim value for a person](/api-reference/customers/write-a-claim-value-for-a-person) and [Add a version to a claim](/api-reference/customers/add-a-version-to-a-claim), and read them back from [List claims for a person](/api-reference/customers/list-claims-for-a-person) and [Retrieve a person claim](/api-reference/customers/retrieve-a-person-claim).
+  - Like `planning.priority`, several of these are per-item: a person can hold several `experience.past_downturn`, `finances.asset`, `household.dependant`, `planning.goal`, `planning.future_expense` and `planning.future_inflow` claims at once, and `finances.asset`, `household.dependant`, `planning.future_expense` and `planning.future_inflow` match repeat writes onto the same item (`asset_class` or `kind`). `based_on` on writes and archives, and `Idempotency-Key` on writes, apply to the individual claim.
+  - `planning.priority` now also accepts `exploring` and `other` as a `priority`.
+</Update>
+
+<Update label="November 9, 2026" description="additions">
+  ## Record what a person wants their money to help with
+
+  You can now record planning priorities for a natural person, one claim per priority.
+
+  **Added**
+  - `planning.priority` claim type, carrying a `priority` of `grow_wealth`, `retirement`, `home`, `support_family`, `income`, or `preserve_wealth`. You can send it to [Create a person](/api-reference/customers/create-a-person), [Write a claim value for a person](/api-reference/customers/write-a-claim-value-for-a-person), and [Add a version to a claim](/api-reference/customers/add-a-version-to-a-claim), and you'll see it from [List claims for a person](/api-reference/customers/list-claims-for-a-person) and [Retrieve a person claim](/api-reference/customers/retrieve-a-person-claim).
+  - A person can hold several `planning.priority` claims at once, one per priority item. Writing the same `priority` again targets that item's claim instead of creating another one, so repeat writes add a confirming source to its latest version. `based_on` on writes and archives, and `Idempotency-Key` on writes, apply to the individual priority claim rather than every `planning.priority` claim on the person.
+</Update>
+
+<Update label="November 8, 2026" description="additions">
+  ## Claim sources show when they were recorded
+
+  **Added**
+  - `created_at` on each entry in a claim version's `sources`: when the source was recorded on the version. A `confirms` source is recorded after the version was written, so its `created_at` reads later than the version's own. Returned wherever claim versions come back, including [List claims for a person](/api-reference/customers/list-claims-for-a-person), [Retrieve a person claim](/api-reference/customers/retrieve-a-person-claim), [Write a claim value for a person](/api-reference/customers/write-a-claim-value-for-a-person), [Add a version to a claim](/api-reference/customers/add-a-version-to-a-claim) and [List a claim's versions](/api-reference/customers/list-a-claims-versions).
+</Update>
+
+<Update label="November 6, 2026" description="additions">
+  ## Fee charges settled by refunds now show as collected
+
+  **Fixed**
+  - `collected_at` on [Retrieve a fee charge](/api-reference/billing/retrieve-a-fee-charge) is now set when a charge is paid off by a mix of collections and refunds, stamped with the moment the collection or refund cleared it. A charge partly refunded and partly collected used to stay `null` and read as uncollected forever. A charge refunded in full before any payment still counts as uncollected.
+</Update>
 
 <Update label="November 5, 2026" description="2026-11-04">
   ## Claims now carry their versions, and you can archive a claim
@@ -22,7 +120,7 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](/changelog/rss.x
 
   **Added**
   - [Add a version to a claim](/api-reference/customers/add-a-version-to-a-claim) (`POST /persons/{person_id}/claims/{claim_id}/versions`) writes a new value to an existing claim. Claim writes accept `based_on` and `reference` beside the value, and an `Idempotency-Key` header.
-  - [List a claim's versions](/api-reference/customers/list-a-claim-s-versions) (`GET /persons/{person_id}/claims/{claim_id}/versions`) returns every version, highest number first.
+  - [List a claim's versions](/api-reference/customers/list-a-claims-versions) (`GET /persons/{person_id}/claims/{claim_id}/versions`) returns every version, highest number first.
   - [Archive a claim](/api-reference/customers/archive-a-claim) (`DELETE /persons/{person_id}/claims/{claim_id}`) retires a claim that no longer applies. Its versions are kept, and a later value of the same type starts a new claim. `identity`, `nationalities`, `residence`, `tax_residencies`, `contact_details` and `registration` can't be archived (`is_archivable: false`).
   - New error codes on the claim routes: `claim_version_conflict` (409, the claim moved on from the version in `based_on`), `claim_type_mismatch` (400, the value is for another claim type or the claim is archived), and `claim_archive_not_allowed` (400, a person of this type must have the claim, or it is already archived).
 </Update>

@@ -1,5 +1,5 @@
 {
-  "api_version": "2026-11-04",
+  "api_version": "2026-11-08",
   "error_codes": [
     {
       "code": "api_version_invalid",
@@ -10,12 +10,16 @@
       "detail": "The Api-Version header refers to a version that is not supported."
     },
     {
+      "code": "appropriateness_warning_not_accepted",
+      "detail": "Accept the appropriateness warning before buying this instrument."
+    },
+    {
       "code": "buy_order_forbidden",
       "detail": "Buy orders are not enabled for this account."
     },
     {
       "code": "claim_archive_not_allowed",
-      "detail": "The claim cannot be archived: a person of this type must have it, or it is already archived."
+      "detail": "This claim type cannot be archived, or the claim is already archived."
     },
     {
       "code": "claim_type_mismatch",
@@ -40,6 +44,10 @@
     {
       "code": "currency_not_supported",
       "detail": "The requested currency is not supported for this account."
+    },
+    {
+      "code": "customer_not_eligible",
+      "detail": "The customer is not eligible to buy this instrument."
     },
     {
       "code": "deposit_advance_forbidden",
@@ -238,7 +246,7 @@
       "detail": "Withdrawals are not enabled for this account."
     }
   ],
-  "openapi_sha256": "a5e067208f9ae5886bcb022b9fcdeea23561708c44760381ee2cfebbb551434b",
+  "openapi_sha256": "1b310e88bcfd906d87281d046f57094da591732e294e4da2df78c0a232ee60e3",
   "schema_version": 1,
   "webhook_events": [
     {
