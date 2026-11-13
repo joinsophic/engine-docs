@@ -8,6 +8,13 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.engine.usesophic.com/changelog/rss.xml).
 
+<Update label="November 13, 2026" description="additions">
+  ## Recurring fee runs charge every recurring fee on an account
+
+  **Fixed**
+  - An account accruing more than one recurring fee had every fee run fail, so none of its recurring fees were ever charged. Runs now build and charge each recurring fee separately, so all of them land. You'll see the charges in `collections` and `collected_at` on [Retrieve a fee charge](/api-reference/billing/retrieve-a-fee-charge), and as fee transactions on [List account transactions](/api-reference/activity/list-account-transactions). Accounts with a single recurring fee were already charged correctly and are unchanged.
+</Update>
+
 <Update label="November 12, 2026" description="additions">
   ## Orders gain an fx_hedge purpose, and FX trades can wait on hedges to settle
 
