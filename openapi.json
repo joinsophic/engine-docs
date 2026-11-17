@@ -17370,6 +17370,7 @@
       "Service": {
         "properties": {
           "id": {
+            "description": "ID of the service actor the token was issued to.",
             "title": "Id",
             "type": "string"
           }
