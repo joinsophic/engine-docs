@@ -13013,7 +13013,7 @@
         "description": "What a placement referencing this quote would set aside.",
         "properties": {
           "amount": {
-            "description": "Amount a placement would reserve: a cash amount on a buy, a unit quantity on a sell — see `denomination`.",
+            "description": "Amount a placement would reserve: a cash amount on a buy, a unit quantity on a sell; see `denomination`.",
             "examples": [
               "1000.00"
             ],
