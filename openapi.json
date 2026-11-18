@@ -9174,6 +9174,16 @@
         "title": "GoalCurrency",
         "type": "string"
       },
+      "GoalDateFlexibility": {
+        "enum": [
+          "fixed",
+          "up_to_1y_later",
+          "over_1y_later"
+        ],
+        "properties": {},
+        "title": "GoalDateFlexibility",
+        "type": "string"
+      },
       "GoalHorizon": {
         "enum": [
           "lt_1y",
@@ -14334,6 +14344,16 @@
             "$ref": "#/components/schemas/GoalCurrency",
             "default": "EUR"
           },
+          "date_flexibility": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalDateFlexibility"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "early_need": {
             "anyOf": [
               {
@@ -14434,6 +14454,17 @@
                 "type": "null"
               }
             ]
+          },
+          "target_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Year"
           },
           "withdrawal": {
             "anyOf": [
@@ -14476,6 +14507,16 @@
             "$ref": "#/components/schemas/GoalCurrency",
             "default": "EUR"
           },
+          "date_flexibility": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalDateFlexibility"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "early_need": {
             "anyOf": [
               {
@@ -14576,6 +14617,17 @@
                 "type": "null"
               }
             ]
+          },
+          "target_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Year"
           },
           "withdrawal": {
             "anyOf": [
@@ -14632,6 +14684,16 @@
           "currency": {
             "$ref": "#/components/schemas/GoalCurrency",
             "default": "EUR"
+          },
+          "date_flexibility": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalDateFlexibility"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "early_need": {
             "anyOf": [
@@ -14749,6 +14811,17 @@
                 "type": "null"
               }
             ]
+          },
+          "target_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Year"
           },
           "withdrawal": {
             "anyOf": [
