@@ -14,6 +14,9 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.eng
   **Added**
   - `planning.goal` claims accept two new optional fields: `target_year`, the calendar year the money is first needed (an alternative to `horizon` or `target_date`), and `date_flexibility`, which reads `fixed`, `up_to_1y_later` or `over_1y_later` to say how far the date could move. Send them anywhere you write these claims: [Create a person](/api-reference/customers/create-a-person), [Write a claim value for a person](/api-reference/customers/write-a-claim-value-for-a-person) and [Add a version to a claim](/api-reference/customers/add-a-version-to-a-claim).
 
+  **Changed**
+  - `contribution.amount` on `planning.goal` claims is now optional: a client can say how often they add to a goal without saying how much. Leave it out on any of the claim write routes above and it reads back as `null`.
+
   **Deprecated**
   - `early_need` on `planning.goal` claims is deprecated in favour of `date_flexibility`. There's no removal date yet; values already written still load and read back unchanged.
 </Update>
