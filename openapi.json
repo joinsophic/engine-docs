@@ -9129,17 +9129,23 @@
       },
       "GoalContribution-Input": {
         "additionalProperties": false,
-        "description": "Money the person adds to a goal, and how often.",
+        "description": "How often the person adds money to a goal, and how much when they said.",
         "properties": {
           "amount": {
-            "$ref": "#/components/schemas/Money-Input"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "frequency": {
             "$ref": "#/components/schemas/ContributionFrequency"
           }
         },
         "required": [
-          "amount",
           "frequency"
         ],
         "title": "GoalContribution",
@@ -9147,17 +9153,23 @@
       },
       "GoalContribution-Output": {
         "additionalProperties": false,
-        "description": "Money the person adds to a goal, and how often.",
+        "description": "How often the person adds money to a goal, and how much when they said.",
         "properties": {
           "amount": {
-            "$ref": "#/components/schemas/Money-Output"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Output"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "frequency": {
             "$ref": "#/components/schemas/ContributionFrequency"
           }
         },
         "required": [
-          "amount",
           "frequency"
         ],
         "title": "GoalContribution",
