@@ -173,10 +173,25 @@
           "name": {
             "description": "Display name of the instrument.",
             "examples": [
-              "Apple Inc."
+              "iShares Core MSCI World"
             ],
             "title": "Name",
             "type": "string"
+          },
+          "official_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Name the issuer or data vendor gives the instrument, such as the fund name on its KID. Null for currency pairs.",
+            "examples": [
+              "iShares Core MSCI World UCITS ETF USD (Acc)"
+            ],
+            "title": "Official Name"
           },
           "portfolio_manager": {
             "anyOf": [
@@ -1327,10 +1342,25 @@
           "name": {
             "description": "Display name of the instrument.",
             "examples": [
-              "Apple Inc."
+              "iShares Core MSCI World"
             ],
             "title": "Name",
             "type": "string"
+          },
+          "official_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Name the issuer or data vendor gives the instrument, such as the fund name on its KID. Null for currency pairs.",
+            "examples": [
+              "iShares Core MSCI World UCITS ETF USD (Acc)"
+            ],
+            "title": "Official Name"
           },
           "price_type": {
             "$ref": "#/components/schemas/PriceType",
@@ -1925,7 +1955,7 @@
           "name": {
             "description": "Display name of the instrument.",
             "examples": [
-              "Apple Inc."
+              "iShares Core MSCI World"
             ],
             "title": "Name",
             "type": "string"
@@ -1945,6 +1975,21 @@
               "2026-01-15"
             ],
             "title": "Next Coupon Date"
+          },
+          "official_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Name the issuer or data vendor gives the instrument, such as the fund name on its KID. Null for currency pairs.",
+            "examples": [
+              "iShares Core MSCI World UCITS ETF USD (Acc)"
+            ],
+            "title": "Official Name"
           },
           "par_value": {
             "anyOf": [
@@ -4455,10 +4500,25 @@
           "name": {
             "description": "Display name of the instrument.",
             "examples": [
-              "Apple Inc."
+              "iShares Core MSCI World"
             ],
             "title": "Name",
             "type": "string"
+          },
+          "official_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Name the issuer or data vendor gives the instrument, such as the fund name on its KID. Null for currency pairs.",
+            "examples": [
+              "iShares Core MSCI World UCITS ETF USD (Acc)"
+            ],
+            "title": "Official Name"
           },
           "price_type": {
             "$ref": "#/components/schemas/PriceType",
@@ -5000,21 +5060,6 @@
             "title": "Decimal Precision",
             "type": "integer"
           },
-          "display_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Short card headline derived from the legal name with share-class tokens removed.",
-            "examples": [
-              "iShares Core MSCI World UCITS ETF"
-            ],
-            "title": "Display Name"
-          },
           "distribution_frequency": {
             "anyOf": [
               {
@@ -5256,7 +5301,7 @@
           "name": {
             "description": "Display name of the instrument.",
             "examples": [
-              "Apple Inc."
+              "iShares Core MSCI World"
             ],
             "title": "Name",
             "type": "string"
@@ -5275,6 +5320,21 @@
               "84250000000.00"
             ],
             "title": "Net Assets"
+          },
+          "official_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Name the issuer or data vendor gives the instrument, such as the fund name on its KID. Null for currency pairs.",
+            "examples": [
+              "iShares Core MSCI World UCITS ETF USD (Acc)"
+            ],
+            "title": "Official Name"
           },
           "price_type": {
             "$ref": "#/components/schemas/PriceType",
@@ -5431,7 +5491,6 @@
           "distribution_frequency",
           "sri",
           "hedge_currency",
-          "display_name",
           "headline",
           "currency_sentence",
           "rhp_years",
@@ -11457,10 +11516,25 @@
           "name": {
             "description": "Display name of the instrument.",
             "examples": [
-              "Apple Inc."
+              "iShares Core MSCI World"
             ],
             "title": "Name",
             "type": "string"
+          },
+          "official_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Name the issuer or data vendor gives the instrument, such as the fund name on its KID. Null for currency pairs.",
+            "examples": [
+              "iShares Core MSCI World UCITS ETF USD (Acc)"
+            ],
+            "title": "Official Name"
           },
           "price_type": {
             "$ref": "#/components/schemas/PriceType",
