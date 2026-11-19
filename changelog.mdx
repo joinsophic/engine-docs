@@ -9,6 +9,17 @@ Track what's new and what's changed in our API. We publish an entry for every us
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.engine.usesophic.com/changelog/rss.xml).
 
 <Update label="November 19, 2026" description="additions">
+  ## Instruments now carry their official issuer name
+
+  **Added**
+  - `official_name` on instrument responses: the name the issuer or data vendor gives the instrument, such as the fund name on its KID. It reads `null` for currency pairs. Returned wherever an instrument comes back, including [List instruments](/api-reference/catalog/list-instruments) and [Retrieve an instrument](/api-reference/catalog/retrieve-an-instrument).
+
+  **Changed**
+  - `name` on bills and bonds is now built from the instrument's terms (issuer country, coupon and maturity), so a bond reads like `Germany 3.00% 15 Aug 2036` instead of a raw legal description.
+  - `display_name` on ETF instruments is removed; the short card headline it held is now what `name` returns. If you read `display_name`, switch to `name` (and `official_name` for the full legal name).
+</Update>
+
+<Update label="November 19, 2026" description="additions">
   ## One customer per person across onboarding applications
 
   **Fixed**
