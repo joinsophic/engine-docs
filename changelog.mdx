@@ -8,6 +8,14 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.engine.usesophic.com/changelog/rss.xml).
 
+<Update label="November 19, 2026" description="additions">
+  ## One customer per person across onboarding applications
+
+  **Fixed**
+  - When a person holds both a self-directed and an advisory application, approving them in either order now provisions both onto a single customer. Before, the second approval could open a duplicate customer, so [Retrieve an onboarding application](/api-reference/onboarding/retrieve-an-onboarding-application) could complete onto a different `customer_id` than the first. Both applications now complete onto the same customer.
+  - A service whose mandate was terminated is provided again on approval: the new mandate supersedes the terminated one instead of being skipped. A service whose mandate is suspended now fails the application's provisioning rather than being left out.
+</Update>
+
 <Update label="November 18, 2026" description="additions">
   ## Goal claims gain a target year and date flexibility
 
