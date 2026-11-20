@@ -3501,7 +3501,7 @@
           },
           "locator": {
             "additionalProperties": true,
-            "description": "Where in that record, by source type. For an API call: the actor that made it and the caller's own `reference`.",
+            "description": "Where in that record, by source type. For a form submission: the `field` and the form's `form_key`, such as `ahead_of_call` (`null` for a form without a key). For an API call: the actor that made it and the caller's own `reference`.",
             "title": "Locator",
             "type": "object"
           },
