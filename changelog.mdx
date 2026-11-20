@@ -9,6 +9,13 @@ Track what's new and what's changed in our API. We publish an entry for every us
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.engine.usesophic.com/changelog/rss.xml).
 
 <Update label="November 20, 2026" description="additions">
+  ## Claim sources name the form a value came from
+
+  **Added**
+  - `form_key` in a claim source's `locator`: when a claim value came from a form submission, its source now carries the form's key, such as `ahead_of_call` (`null` for a form without a key). Sources written before this change resolve the key from the submission, so it shows on older claims too. Read it wherever claims come back, like [List claims for a person](/api-reference/customers/list-claims-for-a-person) and [Retrieve a person claim](/api-reference/customers/retrieve-a-person-claim).
+</Update>
+
+<Update label="November 20, 2026" description="additions">
   ## Goal claims record the return a client hopes for
 
   **Added**
