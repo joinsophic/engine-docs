@@ -26,12 +26,15 @@ export function extractApiReferenceLinks(content) {
  * runs of anything other than letters, digits and `&` collapse to one hyphen.
  * `&` survives, so "Retrieve account earnings (P&L)" becomes
  * `retrieve-account-earnings-p&l` and "(MWRR / TWRR)" becomes `mwrr-twrr`.
+ * Apostrophes are dropped, so "List a claim's versions" becomes
+ * `list-a-claims-versions`.
  *
  * @param {string} text
  */
 export function slugify(text) {
   return text
     .toLowerCase()
+    .replace(/['’]/g, "")
     .replace(/[^a-z0-9&]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
