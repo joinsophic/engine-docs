@@ -9278,6 +9278,18 @@
         "title": "GoalImportance",
         "type": "string"
       },
+      "GoalReturnHope": {
+        "enum": [
+          "keep_pace",
+          "a_little_above",
+          "clearly_above",
+          "as_much_as_possible",
+          "no_view"
+        ],
+        "properties": {},
+        "title": "GoalReturnHope",
+        "type": "string"
+      },
       "GoalShortfallResponse": {
         "enum": [
           "wait_longer",
@@ -14484,6 +14496,16 @@
             "title": "Purpose",
             "type": "string"
           },
+          "return_hope": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalReturnHope"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "return_hoped_for": {
             "anyOf": [
               {
@@ -14646,6 +14668,16 @@
           "purpose": {
             "title": "Purpose",
             "type": "string"
+          },
+          "return_hope": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalReturnHope"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "return_hoped_for": {
             "anyOf": [
@@ -14840,6 +14872,16 @@
               "crm-update-8812"
             ],
             "title": "Reference"
+          },
+          "return_hope": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalReturnHope"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "return_hoped_for": {
             "anyOf": [
