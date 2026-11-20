@@ -8,6 +8,13 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.engine.usesophic.com/changelog/rss.xml).
 
+<Update label="November 20, 2026" description="additions">
+  ## Shorter instrument names on bonds
+
+  **Changed**
+  - `name` on bonds now carries just the maturity month and year, so a bond reads `Germany 3.00% Aug 2036` instead of `Germany 3.00% 15 Aug 2036`. A zero-coupon bond shows its coupon as `0`, like `Germany 0% Aug 2036`. Bill names still carry the full maturity date, now without a leading zero on the day, like `Germany T-Bill 4 Oct 2027`. Returned wherever an instrument comes back, including [List instruments](/api-reference/catalog/list-instruments) and [Retrieve an instrument](/api-reference/catalog/retrieve-an-instrument).
+</Update>
+
 <Update label="November 19, 2026" description="additions">
   ## Instruments now carry their official issuer name
 
