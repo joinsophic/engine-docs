@@ -9,18 +9,18 @@ Track what's new and what's changed in our API. We publish an entry for every us
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.engine.usesophic.com/changelog/rss.xml).
 
 <Update label="November 24, 2026" description="additions">
-  ## Orders now respect exchange holidays, half-days, and desk hours, and account earnings break out unrealized P&L
+  ## Account earnings break out unrealized P&L, and orders now respect exchange holidays, half-days, and desk hours
+
+  ### Account earnings break out unrealized P&L
+
+  **Added**
+  - `positions` on [Retrieve account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l) gains three fields: `unrealized` (earnings on the units still held, before fees), `unrealized_percentage` (`unrealized` as a proportion of `cost_basis`, zero when `cost_basis` is zero) and `cost_basis` (acquisition cost of those units at their purchase exchange rates; units held before the period starts count at the closing valuation of the period's first day).
 
   ### Trading sessions now follow stored exchange calendars
 
   **Changed**
   - Markets are now judged open or closed against each exchange's stored trading calendar, so an order sent on an exchange holiday or after a half-day close is held until the next session open instead of executing right away. Applies to [Place an order](/api-reference/trading/place-an-order).
   - Instruments traded through our desk (ones without an exchange that sets trading hours) now follow the desk's London session, 07:15 to 16:00 on London trading days. Before, the desk window ran continuously from Monday to Friday UTC, so orders sent overnight executed immediately; they now wait for the next session open, like exchange-listed orders already did.
-
-  ### Account earnings break out unrealized P&L
-
-  **Added**
-  - `positions` on [Retrieve account earnings (P&L)](/api-reference/performance/retrieve-account-earnings-p&l) gains three fields: `unrealized` (earnings on the units still held, before fees), `unrealized_percentage` (`unrealized` as a proportion of `cost_basis`, zero when `cost_basis` is zero) and `cost_basis` (acquisition cost of those units at their purchase exchange rates; units held before the period start count at that day's value).
 </Update>
 
 <Update label="November 20, 2026" description="additions">
