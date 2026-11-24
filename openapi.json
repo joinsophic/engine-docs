@@ -713,14 +713,35 @@
             "$ref": "#/components/schemas/EarningsAttribution",
             "description": "Breakdown of the positions' earnings into how much came from the investments themselves and how much from exchange-rate movements."
           },
+          "cost_basis": {
+            "description": "Acquisition cost of the units still held, converted at the exchange rates in force when they were bought. Units held before the period start count at that day's value.",
+            "title": "Cost Basis",
+            "type": "string"
+          },
           "gross": {
             "description": "Total the positions earned before fees, in the account's currency. Equals the investment effect plus the currency effect.",
             "title": "Gross",
+            "type": "string"
+          },
+          "unrealized": {
+            "description": "Unrealized earnings on the units still held, before fees, in the account's currency. Includes the currency effect on those units.",
+            "title": "Unrealized",
+            "type": "string"
+          },
+          "unrealized_percentage": {
+            "description": "`unrealized` as a proportion of `cost_basis`, so it includes the currency effect. Zero when `cost_basis` is zero.",
+            "examples": [
+              "0.0421"
+            ],
+            "title": "Unrealized Percentage",
             "type": "string"
           }
         },
         "required": [
           "gross",
+          "cost_basis",
+          "unrealized",
+          "unrealized_percentage",
           "attribution"
         ],
         "title": "AccountPositionsEarnings",
@@ -15430,7 +15451,7 @@
             "description": "Breakdown of the earnings into how much came from the investment itself and how much from exchange-rate movements."
           },
           "cost_basis": {
-            "description": "Acquisition cost of the units still held, converted at the exchange rates in force when they were bought.",
+            "description": "Acquisition cost of the units still held, converted at the exchange rates in force when they were bought. Units held before the period start count at that day's value.",
             "title": "Cost Basis",
             "type": "string"
           },
@@ -15566,7 +15587,7 @@
             "description": "Breakdown of the earnings into realized and unrealized, and within each into price changes and income."
           },
           "cost_basis": {
-            "description": "Total acquisition cost of the units still held.",
+            "description": "Total acquisition cost of the units still held. Units held before the period start count at that day's value.",
             "title": "Cost Basis",
             "type": "string"
           },
