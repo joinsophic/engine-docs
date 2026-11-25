@@ -20,7 +20,7 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.eng
 
   **Changed**
   - Markets are now judged open or closed against each exchange's stored trading calendar, so an order sent on an exchange holiday or after a half-day close is held until the next session open instead of executing right away. Applies to [Place an order](/api-reference/trading/place-an-order).
-  - Instruments traded through our desk (ones without an exchange that sets trading hours) now follow the desk's London session, 07:15 to 16:00 on London trading days. Before, the desk window ran continuously from Monday to Friday UTC, so orders sent overnight executed immediately; they now wait for the next session open, like exchange-listed orders already did.
+  - Instruments traded through our desk (ones without an exchange that sets trading hours, other than currency pairs) now follow the desk's London session, 07:15 to 16:00 on London trading days. Before, the desk window ran continuously from Monday to Friday UTC, so orders sent overnight executed immediately; they now wait for the next session open, like exchange-listed orders already did.
 </Update>
 
 <Update label="November 20, 2026" description="additions">
@@ -52,7 +52,8 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.eng
 
   **Changed**
   - `name` on bills and bonds is now built from the instrument's terms (issuer country, coupon and maturity), so a bond reads like `Germany 3.00% 15 Aug 2036` instead of a raw legal description.
-  - `display_name` on ETF instruments is removed; the short card headline it held is now what `name` returns. If you read `display_name`, switch to `name` (and `official_name` for the full legal name).
+  - `name` on ETF instruments now returns the short headline `display_name` used to hold, such as `iShares Core MSCI World`, instead of the fund's legal name. Read `official_name` if you need the legal name.
+  - `display_name` is removed from ETF instruments. This applies on every API version, so if you read `display_name`, switch to `name`.
 
   ### One customer per person across onboarding applications
 
@@ -122,7 +123,7 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.eng
 </Update>
 
 <Update label="November 10, 2026" description="additions">
-  ## Onboarding approvals verify claims, and owed fees collect from more inflows
+  ## Onboarding approvals verify claims, owed fees collect from more inflows, and ETF cash buys size on older prices
 
   ### Onboarding approvals now verify claims and complete the application
 
@@ -136,7 +137,11 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.eng
 
   **Changed**
   - When a cash credit lands on an account balance, we now collect any fees the account owes on FX conversions, coupon payments, merger cash legs and book transfers in, in the received currency. Previously only deposits, maturities and sell fills triggered collection. You'll see the extra collection events in `collections` and `collected_at` on [Retrieve a fee charge](/api-reference/billing/retrieve-a-fee-charge), and as fee transactions on [List account transactions](/api-reference/activity/list-account-transactions). Nothing is collected when the account owes nothing, and credits that land on a managed portfolio's residual still collect nothing.
-  - ETF cash buys no longer wait on a same-day quote. When you place a market buy with a `cash_amount` on an ETF, we now size the order on the previous weekday's close at its listing exchange (in the exchange's time zone), instead of refusing or stalling while its quote is older than a few minutes. The listing venue refreshes an ETF's close once a day, so a Monday order sizes on Friday's close. Other instrument types still size on a fresh quote. You'll see the difference in the `quantity` an ETF order reserves, on [Retrieve an order](/api-reference/trading/retrieve-an-order) and [List orders](/api-reference/trading/list-orders).
+
+  ### ETF cash buys no longer wait on a fresh quote
+
+  **Changed**
+  - When you place a market buy with a `cash_amount` on an ETF, we now size the order on the latest price we hold, as long as it's no older than the previous weekday's close at the listing exchange (in the exchange's time zone). Before, we refused or stalled the order while the quote was older than a few minutes. When there's no recent intraday price, that's the listing venue's close, which refreshes once a day, so a Monday order can size on Friday's close. Other instrument types still size on a fresh quote. You'll see the difference in the `quantity` an ETF order reserves, on [Retrieve an order](/api-reference/trading/retrieve-an-order) and [List orders](/api-reference/trading/list-orders).
 </Update>
 
 <Update label="November 9, 2026" description="additions">
