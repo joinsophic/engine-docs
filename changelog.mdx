@@ -19,15 +19,15 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.eng
   **Added**
   - Two new agreement values, `joint_account_agreement` and `corporate_client_agreement`: they appear as `document_type` on legal documents once a tenant uploads them (see [List legal documents](/api-reference/legal-documents/list-legal-documents)), and you send them as `consent_type` in the `consents` field of [Submit an onboarding application](/api-reference/onboarding/submit-an-onboarding-application).
 
+  ### Fee variants can be scoped to a strategy
+
+  **Added**
+  - `strategy` on a fee variant: the ID of the advisory strategy the variant prices, so we can charge every holding of a portfolio following that strategy (recurring fees only). It's `null` when the variant has no strategy scope. Read it on [Retrieve a fee](/api-reference/billing/retrieve-a-fee).
+
   ### ETF orders no longer stall on stale prices after an exchange holiday
 
   **Fixed**
   - An ETF order placed on the first trading day after an exchange holiday no longer waits on a stale-price retry. We now judge the sizing price's date against the listing exchange's previous trading day instead of the previous weekday, so the close from before the holiday counts as fresh. Applies to [Place an order](/api-reference/trading/place-an-order).
-
-  ### Fee variants can be scoped to a strategy
-
-  **Added**
-  - `strategy` on a fee variant: the ID of the advisory strategy the variant prices, so a variant can charge every holding of a portfolio following that strategy (recurring fees only). It's `null` when the variant has no strategy scope. Read it on [Retrieve a fee](/api-reference/billing/retrieve-a-fee).
 </Update>
 
 <Update label="November 24, 2026" description="additions">
