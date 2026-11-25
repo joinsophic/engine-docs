@@ -10610,6 +10610,8 @@
           "investment_services_agreement",
           "investment_advice_agreement",
           "portfolio_management_agreement",
+          "joint_account_agreement",
+          "corporate_client_agreement",
           "risk_disclosures",
           "conflicts_of_interest_policy",
           "complaints_handling_policy",

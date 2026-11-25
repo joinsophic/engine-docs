@@ -1,5 +1,5 @@
 {
-  "api_version": "2026-11-08",
+  "api_version": "2026-11-25",
   "error_codes": [
     {
       "code": "api_version_invalid",
@@ -246,7 +246,7 @@
       "detail": "Withdrawals are not enabled for this account."
     }
   ],
-  "openapi_sha256": "300ba30888365ea5072874a722a75187cebe40f71bf7ab16b1aacd69cb53501f",
+  "openapi_sha256": "c6615b5838b80accd1e736a14cb1c7f4383b3d49e47b5c0cca8529ae6b45e3d3",
   "schema_version": 1,
   "webhook_events": [
     {
