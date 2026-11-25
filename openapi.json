@@ -8156,6 +8156,21 @@
             "description": "Forward-looking portfolio-type scope key.",
             "title": "Portfolio Type"
           },
+          "strategy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ID of the strategy this variant is scoped to: it prices every holding of a portfolio following that strategy (recurring fees only). Null when the variant has no strategy scope.",
+            "examples": [
+              "str_8kQ2mXp4Rt"
+            ],
+            "title": "Strategy"
+          },
           "transaction_type": {
             "anyOf": [
               {
