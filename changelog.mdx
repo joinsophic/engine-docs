@@ -17,7 +17,7 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.eng
   - [Submit an onboarding application](/api-reference/onboarding/submit-an-onboarding-application) now requires a consent to the joint account agreement from every owner of a joint application, and to the corporate client agreement from every signatory of a business application, on top of the account agreements. On `2026-11-25` and later a missing one returns 400; earlier versions don't require them.
 
   **Added**
-  - Two new agreement values, `joint_account_agreement` and `corporate_client_agreement`: they appear as `document_type` on legal documents and as `consent_type` on consents once a tenant uploads them. See [List legal documents](/api-reference/legal-documents/list-legal-documents).
+  - Two new agreement values, `joint_account_agreement` and `corporate_client_agreement`: they appear as `document_type` on legal documents once a tenant uploads them (see [List legal documents](/api-reference/legal-documents/list-legal-documents)), and you send them as `consent_type` in the `consents` field of [Submit an onboarding application](/api-reference/onboarding/submit-an-onboarding-application).
 
   ### ETF orders no longer stall on stale prices after an exchange holiday
 
