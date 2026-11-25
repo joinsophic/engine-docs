@@ -14,7 +14,7 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.eng
   <Info>New API version `2026-11-25`. See [Versioning](/api-reference/versioning) to migrate.</Info>
 
   **Breaking**
-  - [Submit an onboarding application](/api-reference/onboarding/submit-an-onboarding-application) now requires a consent to the joint account agreement from every owner of a joint application, and to the corporate client agreement from every signatory of a business application, on top of the account agreements. On `2026-11-25` and later a missing one returns 400; earlier versions don't require them.
+  - [Submit an onboarding application](/api-reference/onboarding/submit-an-onboarding-application) now requires a consent to the joint account agreement from every owner of a joint application, and to the corporate client agreement from every signatory of a business application, on top of the account agreements. On `2026-11-25` and later a missing one returns 400; earlier versions don't require them. Each consent points at a version of the agreement, so before you move to `2026-11-25`, check that both agreements show up in [List legal documents](/api-reference/legal-documents/list-legal-documents). Until both are published, joint and business applications can't pass on the new version.
 
   **Added**
   - Two new agreement values, `joint_account_agreement` and `corporate_client_agreement`: they appear as `document_type` on legal documents once a tenant uploads them (see [List legal documents](/api-reference/legal-documents/list-legal-documents)), and you send them as `consent_type` in the `consents` field of [Submit an onboarding application](/api-reference/onboarding/submit-an-onboarding-application).
