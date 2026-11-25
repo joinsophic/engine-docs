@@ -50,7 +50,7 @@ A consent records that a person agreed to a specific [legal document version](/a
 | Field | Type | Required | Notes |
 |---|---|---|---|
 | `person` | string | yes | An authority or related person; see [attribution](#per-person-attribution). |
-| `consent_type` | string | yes | E.g. `terms_of_service`, `data_accuracy`. See [required consents](#required-consents) for the full list. |
+| `consent_type` | string | yes | E.g. `investment_services_agreement`, `data_accuracy`. See [required consents](#required-consents) for the full list. |
 | `legal_document_version` | string | conditional | Required for every `consent_type` except `data_accuracy`. For `data_accuracy`, omit. |
 | `consented_at` | datetime | yes | ISO-8601 timestamp. |
 
@@ -205,19 +205,28 @@ Who supplies the consents depends on customer type:
 - **Joint**: every natural authority, each attributed to themselves.
 - **Business**: every signatory, each attributed to themselves. The legal-entity owner does not consent.
 
-The same nine consents apply in every case:
+Every person who consents supplies these nine:
 
 | `consent_type` | `legal_document_version` |
 |---|---|
-| `terms_of_service` | required |
-| `investment_service_agreement` | required |
+| `investment_services_agreement` | required |
 | `risk_disclosures` | required |
 | `conflicts_of_interest_policy` | required |
 | `complaints_handling_policy` | required |
 | `client_assets_safeguarding_policy` | required |
 | `investor_compensation_fund_policy` | required |
 | `order_execution_policy` | required |
+| `costs_and_charges` | required |
 | `data_accuracy` | must be omitted |
+
+On API version `2026-11-25` and later, joint and business applications also need their customer type's agreement from each person who consents:
+
+| Customer type | Extra `consent_type` | `legal_document_version` |
+|---|---|---|
+| Joint | `joint_account_agreement` | required |
+| Business | `corporate_client_agreement` | required |
+
+Earlier versions don't ask for these.
 
 `data_accuracy` is an attestation; the person attests that the information they provided is accurate, so there is no legal document to version. Sending `legal_document_version` with it returns `400 invalid_request`.
 
@@ -357,7 +366,7 @@ Natural-person evidence (`identity_document`, `proof_of_address`, `selfie`, `boa
       {"person": "per_ada", "authority_type": "owner"}
     ],
     "consents": [
-      {"person": "per_ada", "consent_type": "terms_of_service", "legal_document_version": "legal_doc_ver_tos_v3", "consented_at": "2026-04-18T09:30:00Z"}
+      {"person": "per_ada", "consent_type": "investment_services_agreement", "legal_document_version": "legal_doc_ver_isa_v1", "consented_at": "2026-04-18T09:30:00Z"}
     ],
     "evidence": [
       {"person": "per_ada", "evidence_type": "identity_document", "document_type": "passport", "file": "fil_passport"}
@@ -421,7 +430,7 @@ A successful request returns `200 OK` with the same shape as the submission resp
       {"person": "per_ada", "authority_type": "owner"}
     ],
     "consents": [
-      {"person": "per_ada", "consent_type": "terms_of_service", "legal_document_version": "legal_doc_ver_tos_v3", "consented_at": "2026-04-18T09:30:00Z"}
+      {"person": "per_ada", "consent_type": "investment_services_agreement", "legal_document_version": "legal_doc_ver_isa_v1", "consented_at": "2026-04-18T09:30:00Z"}
     ],
     "evidence": [
       {"person": "per_ada", "evidence_type": "identity_document", "document_type": "passport", "file": "fil_passport"}
