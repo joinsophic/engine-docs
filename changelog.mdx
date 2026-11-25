@@ -8,6 +8,13 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.engine.usesophic.com/changelog/rss.xml).
 
+<Update label="November 25, 2026" description="additions">
+  ## ETF orders no longer stall on stale prices after an exchange holiday
+
+  **Fixed**
+  - An ETF order placed on the first trading day after an exchange holiday no longer waits on a stale-price retry. We now judge the sizing price's date against the listing exchange's previous trading day instead of the previous weekday, so the close from before the holiday counts as fresh. Applies to [Place an order](/api-reference/trading/place-an-order).
+</Update>
+
 <Update label="November 24, 2026" description="additions">
   ## Account earnings break out unrealized P&L, and orders now respect exchange holidays, half-days, and desk hours
 
