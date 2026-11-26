@@ -7821,7 +7821,7 @@
                 "type": "null"
               }
             ],
-            "description": "Date and time the charge was fully collected, or settled by collections and refunds.",
+            "description": "Date and time the charge was fully collected, or settled by collections and refunds, or, for a charge totalling zero, when it was invoiced.",
             "examples": [
               "2026-02-01T09:30:00Z"
             ],
@@ -8143,6 +8143,20 @@
             "format": "date-time",
             "title": "Modified At",
             "type": "string"
+          },
+          "order_purpose": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OrderPurpose"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Order purpose this variant is scoped to: it prices every order with that purpose, ahead of every instrument scope (transaction fees only). Null when the variant has no purpose scope.",
+            "examples": [
+              "rollover"
+            ]
           },
           "portfolio_type": {
             "anyOf": [
