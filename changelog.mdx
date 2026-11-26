@@ -8,6 +8,20 @@ Track what's new and what's changed in our API. We publish an entry for every us
 
 Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.engine.usesophic.com/changelog/rss.xml).
 
+<Update label="November 26, 2026" description="additions">
+  ## Contact details claims need a phone number, and percentage order fees respect a minimum
+
+  ### Contact details claims need a phone number
+
+  **Changed**
+  - A person's `contact_details` claim only counts toward an application's requirements when it carries a phone number, since we text the signing code to it. A claim written with a blank number no longer passes, so [Submit an onboarding application](/api-reference/onboarding/submit-an-onboarding-application) returns `400` until the person holds a contact details claim with a number.
+
+  ### Percentage order fees never charge below their minimum
+
+  **Changed**
+  - A percentage-priced order fee can now carry a per-currency minimum: the charge is the greater of the rate on the order's notional and that minimum. You'll see it in the fees of [Get an order quote](/api-reference/trading/get-an-order-quote) and in the charged amounts on [Retrieve a fee charge](/api-reference/billing/retrieve-a-fee-charge). Fees without a configured minimum are unchanged.
+</Update>
+
 <Update label="November 25, 2026" description="2026-11-25">
   ## Joint and business onboarding applications require their customer type's agreement
 
