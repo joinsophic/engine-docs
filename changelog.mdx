@@ -20,6 +20,16 @@ Subscribe to updates via the RSS feed at [`/changelog/rss.xml`](https://docs.eng
 
   **Changed**
   - A percentage-priced order fee can now carry a per-currency minimum: the charge is the greater of the rate on the order's notional and that minimum. You'll see it in the fees of [Get an order quote](/api-reference/trading/get-an-order-quote) and in the charged amounts on [Retrieve a fee charge](/api-reference/billing/retrieve-a-fee-charge). Fees without a configured minimum are unchanged.
+
+  ### Fee variants can be scoped to an order purpose
+
+  **Added**
+  - `order_purpose` on a fee variant: the order purpose the variant prices (currently only `rollover`), ahead of every instrument scope. It's `null` when the variant has no purpose scope, and only transaction fees can carry one. Read it on [Retrieve a fee](/api-reference/billing/retrieve-a-fee); an order with a matching purpose is charged by that variant before any instrument-scoped one.
+
+  ### Zero-amount fee charges settle when invoiced
+
+  **Fixed**
+  - A fee charge totalling zero now reports `collected_at` when it's invoiced instead of staying unset, and no longer reports `is_fully_refunded` for a charge that was never refunded. Applies to [Retrieve a fee charge](/api-reference/billing/retrieve-a-fee-charge).
 </Update>
 
 <Update label="November 25, 2026" description="2026-11-25">
