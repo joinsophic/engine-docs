@@ -1,0 +1,34 @@
+overlay: 1.1.0
+info:
+  title: Attribution headers
+  version: 1.0.0
+extends: ../openapi.json
+actions:
+  - target: $.paths['/accounts/{account_id}/orders'].post
+    description: Document the middleware-level attribution headers on order placement.
+    update:
+      parameters:
+        - name: Person-Id
+          in: header
+          required: false
+          description: >-
+            Our person ID (`per_…`) for the end person this request concerns. For
+            order placement, this is the person who instructed the order. We use it
+            for attribution; it doesn't replace the Bearer token or affect
+            authorization. See [Attribution](/api-reference/attribution).
+          schema:
+            type: string
+            maxLength: 255
+            examples:
+              - per_m4k7r9s2
+        - name: Client-User-Id
+          in: header
+          required: false
+          description: >-
+            Your own stable identifier for the same end user. Used only to correlate
+            logs during support and incident investigation.
+          schema:
+            type: string
+            maxLength: 255
+            examples:
+              - partner-user-123

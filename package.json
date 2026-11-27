@@ -16,6 +16,6 @@
   "packageManager": "pnpm@10.9.0",
   "dependencies": {
     "biome": "^0.3.3",
-    "mint": "^4.2.873"
+    "mint": "^4.3.96"
   }
 }
