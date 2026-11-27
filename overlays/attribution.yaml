@@ -19,7 +19,8 @@ actions:
           schema:
             type: string
             maxLength: 255
-          example: per_m4k7r9s2
+            examples:
+              - per_m4k7r9s2
         - name: Client-User-Id
           in: header
           required: false
@@ -29,4 +30,5 @@ actions:
           schema:
             type: string
             maxLength: 255
-          example: partner-user-123
+            examples:
+              - partner-user-123
