@@ -8,23 +8,28 @@ headers to attribute the action for compliance, and to correlate your identifier
 with ours in logs and support.
 
 ```bash
-curl https://api.joinsophic.com/me \
+curl -X POST https://api.joinsophic.com/accounts/acc_…/orders \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Person-Id: per_…" \
-  -H "Client-User-Id: your-end-user-id"
+  -H "Client-User-Id: your-end-user-id" \
+  -H "Content-Type: application/json" \
+  -d '{"instrument":"ins_…","order_type":"market","side":"buy","cash_amount":"100.00"}'
 ```
 
-Neither header replaces [authentication](/api-reference/auth). Your Bearer token
-still identifies your tenant; these headers identify the end person the call is
-about.
+Neither header replaces [authentication](/api-reference/auth) or changes
+authorization. Your Bearer token still identifies your tenant, and the path and
+body still choose the customer or account the request acts on. These headers
+identify the end person the call is about.
 
 ## Person-Id
 
 Send `Person-Id` with our person ID (`per_…`) whenever the request concerns an
-end person. This is how we attribute the call for compliance.
+end person. This is how we attribute the call for compliance. Passing it doesn't
+grant or prove authority over the account in the request.
 
 Create persons via [`POST /persons`](/api-reference/customers/create-a-person),
-then pass the returned ID on subsequent requests that act for that person.
+then pass the returned ID on subsequent requests that act for that person. On
+order placement, send the person who instructed the order.
 
 ## Client-User-Id
 
