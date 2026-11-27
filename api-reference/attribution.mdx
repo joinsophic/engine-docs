@@ -34,25 +34,29 @@ order = response.json()
 ```
 
 ```javascript Node.js
-const response = await fetch(
-  "https://api.joinsophic.com/accounts/{account_id}/orders",
-  {
-    method: "POST",
-    headers: {
-      Authorization: "Bearer YOUR_ACCESS_TOKEN",
-      "Person-Id": "per_m4k7r9s2",
-      "Client-User-Id": "partner-user-123",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      instrument: "ins_xyz789",
-      order_type: "market",
-      side: "buy",
-      cash_amount: "100.00",
-    }),
-  }
-);
-const order = await response.json();
+async function placeOrder() {
+  const response = await fetch(
+    "https://api.joinsophic.com/accounts/{account_id}/orders",
+    {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer YOUR_ACCESS_TOKEN",
+        "Person-Id": "per_m4k7r9s2",
+        "Client-User-Id": "partner-user-123",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        instrument: "ins_xyz789",
+        order_type: "market",
+        side: "buy",
+        cash_amount: "100.00",
+      }),
+    }
+  );
+  return response.json();
+}
+
+placeOrder();
 ```
 
 ```go Go
